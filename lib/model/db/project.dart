@@ -27,14 +27,14 @@ class _Project {
   // 项目环境key
   late String environmentKey;
 
+  // 项目版本号
+  late String version;
+
   // 项目数据源类型
   late int sourceType;
 
   // 项目git数据源配置对象
   late _GitSource? gitSource;
-
-  // pubspec.yaml附件信息
-  late _PubspecFile? pubspecFile;
 
   // android平台信息
   late _AndroidPlatform? androidPlatform;
@@ -63,34 +63,24 @@ class _Project {
   // 获取数据源类型美剧
   SourceType getSourceType() => SourceType.values[sourceType];
 
-  // // 获取所有已存在平台名称集合
-  // List<String> loadExitPlatforms() {
-  //   var platforms = <String>[];
-  //   return platforms;
-  // }
+  // 获取所有已存在平台名称集合
+  List<String> loadExitPlatforms() {
+    return [
+      ...<dynamic>[
+        androidPlatform?.name,
+        iosPlatform?.name,
+        webPlatform?.name,
+        linuxPlatform?.name,
+        macosPlatform?.name,
+        windowsPlatform?.name
+      ]..removeWhere((e) => null == e)
+    ];
+  }
 
   // 更新项目信息
   void updateInfo({
     required CheckFileUpdate checkFileUpdate,
   }) {}
-}
-
-/*
-* pubspec.yaml文件信息管理
-* @author wuxubaiyang
-* @Time 5/15/2022 8:20 AM
-*/
-@RealmModel()
-class _PubspecFile {
-  // 项目版本
-  late String? version;
-
-  // 更新文件信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {
-  }
 }
 
 /*
@@ -100,13 +90,14 @@ class _PubspecFile {
 */
 @RealmModel()
 class _AndroidPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "android";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*
@@ -116,13 +107,14 @@ class _AndroidPlatform {
 */
 @RealmModel()
 class _IOSPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "ios";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*
@@ -132,13 +124,14 @@ class _IOSPlatform {
 */
 @RealmModel()
 class _WebPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "web";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*
@@ -148,13 +141,14 @@ class _WebPlatform {
 */
 @RealmModel()
 class _LinuxPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "linux";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*
@@ -164,13 +158,14 @@ class _LinuxPlatform {
 */
 @RealmModel()
 class _MacosPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "macos";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*
@@ -180,13 +175,14 @@ class _MacosPlatform {
 */
 @RealmModel()
 class _WindowsPlatform {
-  // 更新平台信息
+  // 平台名称
+  late String name = "windows";
+
+  // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 检查文件是否存在并更新
-  }
+  }) {}
 }
 
 /*

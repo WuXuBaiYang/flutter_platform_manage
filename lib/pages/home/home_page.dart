@@ -1,6 +1,6 @@
-import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/utils/platform_info_handler.dart';
 import 'package:jtech_pomelo/pomelo.dart';
 
 /*
@@ -30,12 +30,14 @@ class _HomePageState extends BaseState<HomePage> {
       body: Center(
         child: TextButton(
           child: Text("test button"),
-          onPressed: () {
-            a ??= Project("primaryKey", "name", "path", "environmentKey", 0);
-            a?.updateInfo(checkFileUpdate: (path) {
-              print("aaaaaaaaaaaaa");
-              return true;
-            });
+          onPressed: () async {
+            var rootPath =
+                r"C:\Users\wuxubaiyang\Documents\WorkSpace\platform_test";
+            // var version = await ProjectInfoHandle.loadVersion(rootPath);
+            // print(version);
+            // await ProjectInfoHandler.setVersion(rootPath, "1.3.2+12");
+            // version = await ProjectInfoHandle.loadVersion(rootPath);
+            // print(version);
           },
         ),
       ),

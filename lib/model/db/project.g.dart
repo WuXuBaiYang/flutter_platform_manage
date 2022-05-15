@@ -12,9 +12,9 @@ class Project extends _Project with RealmEntity, RealmObject {
     String name,
     String path,
     String environmentKey,
+    String version,
     int sourceType, {
     GitSource? gitSource,
-    PubspecFile? pubspecFile,
     AndroidPlatform? androidPlatform,
     IOSPlatform? iosPlatform,
     WebPlatform? webPlatform,
@@ -26,9 +26,9 @@ class Project extends _Project with RealmEntity, RealmObject {
     RealmObject.set(this, 'name', name);
     RealmObject.set(this, 'path', path);
     RealmObject.set(this, 'environmentKey', environmentKey);
+    RealmObject.set(this, 'version', version);
     RealmObject.set(this, 'sourceType', sourceType);
     RealmObject.set(this, 'gitSource', gitSource);
-    RealmObject.set(this, 'pubspecFile', pubspecFile);
     RealmObject.set(this, 'androidPlatform', androidPlatform);
     RealmObject.set(this, 'iosPlatform', iosPlatform);
     RealmObject.set(this, 'webPlatform', webPlatform);
@@ -63,6 +63,11 @@ class Project extends _Project with RealmEntity, RealmObject {
       RealmObject.set(this, 'environmentKey', value);
 
   @override
+  String get version => RealmObject.get<String>(this, 'version') as String;
+  @override
+  set version(String value) => RealmObject.set(this, 'version', value);
+
+  @override
   int get sourceType => RealmObject.get<int>(this, 'sourceType') as int;
   @override
   set sourceType(int value) => RealmObject.set(this, 'sourceType', value);
@@ -73,13 +78,6 @@ class Project extends _Project with RealmEntity, RealmObject {
   @override
   set gitSource(covariant GitSource? value) =>
       RealmObject.set(this, 'gitSource', value);
-
-  @override
-  PubspecFile? get pubspecFile =>
-      RealmObject.get<PubspecFile>(this, 'pubspecFile') as PubspecFile?;
-  @override
-  set pubspecFile(covariant PubspecFile? value) =>
-      RealmObject.set(this, 'pubspecFile', value);
 
   @override
   AndroidPlatform? get androidPlatform =>
@@ -138,11 +136,10 @@ class Project extends _Project with RealmEntity, RealmObject {
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('environmentKey', RealmPropertyType.string),
+      SchemaProperty('version', RealmPropertyType.string),
       SchemaProperty('sourceType', RealmPropertyType.int),
       SchemaProperty('gitSource', RealmPropertyType.object,
           optional: true, linkTarget: 'GitSource'),
-      SchemaProperty('pubspecFile', RealmPropertyType.object,
-          optional: true, linkTarget: 'PubspecFile'),
       SchemaProperty('androidPlatform', RealmPropertyType.object,
           optional: true, linkTarget: 'AndroidPlatform'),
       SchemaProperty('iosPlatform', RealmPropertyType.object,
@@ -159,62 +156,26 @@ class Project extends _Project with RealmEntity, RealmObject {
   }
 }
 
-class PubspecFile extends _PubspecFile with RealmEntity, RealmObject {
-  PubspecFile({
-    String? version,
-  }) {
-    RealmObject.set(this, 'version', version);
-  }
-
-  PubspecFile._();
-
-  @override
-  String? get version => RealmObject.get<String>(this, 'version') as String?;
-  @override
-  set version(String? value) => RealmObject.set(this, 'version', value);
-
-  @override
-  Stream<RealmObjectChanges<PubspecFile>> get changes =>
-      RealmObject.getChanges<PubspecFile>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObject.registerFactory(PubspecFile._);
-    return const SchemaObject(PubspecFile, [
-      SchemaProperty('version', RealmPropertyType.string, optional: true),
-    ]);
-  }
-}
-
 class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   AndroidPlatform({
-    String path = "android",
-    bool exit = false,
+    String name = "android",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<AndroidPlatform>({
-        'path': "android",
-        'exit': false,
+        'name': "android",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   AndroidPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<AndroidPlatform>> get changes =>
@@ -225,8 +186,7 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(AndroidPlatform._);
     return const SchemaObject(AndroidPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
@@ -235,30 +195,22 @@ class IOSPlatform extends _IOSPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   IOSPlatform({
-    String path = "ios",
-    bool exit = false,
+    String name = "ios",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<IOSPlatform>({
-        'path': "ios",
-        'exit': false,
+        'name': "ios",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   IOSPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<IOSPlatform>> get changes =>
@@ -269,8 +221,7 @@ class IOSPlatform extends _IOSPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(IOSPlatform._);
     return const SchemaObject(IOSPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
@@ -279,30 +230,22 @@ class WebPlatform extends _WebPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   WebPlatform({
-    String path = "web",
-    bool exit = false,
+    String name = "web",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<WebPlatform>({
-        'path': "web",
-        'exit': false,
+        'name': "web",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   WebPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<WebPlatform>> get changes =>
@@ -313,8 +256,7 @@ class WebPlatform extends _WebPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(WebPlatform._);
     return const SchemaObject(WebPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
@@ -323,30 +265,22 @@ class LinuxPlatform extends _LinuxPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   LinuxPlatform({
-    String path = "linux",
-    bool exit = false,
+    String name = "linux",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<LinuxPlatform>({
-        'path': "linux",
-        'exit': false,
+        'name': "linux",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   LinuxPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<LinuxPlatform>> get changes =>
@@ -357,8 +291,7 @@ class LinuxPlatform extends _LinuxPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(LinuxPlatform._);
     return const SchemaObject(LinuxPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
@@ -367,30 +300,22 @@ class MacosPlatform extends _MacosPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   MacosPlatform({
-    String path = "macos",
-    bool exit = false,
+    String name = "macos",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<MacosPlatform>({
-        'path': "macos",
-        'exit': false,
+        'name': "macos",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   MacosPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<MacosPlatform>> get changes =>
@@ -401,8 +326,7 @@ class MacosPlatform extends _MacosPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(MacosPlatform._);
     return const SchemaObject(MacosPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
@@ -411,30 +335,22 @@ class WindowsPlatform extends _WindowsPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
   WindowsPlatform({
-    String path = "windows",
-    bool exit = false,
+    String name = "windows",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<WindowsPlatform>({
-        'path': "windows",
-        'exit': false,
+        'name': "windows",
       });
     }
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'exit', exit);
+    RealmObject.set(this, 'name', name);
   }
 
   WindowsPlatform._();
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get name => RealmObject.get<String>(this, 'name') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
-
-  @override
-  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
-  @override
-  set exit(bool value) => RealmObject.set(this, 'exit', value);
+  set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
   Stream<RealmObjectChanges<WindowsPlatform>> get changes =>
@@ -445,8 +361,7 @@ class WindowsPlatform extends _WindowsPlatform with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(WindowsPlatform._);
     return const SchemaObject(WindowsPlatform, [
-      SchemaProperty('path', RealmPropertyType.string),
-      SchemaProperty('exit', RealmPropertyType.bool),
+      SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
 }
