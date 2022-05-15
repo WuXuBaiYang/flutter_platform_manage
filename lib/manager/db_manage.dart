@@ -26,6 +26,13 @@ class DBManage extends BaseManage {
   Future<void> init() async {
     var config = Configuration([
       Project.schema,
+      PubspecFile.schema,
+      AndroidPlatform.schema,
+      IOSPlatform.schema,
+      WebPlatform.schema,
+      LinuxPlatform.schema,
+      MacosPlatform.schema,
+      WindowsPlatform.schema,
       GitSource.schema,
       Environment.schema,
       Setting.schema,

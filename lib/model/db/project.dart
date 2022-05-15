@@ -36,6 +36,24 @@ class _Project {
   // pubspec.yaml附件信息
   late _PubspecFile? pubspecFile;
 
+  // android平台信息
+  late _AndroidPlatform? androidPlatform;
+
+  // ios平台信息
+  late _IOSPlatform? iosPlatform;
+
+  // web平台信息
+  late _WebPlatform? webPlatform;
+
+  // linux平台信息
+  late _LinuxPlatform? linuxPlatform;
+
+  // macos平台信息
+  late _MacosPlatform? macosPlatform;
+
+  // windows平台信息
+  late _WindowsPlatform? windowsPlatform;
+
   // 获取当前项目对应的环境对象
   Environment? getEnvironment() => dbManage.find<Environment>(environmentKey);
 
@@ -45,12 +63,16 @@ class _Project {
   // 获取数据源类型美剧
   SourceType getSourceType() => SourceType.values[sourceType];
 
+  // // 获取所有已存在平台名称集合
+  // List<String> loadExitPlatforms() {
+  //   var platforms = <String>[];
+  //   return platforms;
+  // }
+
   // 更新项目信息
-  void updateProjectInfo({
+  void updateInfo({
     required CheckFileUpdate checkFileUpdate,
-  }) {
-    // 更新pubspec.yaml文件信息
-  }
+  }) {}
 }
 
 /*
@@ -60,17 +82,106 @@ class _Project {
 */
 @RealmModel()
 class _PubspecFile {
-  // 文件路径
-  late String path = "pubspec.yaml";
-
-  // 是否存在
-  late bool exit;
-
   // 项目版本
-  late String version;
+  late String? version;
 
   // 更新文件信息
-  void updateFileInfo(
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+  }
+}
+
+/*
+* android平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _AndroidPlatform {
+  // 更新平台信息
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+    // 检查文件是否存在并更新
+  }
+}
+
+/*
+* ios平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _IOSPlatform {
+  // 更新平台信息
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+    // 检查文件是否存在并更新
+  }
+}
+
+/*
+* web平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _WebPlatform {
+  // 更新平台信息
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+    // 检查文件是否存在并更新
+  }
+}
+
+/*
+* linux平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _LinuxPlatform {
+  // 更新平台信息
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+    // 检查文件是否存在并更新
+  }
+}
+
+/*
+* macos平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _MacosPlatform {
+  // 更新平台信息
+  void updateInfo(
+    String rootPath, {
+    required CheckFileUpdate checkFileUpdate,
+  }) {
+    // 检查文件是否存在并更新
+  }
+}
+
+/*
+* windows平台信息
+* @author wuxubaiyang
+* @Time 5/15/2022 9:21 AM
+*/
+@RealmModel()
+class _WindowsPlatform {
+  // 更新平台信息
+  void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
   }) {
