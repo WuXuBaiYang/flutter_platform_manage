@@ -7,6 +7,11 @@
 
 # Files for the ART/Dalvik VM
 *.dex
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.idea
+.dart_tool
 
 # Java class files
 *.class
