@@ -16,6 +16,10 @@ class ProjectFilePath {
   // android/app/build.gradle
   static const String androidAppBuildGradle = "$android/app/build.gradle";
 
+  // android/app/src/main/AndroidManifest.xml
+  static const String androidManifest =
+      "$android/app/src/main/AndroidManifest.xml";
+
   // ios
   static const String ios = "ios";
 

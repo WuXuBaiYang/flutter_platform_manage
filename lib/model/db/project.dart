@@ -18,8 +18,11 @@ class _Project {
   @PrimaryKey()
   late String primaryKey;
 
-  // 项目名称
+  // 项目名称（pubspec中不可为中文）
   late String name;
+
+  // 项目别名
+  late String alias;
 
   // 项目的本地存储路径
   late String path;

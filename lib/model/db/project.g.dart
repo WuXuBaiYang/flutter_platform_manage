@@ -10,6 +10,7 @@ class Project extends _Project with RealmEntity, RealmObject {
   Project(
     String primaryKey,
     String name,
+    String alias,
     String path,
     String environmentKey,
     String version,
@@ -24,6 +25,7 @@ class Project extends _Project with RealmEntity, RealmObject {
   }) {
     RealmObject.set(this, 'primaryKey', primaryKey);
     RealmObject.set(this, 'name', name);
+    RealmObject.set(this, 'alias', alias);
     RealmObject.set(this, 'path', path);
     RealmObject.set(this, 'environmentKey', environmentKey);
     RealmObject.set(this, 'version', version);
@@ -49,6 +51,11 @@ class Project extends _Project with RealmEntity, RealmObject {
   String get name => RealmObject.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObject.set(this, 'name', value);
+
+  @override
+  String get alias => RealmObject.get<String>(this, 'alias') as String;
+  @override
+  set alias(String value) => RealmObject.set(this, 'alias', value);
 
   @override
   String get path => RealmObject.get<String>(this, 'path') as String;
@@ -134,6 +141,7 @@ class Project extends _Project with RealmEntity, RealmObject {
     return const SchemaObject(Project, [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('environmentKey', RealmPropertyType.string),
       SchemaProperty('version', RealmPropertyType.string),
