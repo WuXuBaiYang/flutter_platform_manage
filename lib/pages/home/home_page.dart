@@ -36,32 +36,35 @@ class _HomePageState extends BaseState<HomePage> {
             var projectInfoHandle = ProjectInfoHandle();
 
             /// 应用版本号
-            // var version = await projectInfoHandle.loadVersion(rootPath);
-            // print(version);
-            // await projectInfoHandle.setVersion(rootPath, "1.3.2+12");
-            // version = await projectInfoHandle.loadVersion(rootPath);
-            // print(version);
+            var version = await projectInfoHandle.loadVersion(rootPath);
+            print(version);
+            await projectInfoHandle.setVersion(rootPath, "1.3.2+12");
+            version = await projectInfoHandle.loadVersion(rootPath);
+            print(version);
             /// 应用名称（仅英文）
-            // var name = await projectInfoHandle.loadName(rootPath);
-            // print(name);
-            // await projectInfoHandle.setName(rootPath, "testName");
-            // name = await projectInfoHandle.loadName(rootPath);
-            // print(name);
+            var name = await projectInfoHandle.loadName(rootPath);
+            print(name);
+            await projectInfoHandle.setName(rootPath, "testName");
+            name = await projectInfoHandle.loadName(rootPath);
+            print(name);
             var androidInfoHandle = AndroidInfoHandle();
 
             /// android项目名称
-            // var label = await androidInfoHandle.loadLabel(rootPath);
-            // print(label);
-            // await androidInfoHandle.setLabel(rootPath, "测试名称");
-            // label = await androidInfoHandle.loadLabel(rootPath);
-            // print(label);
+            var label = await androidInfoHandle.loadLabel(rootPath);
+            print(label);
+            await androidInfoHandle.setLabel(rootPath, "测试名称");
+            label = await androidInfoHandle.loadLabel(rootPath);
+            print(label);
 
             /// android项目包名
-            // var package = await androidInfoHandle.loadPackage(rootPath);
-            // print(package);
-            // await androidInfoHandle.setPackage(rootPath, "com.jtech.test");
-            // package = await androidInfoHandle.loadPackage(rootPath);
-            // print(package);
+            var package = await androidInfoHandle.loadPackage(rootPath);
+            print(package);
+            await androidInfoHandle.setPackage(rootPath, "com.jtech.test");
+            package = await androidInfoHandle.loadPackage(rootPath);
+            print(package);
+            /// android图标名
+            var icon = await androidInfoHandle.loadIconPath(rootPath);
+            print(icon);
           },
         ),
       ),

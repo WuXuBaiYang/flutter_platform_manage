@@ -13,7 +13,8 @@ class ProjectInfoHandle extends BaseInfoHandle {
 
   // 加载项目版本号
   Future<String> loadVersion(String rootPath) {
-    return _loadOnPubspecInfo(rootPath, regVersion, regName: "版本号信息");
+    return _loadOnPubspecInfo(rootPath, regVersion, regName: "版本号信息")
+        .then((v) => v.replaceAll("version: ", ""));
   }
 
   // 设置项目版本号
@@ -27,7 +28,8 @@ class ProjectInfoHandle extends BaseInfoHandle {
 
   // 加载项目名称
   Future<String> loadName(String rootPath) {
-    return _loadOnPubspecInfo(rootPath, regName, regName: "项目名称");
+    return _loadOnPubspecInfo(rootPath, regName, regName: "项目名称")
+        .then((v) => v.replaceAll("name: ", ""));
   }
 
   // 设置项目名称(不可为中文)
@@ -68,12 +70,23 @@ class ProjectInfoHandle extends BaseInfoHandle {
 * @Time 5/15/2022 8:39 PM
 */
 class AndroidInfoHandle extends BaseInfoHandle {
+  // 图标正则匹配
+  final regIconPath = RegExp(r'android:icon="@.+"');
+
+  // 加载应用名
+  Future<List<String>> loadIconPath(String rootPath) {
+    return _loadOnAndroidManifestInfo(rootPath, regIconPath, regName: "图标路径")
+        .then((v) => v.replaceAll(RegExp(r'android:icon=|"|@'), ""))
+        .then((v) => v.split("/"));
+  }
+
   // 应用名正则匹配
   final regLabel = RegExp(r'android:label=".+"');
 
   // 加载应用名
   Future<String> loadLabel(String rootPath) {
-    return _loadOnAndroidManifestInfo(rootPath, regLabel, regName: "应用名");
+    return _loadOnAndroidManifestInfo(rootPath, regLabel, regName: "应用名")
+        .then((v) => v.replaceAll(RegExp(r'android:label=|"'), ""));
   }
 
   // 设置应用名
@@ -87,7 +100,8 @@ class AndroidInfoHandle extends BaseInfoHandle {
 
   // 加载包名
   Future<String> loadPackage(String rootPath) {
-    return _loadOnAndroidManifestInfo(rootPath, regPackage, regName: "包名");
+    return _loadOnAndroidManifestInfo(rootPath, regPackage, regName: "包名")
+        .then((v) => v.replaceAll(RegExp(r'package=|"'), ""));
   }
 
   // 设置包名
