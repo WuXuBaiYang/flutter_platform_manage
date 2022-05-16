@@ -167,8 +167,11 @@ class Project extends _Project with RealmEntity, RealmObject {
 class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
-  AndroidPlatform({
+  AndroidPlatform(
+    String label,
+    String package, {
     String name = "android",
+    AndroidIcons? icons,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<AndroidPlatform>({
@@ -176,6 +179,9 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
       });
     }
     RealmObject.set(this, 'name', name);
+    RealmObject.set(this, 'label', label);
+    RealmObject.set(this, 'package', package);
+    RealmObject.set(this, 'icons', icons);
   }
 
   AndroidPlatform._();
@@ -184,6 +190,23 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   String get name => RealmObject.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObject.set(this, 'name', value);
+
+  @override
+  String get label => RealmObject.get<String>(this, 'label') as String;
+  @override
+  set label(String value) => RealmObject.set(this, 'label', value);
+
+  @override
+  String get package => RealmObject.get<String>(this, 'package') as String;
+  @override
+  set package(String value) => RealmObject.set(this, 'package', value);
+
+  @override
+  AndroidIcons? get icons =>
+      RealmObject.get<AndroidIcons>(this, 'icons') as AndroidIcons?;
+  @override
+  set icons(covariant AndroidIcons? value) =>
+      RealmObject.set(this, 'icons', value);
 
   @override
   Stream<RealmObjectChanges<AndroidPlatform>> get changes =>
@@ -195,6 +218,72 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
     RealmObject.registerFactory(AndroidPlatform._);
     return const SchemaObject(AndroidPlatform, [
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('label', RealmPropertyType.string),
+      SchemaProperty('package', RealmPropertyType.string),
+      SchemaProperty('icons', RealmPropertyType.object,
+          optional: true, linkTarget: 'AndroidIcons'),
+    ]);
+  }
+}
+
+class AndroidIcons extends _AndroidIcons with RealmEntity, RealmObject {
+  AndroidIcons(
+    String hdpiIcon,
+    String mdpiIcon,
+    String xhdpiIcon,
+    String xxhdpiIcon,
+    String xxxhdpiIcon,
+  ) {
+    RealmObject.set(this, 'hdpiIcon', hdpiIcon);
+    RealmObject.set(this, 'mdpiIcon', mdpiIcon);
+    RealmObject.set(this, 'xhdpiIcon', xhdpiIcon);
+    RealmObject.set(this, 'xxhdpiIcon', xxhdpiIcon);
+    RealmObject.set(this, 'xxxhdpiIcon', xxxhdpiIcon);
+  }
+
+  AndroidIcons._();
+
+  @override
+  String get hdpiIcon => RealmObject.get<String>(this, 'hdpiIcon') as String;
+  @override
+  set hdpiIcon(String value) => RealmObject.set(this, 'hdpiIcon', value);
+
+  @override
+  String get mdpiIcon => RealmObject.get<String>(this, 'mdpiIcon') as String;
+  @override
+  set mdpiIcon(String value) => RealmObject.set(this, 'mdpiIcon', value);
+
+  @override
+  String get xhdpiIcon => RealmObject.get<String>(this, 'xhdpiIcon') as String;
+  @override
+  set xhdpiIcon(String value) => RealmObject.set(this, 'xhdpiIcon', value);
+
+  @override
+  String get xxhdpiIcon =>
+      RealmObject.get<String>(this, 'xxhdpiIcon') as String;
+  @override
+  set xxhdpiIcon(String value) => RealmObject.set(this, 'xxhdpiIcon', value);
+
+  @override
+  String get xxxhdpiIcon =>
+      RealmObject.get<String>(this, 'xxxhdpiIcon') as String;
+  @override
+  set xxxhdpiIcon(String value) => RealmObject.set(this, 'xxxhdpiIcon', value);
+
+  @override
+  Stream<RealmObjectChanges<AndroidIcons>> get changes =>
+      RealmObject.getChanges<AndroidIcons>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObject.registerFactory(AndroidIcons._);
+    return const SchemaObject(AndroidIcons, [
+      SchemaProperty('hdpiIcon', RealmPropertyType.string),
+      SchemaProperty('mdpiIcon', RealmPropertyType.string),
+      SchemaProperty('xhdpiIcon', RealmPropertyType.string),
+      SchemaProperty('xxhdpiIcon', RealmPropertyType.string),
+      SchemaProperty('xxxhdpiIcon', RealmPropertyType.string),
     ]);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_platform_manage/common/file_path.dart';
+import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:jtech_pomelo/pomelo.dart';
 
 /*
@@ -73,11 +74,31 @@ class AndroidInfoHandle extends BaseInfoHandle {
   // 图标正则匹配
   final regIconPath = RegExp(r'android:icon="@.+"');
 
-  // 加载应用名
-  Future<List<String>> loadIconPath(String rootPath) {
+  // 加载应用图标信息
+  Future<List<String>> loadIconInfo(String rootPath) {
     return _loadOnAndroidManifestInfo(rootPath, regIconPath, regName: "图标路径")
         .then((v) => v.replaceAll(RegExp(r'android:icon=|"|@'), ""))
         .then((v) => v.split("/"));
+  }
+
+  // 图标分辨率集合
+  final _iconDPIList = ["hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"];
+
+  // 加载应用图标信息对象
+  Future<AndroidIcons> loadIcons(String rootPath) async {
+    var paths = await loadIconInfo(rootPath);
+    if (paths.isEmpty || paths.length != 2) throw Exception("android图标路径有误");
+    var parent = paths.first;
+    var child = "${paths.last}.png";
+    final iconList = _iconDPIList.map((e) {
+      var file = File(
+          joinAll([rootPath, ProjectFilePath.androidRes, "$parent-$e", child]));
+      return file.parent.existsSync() && file.existsSync()
+          ? file.path.replaceAll("\\", "/")
+          : "";
+    }).toList();
+    return AndroidIcons(
+        iconList[0], iconList[1], iconList[2], iconList[3], iconList[4]);
   }
 
   // 应用名正则匹配

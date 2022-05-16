@@ -20,6 +20,9 @@ class ProjectFilePath {
   static const String androidManifest =
       "$android/app/src/main/AndroidManifest.xml";
 
+  // android/app/src/main/res/
+  static const String androidRes = "$android/app/src/main/res";
+
   // ios
   static const String ios = "ios";
 

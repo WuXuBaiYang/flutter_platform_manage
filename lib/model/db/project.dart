@@ -96,11 +96,43 @@ class _AndroidPlatform {
   // 平台名称
   late String name = "android";
 
+  // 应用名
+  late String label;
+
+  // 包名
+  late String package;
+
+  // 图标对象
+  late _AndroidIcons? icons;
+
   // 更新信息
   void updateInfo(
     String rootPath, {
     required CheckFileUpdate checkFileUpdate,
   }) {}
+}
+
+/*
+* android平台图标信息对象
+* @author wuxubaiyang
+* @Time 5/16/2022 6:40 PM
+*/
+@RealmModel()
+class _AndroidIcons {
+  // hdpi
+  late String hdpiIcon;
+
+  // mdpi
+  late String mdpiIcon;
+
+  // xhdpi
+  late String xhdpiIcon;
+
+  // xxhdpi
+  late String xxhdpiIcon;
+
+  // xxxhdpi
+  late String xxxhdpiIcon;
 }
 
 /*
