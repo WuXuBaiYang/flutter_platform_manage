@@ -1,20 +1,46 @@
-import 'package:flutter_platform_manage/common/common.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/pages/home/home_page.dart';
-import 'package:jtech_pomelo/pomelo.dart';
+import 'package:window_manager/window_manager.dart';
+
+// 记录debug状态
+const bool debugMode = true;
 
 void main() async {
-  //运行项目
-  runJAppRoot(
-    debug: true,
-    title: Common.appName,
-    homePage: const HomePage(),
-    initialize: () async {
-      // 初始化数据库管理
-      await dbManage.init();
-    },
-    routes: {
-      "/home": (_) => const HomePage(),
-    },
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  // 初始化窗口管理
+  await WindowManager.instance.ensureInitialized();
+  windowManager.waitUntilReadyToShow().then((_) async {
+    await windowManager.setTitleBarStyle(
+      TitleBarStyle.hidden,
+      windowButtonVisibility: false,
+    );
+    await windowManager.setSize(const Size(755, 545));
+    await windowManager.setMinimumSize(const Size(755, 545));
+    await windowManager.center();
+    await windowManager.show();
+    await windowManager.setPreventClose(true);
+    await windowManager.setSkipTaskbar(false);
+  });
+  // 初始化业务
+  await dbManage.init();
+  // 启动应用
+  runApp(const MyApp());
+}
+
+/*
+* 应用入口
+* @author wuxubaiyang
+* @Time 5/18/2022 10:40 AM
+*/
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const FluentApp(
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
+    );
+  }
 }

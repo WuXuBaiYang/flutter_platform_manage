@@ -30,11 +30,14 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # 基础依赖库
-  jtech_pomelo:
-    git:
-      url: https://gitee.com/JTech/jtech_pomelo.git
-      ref: dev
+  # ui库
+  fluent_ui: ^3.12.0
+
+  # 窗口管理
+  window_manager: ^0.2.3
+
+  # 加密算法
+  crypto: ^3.0.2
 
   # 数据库
   realm: ^0.2.1+alpha
