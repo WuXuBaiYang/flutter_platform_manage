@@ -1,5 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/pages/project/project_list.dart';
+import 'package:flutter_platform_manage/pages/record/package_record.dart';
+import 'package:flutter_platform_manage/pages/setting/setting.dart';
 import 'package:flutter_platform_manage/widgets/window_buttons.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -21,7 +24,11 @@ class HomePage extends StatefulWidget {
 * @Time 2022/5/12 12:49
 */
 class _HomePageState extends State<HomePage> with WindowListener {
+  // 导航组件key
   final viewKey = GlobalKey();
+
+  // 导航当前下标
+  int index = 0;
 
   @override
   void initState() {
@@ -38,13 +45,51 @@ class _HomePageState extends State<HomePage> with WindowListener {
         title: const DragToMoveArea(
           child: Align(
             alignment: AlignmentDirectional.centerStart,
-            child: Text(Common.appName),
+            child: Text("  ${Common.appName}"),
           ),
         ),
         actions: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [Spacer(), WindowButtons()],
         ),
+      ),
+      pane: NavigationPane(
+        selected: index,
+        onChanged: (v) => setState(() => index = v),
+        size: const NavigationPaneSize(
+          openMinWidth: 120,
+          openMaxWidth: 200,
+        ),
+        header: const FlutterLogo(
+          style: FlutterLogoStyle.horizontal,
+          size: 100,
+        ),
+        indicator: const StickyNavigationIndicator(),
+        items: [
+          PaneItem(
+            icon: const Icon(FluentIcons.project_management),
+            title: const Text("项目管理"),
+          ),
+          PaneItem(
+            icon: const Icon(FluentIcons.packages),
+            title: const Text("打包记录"),
+          )
+        ],
+        footerItems: [
+          PaneItemSeparator(),
+          PaneItem(
+            icon: const Icon(FluentIcons.settings),
+            title: const Text("设置"),
+          ),
+        ],
+      ),
+      content: NavigationBody(
+        index: index,
+        children: const [
+          ProjectListPage(),
+          PackageRecordPage(),
+          SettingPage(),
+        ],
       ),
     );
   }
