@@ -4,9 +4,6 @@ import 'package:realm/realm.dart';
 
 part 'project.g.dart';
 
-// 检查本地文件是否变动回调
-typedef CheckFileUpdate = bool Function(String filePath);
-
 /*
 * 项目对象
 * @author wuxubaiyang
@@ -79,11 +76,6 @@ class _Project {
       ]..removeWhere((e) => null == e)
     ];
   }
-
-  // 更新项目信息
-  void updateInfo({
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -104,12 +96,6 @@ class _AndroidPlatform {
 
   // 图标对象
   late _AndroidIcons? icons;
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -144,12 +130,6 @@ class _AndroidIcons {
 class _IOSPlatform {
   // 平台名称
   late String name = "ios";
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -161,12 +141,6 @@ class _IOSPlatform {
 class _WebPlatform {
   // 平台名称
   late String name = "web";
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -178,12 +152,6 @@ class _WebPlatform {
 class _LinuxPlatform {
   // 平台名称
   late String name = "linux";
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -195,12 +163,6 @@ class _LinuxPlatform {
 class _MacosPlatform {
   // 平台名称
   late String name = "macos";
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*
@@ -212,12 +174,6 @@ class _MacosPlatform {
 class _WindowsPlatform {
   // 平台名称
   late String name = "windows";
-
-  // 更新信息
-  void updateInfo(
-    String rootPath, {
-    required CheckFileUpdate checkFileUpdate,
-  }) {}
 }
 
 /*

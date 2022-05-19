@@ -79,12 +79,6 @@ class DBManage extends BaseManage {
     return results.changes;
   }
 
-  // 加载所有项目信息
-  RealmResults<Project> loadAllProjects() => all<Project>();
-
-  // 加载指定项目信息
-  Project? loadProjectByKey(String primaryKey) => find<Project>(primaryKey);
-
   // 加载所有环境信息
   RealmResults<Environment> loadAllEnvironments() => all<Environment>();
 

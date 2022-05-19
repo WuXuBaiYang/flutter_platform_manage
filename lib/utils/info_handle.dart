@@ -73,26 +73,19 @@ class AndroidInfoHandle extends BaseInfoHandle {
         .then((v) => v.split("/"));
   }
 
-  // 图标分辨率集合
-  final _iconDPIList = ["hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"];
-
   // 加载应用图标信息对象
   Future<AndroidIcons> loadIcons(String rootPath) async {
     var paths = await loadIconInfo(rootPath);
     if (paths.isEmpty || paths.length != 2) throw Exception("android图标路径有误");
-    var parent = paths.first;
-    var child = "${paths.last}.png";
-    final iconList = _iconDPIList.map((e) {
-      var filePath =
-          "$rootPath/${ProjectFilePath.androidRes}/$parent-$e/$child";
-      return File(filePath).existsSync() ? filePath : "";
-    }).toList();
+    var holder = "%{dpi}";
+    var filePath =
+        "${ProjectFilePath.androidRes}/${paths.first}-$holder/${paths.last}.png";
     return AndroidIcons(
-      iconList[0],
-      iconList[1],
-      iconList[2],
-      iconList[3],
-      iconList[4],
+      filePath.replaceFirst(holder, "hdpi"),
+      filePath.replaceFirst(holder, "mdpi"),
+      filePath.replaceFirst(holder, "xhdpi"),
+      filePath.replaceFirst(holder, "xxhdpi"),
+      filePath.replaceFirst(holder, "xxxhdpi"),
     );
   }
 

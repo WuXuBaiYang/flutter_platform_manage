@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/manager/cache_manage.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/pages/home/home_page.dart';
 import 'package:window_manager/window_manager.dart';
@@ -24,6 +25,7 @@ void main() async {
   });
   // 初始化业务
   await dbManage.init();
+  await jCache.init();
   // 启动应用
   runApp(const MyApp());
 }
