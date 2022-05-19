@@ -64,7 +64,9 @@ class _HomePageState extends State<HomePage> with WindowListener {
           style: FlutterLogoStyle.horizontal,
           size: 100,
         ),
-        indicator: const StickyNavigationIndicator(),
+        indicator: const StickyNavigationIndicator(
+          duration: Duration(milliseconds: 120),
+        ),
         items: [
           PaneItem(
             icon: const Icon(FluentIcons.project_management),
