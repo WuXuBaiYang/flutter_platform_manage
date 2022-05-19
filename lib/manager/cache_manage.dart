@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_platform_manage/manager/base_manage.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'base_manage.dart';
 
 /*
 * 缓存管理

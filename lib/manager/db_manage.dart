@@ -3,7 +3,6 @@ import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/db/setting.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:realm/realm.dart';
-
 import 'base_manage.dart';
 
 // 事件事务回调
