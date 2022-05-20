@@ -21,7 +21,7 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return const ScaffoldPage(
-      content: Text("正在开发"),
+      content: Center(child: Text("正在开发")),
     );
   }
 }
