@@ -20,8 +20,8 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage.withPadding(
-      content: const Text("正在开发"),
+    return const ScaffoldPage(
+      content: Text("正在开发"),
     );
   }
 }

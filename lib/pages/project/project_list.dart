@@ -27,7 +27,7 @@ class ProjectListPage extends StatefulWidget {
 class _ProjectListPageState extends State<ProjectListPage> {
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage.withPadding(
+    return ScaffoldPage(
       content: Center(
         child: TextButton(
           child: Text("click"),
