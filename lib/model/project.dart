@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/utils/info_handle.dart';
 
 /*
 *
 * @author wuxubaiyang
 * @Time 5/20/2022 10:37 AM
 */
-class ProjectModel extends BaseProject with InfoHandleMixin {
+class ProjectModel {
   // 项目基本信息
   final Project project;
 
@@ -39,14 +40,17 @@ class ProjectModel extends BaseProject with InfoHandleMixin {
   final _versionReg = RegExp(r'version: .+\+.+');
   final _versionRegRe = RegExp(r'version: ');
 
-  // 更新简略信息
+  // 更新简略项目信息
   Future<bool> updateSimple() async {
     try {
       // 处理pubspec.yaml文件
-      await fileRead("${project.path}/${ProjectFilePath.pubspec}", (source) {
-        name = stringMatch(source, _nameReg, _nameRegRe);
-        version = stringMatch(source, _versionReg, _versionRegRe);
-      });
+      await InfoHandle.fileRead(
+        "${project.path}/${ProjectFilePath.pubspec}",
+        (source) {
+          name = InfoHandle.stringMatch(source, _nameReg, _nameRegRe);
+          version = InfoHandle.stringMatch(source, _versionReg, _versionRegRe);
+        },
+      );
       // 处理平台信息
       platforms = [];
       for (var t in PlatformType.values) {
@@ -60,14 +64,17 @@ class ProjectModel extends BaseProject with InfoHandleMixin {
     return true;
   }
 
-  @override
+  // 更新项目信息
   Future<bool> update() async {
     try {
       // 处理pubspec.yaml文件
-      await fileRead("${project.path}/${ProjectFilePath.pubspec}", (source) {
-        name = stringMatch(source, _nameReg, _nameRegRe);
-        version = stringMatch(source, _versionReg, _versionRegRe);
-      });
+      await InfoHandle.fileRead(
+        "${project.path}/${ProjectFilePath.pubspec}",
+        (source) {
+          name = InfoHandle.stringMatch(source, _nameReg, _nameRegRe);
+          version = InfoHandle.stringMatch(source, _versionReg, _versionRegRe);
+        },
+      );
       // 处理平台信息
       platforms = [];
       for (var t in PlatformType.values) {
@@ -83,15 +90,19 @@ class ProjectModel extends BaseProject with InfoHandleMixin {
     return true;
   }
 
-  @override
+  // 执行项目信息变动
   Future<bool> commit() async {
     try {
       // 处理pubspec.yaml文件
-      fileWrite("${project.path}/${ProjectFilePath.pubspec}", (source) {
-        source = sourceReplace(source, _nameReg, "name: $name");
-        source = sourceReplace(source, _versionReg, "version: $version");
-        return source;
-      });
+      InfoHandle.fileWrite(
+        "${project.path}/${ProjectFilePath.pubspec}",
+        (source) {
+          source = InfoHandle.sourceReplace(source, _nameReg, "name: $name");
+          source = InfoHandle.sourceReplace(
+              source, _versionReg, "version: $version");
+          return source;
+        },
+      );
       // 处理平台信息
       for (var p in platforms) {
         var path = "${project.path}/${p.type.name}";
@@ -156,11 +167,15 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> update(String path) async {
     try {
       // 处理androidManifest.xml文件
-      await fileRead("$path/${ProjectFilePath.androidManifest}", (source) {
-        label = stringMatch(source, _labelReg, _labelRegRe);
-        package = stringMatch(source, _packageReg, _packageRegRe);
-        iconPath = stringMatch(source, _iconPathReg, _iconPathRegRe);
-      });
+      await InfoHandle.fileRead(
+        "$path/${ProjectFilePath.androidManifest}",
+        (source) {
+          label = InfoHandle.stringMatch(source, _labelReg, _labelRegRe);
+          package = InfoHandle.stringMatch(source, _packageReg, _packageRegRe);
+          iconPath =
+              InfoHandle.stringMatch(source, _iconPathReg, _iconPathRegRe);
+        },
+      );
     } catch (e) {
       return false;
     }
@@ -171,20 +186,22 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     try {
       // 处理androidManifest.xml文件
-      if (!await fileWrite(
+      if (!await InfoHandle.fileWrite(
         "$path/${ProjectFilePath.androidManifest}",
         (source) {
-          source = sourceReplace(source, _labelReg, 'android:label="$label"');
-          source = sourceReplace(source, _packageReg, 'package="$package"');
+          source = InfoHandle.sourceReplace(
+              source, _labelReg, 'android:label="$label"');
+          source = InfoHandle.sourceReplace(
+              source, _packageReg, 'package="$package"');
           return source;
         },
       )) return false;
       // 处理app/build.gradle文件
-      if (!await fileWrite(
+      if (!await InfoHandle.fileWrite(
         "$path/${ProjectFilePath.androidAppBuildGradle}",
         (source) {
-          source =
-              sourceReplace(source, _packageReg, 'applicationId "$package"');
+          source = InfoHandle.sourceReplace(
+              source, _packageReg, 'applicationId "$package"');
           return source;
         },
       )) return false;
@@ -295,7 +312,7 @@ class LinuxPlatform extends BasePlatform {
 * @author wuxubaiyang
 * @Time 5/20/2022 11:14 AM
 */
-abstract class BasePlatform with InfoHandleMixin {
+abstract class BasePlatform {
   // 平台类型
   final PlatformType type;
 
@@ -306,64 +323,6 @@ abstract class BasePlatform with InfoHandleMixin {
 
   // 提交信息变动
   Future<bool> commit(String path);
-}
-
-/*
-* 项目信息基类
-* @author wuxubaiyang
-* @Time 5/20/2022 12:02 PM
-*/
-abstract class BaseProject with InfoHandleMixin {
-  // 更新信息
-  Future<bool> update();
-
-  // 提交信息变动
-  Future<bool> commit();
-}
-
-/*
-* 项目信息混合
-* @author wuxubaiyang
-* @Time 5/20/2022 11:15 AM
-*/
-mixin InfoHandleMixin {
-  // 文件读取方法
-  Future<void> fileRead(
-    String path,
-    void Function(String source) onFileRead,
-  ) async {
-    var f = File(path);
-    if (!f.existsSync()) return;
-    var source = f.readAsStringSync();
-    return onFileRead(source);
-  }
-
-  // 文件读取方法
-  Future<bool> fileWrite(
-    String path,
-    String Function(String source) onFileWrite,
-  ) async {
-    var f = File(path);
-    if (!f.existsSync()) return false;
-    var source = f.readAsStringSync();
-    source = onFileWrite(source);
-    f.writeAsStringSync(source);
-    return true;
-  }
-
-  // 字符串参数匹配
-  String stringMatch(String source, RegExp reg, RegExp replace) {
-    var value = reg.stringMatch(source);
-    return value?.replaceAll(replace, "") ?? "";
-  }
-
-  // 源文件替换
-  String sourceReplace(String source, RegExp reg, String value) {
-    if (reg.hasMatch(source)) {
-      source = source.replaceAll(reg, value);
-    }
-    return source;
-  }
 }
 
 /*
