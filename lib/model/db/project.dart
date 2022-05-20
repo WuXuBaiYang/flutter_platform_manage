@@ -15,47 +15,20 @@ class _Project {
   @PrimaryKey()
   late String primaryKey;
 
-  // 项目名称（pubspec中不可为中文）
-  late String? name;
-
   // 项目别名
-  late String alias;
+  late String? alias;
 
   // 项目的本地存储路径
   late String path;
 
-  // 项目本地存储路径项目是否存在(项目根目录下是否有pubspec.yaml)
-  late bool exit;
-
   // 项目环境key
   late String environmentKey;
-
-  // 项目版本号
-  late String? version;
 
   // 项目数据源类型
   late int sourceType;
 
   // 项目git数据源配置对象
   late _GitSource? gitSource;
-
-  // android平台信息
-  late _AndroidPlatform? androidPlatform;
-
-  // ios平台信息
-  late _IOSPlatform? iosPlatform;
-
-  // web平台信息
-  late _WebPlatform? webPlatform;
-
-  // linux平台信息
-  late _LinuxPlatform? linuxPlatform;
-
-  // macos平台信息
-  late _MacosPlatform? macosPlatform;
-
-  // windows平台信息
-  late _WindowsPlatform? windowsPlatform;
 
   // 获取当前项目对应的环境对象
   Environment? getEnvironment() => dbManage.find<Environment>(environmentKey);
@@ -65,95 +38,6 @@ class _Project {
 
   // 获取数据源类型美剧
   SourceType getSourceType() => SourceType.values[sourceType];
-
-  // 获取所有已存在平台名称集合
-  List<String> loadExitPlatforms() {
-    return [
-      ...<dynamic>[
-        androidPlatform?.name,
-        iosPlatform?.name,
-        webPlatform?.name,
-        linuxPlatform?.name,
-        macosPlatform?.name,
-        windowsPlatform?.name
-      ]..removeWhere((e) => null == e)
-    ];
-  }
-}
-
-/*
-* android平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _AndroidPlatform {
-  // 平台名称
-  late String name = "android";
-
-  // 应用名
-  late String? label;
-
-  // 包名
-  late String? package;
-
-  // 图标对象
-  late String? iconPath;
-}
-
-/*
-* ios平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _IOSPlatform {
-  // 平台名称
-  late String name = "ios";
-}
-
-/*
-* web平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _WebPlatform {
-  // 平台名称
-  late String name = "web";
-}
-
-/*
-* linux平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _LinuxPlatform {
-  // 平台名称
-  late String name = "linux";
-}
-
-/*
-* macos平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _MacosPlatform {
-  // 平台名称
-  late String name = "macos";
-}
-
-/*
-* windows平台信息
-* @author wuxubaiyang
-* @Time 5/15/2022 9:21 AM
-*/
-@RealmModel()
-class _WindowsPlatform {
-  // 平台名称
-  late String name = "windows";
 }
 
 /*

@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 
 /*
 * 项目列表页
@@ -26,7 +30,15 @@ class _ProjectListPageState extends State<ProjectListPage> {
       content: Center(
         child: TextButton(
           child: Text("click"),
-          onPressed: () {},
+          onPressed: () async {
+            var p = await ProjectModel.create(
+                project: Project(
+                    Utils.genID(),
+                    r"C:\Users\wuxubaiyang\Documents\WorkSpace\platform_test",
+                    "",
+                    0));
+            print(p);
+          },
         ),
       ),
     );
