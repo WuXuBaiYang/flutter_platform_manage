@@ -16,7 +16,7 @@ class _Project {
   late String primaryKey;
 
   // 项目别名
-  late String? alias;
+  late String alias;
 
   // 项目的本地存储路径
   late String path;

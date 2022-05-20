@@ -31,12 +31,6 @@ class ProjectModel extends BaseProject with InfoHandleMixin {
     this.platforms = const [],
   });
 
-  // 创建项目
-  static Future<ProjectModel?> create({required Project project}) async {
-    var p = ProjectModel(project: project);
-    return await p.update() ? p : null;
-  }
-
   // 项目名称正则
   final _nameReg = RegExp(r'name: .+');
   final _nameRegRe = RegExp(r'name: ');
@@ -44,6 +38,27 @@ class ProjectModel extends BaseProject with InfoHandleMixin {
   // 项目版本号正则
   final _versionReg = RegExp(r'version: .+\+.+');
   final _versionRegRe = RegExp(r'version: ');
+
+  // 更新简略信息
+  Future<bool> updateSimple() async {
+    try {
+      // 处理pubspec.yaml文件
+      await fileRead("${project.path}/${ProjectFilePath.pubspec}", (source) {
+        name = stringMatch(source, _nameReg, _nameRegRe);
+        version = stringMatch(source, _versionReg, _versionRegRe);
+      });
+      // 处理平台信息
+      platforms = [];
+      for (var t in PlatformType.values) {
+        var d = Directory("${project.path}/${t.name}");
+        if (!d.existsSync()) continue;
+        platforms.add(t.create());
+      }
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 
   @override
   Future<bool> update() async {

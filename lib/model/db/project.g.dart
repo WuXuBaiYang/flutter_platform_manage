@@ -9,10 +9,10 @@ part of 'project.dart';
 class Project extends _Project with RealmEntity, RealmObject {
   Project(
     String primaryKey,
+    String alias,
     String path,
-    String environmentKey, {
-    String? alias,
-  }) {
+    String environmentKey,
+  ) {
     RealmObject.set(this, 'primaryKey', primaryKey);
     RealmObject.set(this, 'alias', alias);
     RealmObject.set(this, 'path', path);
@@ -28,9 +28,9 @@ class Project extends _Project with RealmEntity, RealmObject {
   set primaryKey(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String? get alias => RealmObject.get<String>(this, 'alias') as String?;
+  String get alias => RealmObject.get<String>(this, 'alias') as String;
   @override
-  set alias(String? value) => RealmObject.set(this, 'alias', value);
+  set alias(String value) => RealmObject.set(this, 'alias', value);
 
   @override
   String get path => RealmObject.get<String>(this, 'path') as String;
@@ -54,7 +54,7 @@ class Project extends _Project with RealmEntity, RealmObject {
     RealmObject.registerFactory(Project._);
     return const SchemaObject(Project, [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('alias', RealmPropertyType.string, optional: true),
+      SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('environmentKey', RealmPropertyType.string),
     ]);

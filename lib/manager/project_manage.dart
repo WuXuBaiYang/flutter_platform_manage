@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
-import 'package:realm/realm.dart';
+import 'package:flutter_platform_manage/model/project.dart';
 import 'base_manage.dart';
 
 /*
@@ -16,14 +18,14 @@ class ProjectManage extends BaseManage {
   ProjectManage._internal();
 
   // 加载所有项目信息
-  RealmResults<Project> loadAll() => dbManage.all<Project>();
-
-  // 加载指定项目信息
-  Project? loadByKey(String primaryKey) => dbManage.find<Project>(primaryKey);
-
-  // 更新项目信息
-  Future<void> updateInfo(List<Project> projectList) async {
-    for (var it in projectList) {}
+  Future<List<ProjectModel>> loadAll() async {
+    var temp = <ProjectModel>[];
+    for (var it in dbManage.all<Project>()) {
+      var p = ProjectModel(project: it);
+      await p.updateSimple();
+      temp.add(p);
+    }
+    return temp;
   }
 }
 
