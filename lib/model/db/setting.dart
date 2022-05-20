@@ -12,7 +12,4 @@ class _Setting {
   // 主键key
   @PrimaryKey()
   late String primaryKey;
-
-  // git仓库缓存路径
-  late String gitRepositoryCachePath;
 }

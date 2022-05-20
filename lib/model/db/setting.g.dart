@@ -9,10 +9,8 @@ part of 'setting.dart';
 class Setting extends _Setting with RealmEntity, RealmObject {
   Setting(
     String primaryKey,
-    String gitRepositoryCachePath,
   ) {
     RealmObject.set(this, 'primaryKey', primaryKey);
-    RealmObject.set(this, 'gitRepositoryCachePath', gitRepositoryCachePath);
   }
 
   Setting._();
@@ -24,13 +22,6 @@ class Setting extends _Setting with RealmEntity, RealmObject {
   set primaryKey(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get gitRepositoryCachePath =>
-      RealmObject.get<String>(this, 'gitRepositoryCachePath') as String;
-  @override
-  set gitRepositoryCachePath(String value) =>
-      RealmObject.set(this, 'gitRepositoryCachePath', value);
-
-  @override
   Stream<RealmObjectChanges<Setting>> get changes =>
       RealmObject.getChanges<Setting>(this);
 
@@ -40,7 +31,6 @@ class Setting extends _Setting with RealmEntity, RealmObject {
     RealmObject.registerFactory(Setting._);
     return const SchemaObject(Setting, [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('gitRepositoryCachePath', RealmPropertyType.string),
     ]);
   }
 }

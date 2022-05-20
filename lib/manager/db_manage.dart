@@ -27,7 +27,6 @@ class DBManage extends BaseManage {
   Future<void> init() async {
     var config = Configuration([
       Project.schema,
-      GitSource.schema,
       Environment.schema,
       Setting.schema,
     ]);
@@ -79,14 +78,11 @@ class DBManage extends BaseManage {
       find<Environment>(primaryKey);
 
   // 获取系统设置
-  Setting loadSetting() {
+  Future<Setting> loadSetting() async {
     var results = all<Setting>();
     if (results.isEmpty) {
       write((realm) {
-        realm.add(Setting(
-          Utils.genID(),
-          "",
-        ));
+        realm.add(Setting(Utils.genID()));
       });
       return loadSetting();
     }
