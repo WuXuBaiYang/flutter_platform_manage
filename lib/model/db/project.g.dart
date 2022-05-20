@@ -9,12 +9,13 @@ part of 'project.dart';
 class Project extends _Project with RealmEntity, RealmObject {
   Project(
     String primaryKey,
-    String name,
     String alias,
     String path,
+    bool exit,
     String environmentKey,
-    String version,
     int sourceType, {
+    String? name,
+    String? version,
     GitSource? gitSource,
     AndroidPlatform? androidPlatform,
     IOSPlatform? iosPlatform,
@@ -27,6 +28,7 @@ class Project extends _Project with RealmEntity, RealmObject {
     RealmObject.set(this, 'name', name);
     RealmObject.set(this, 'alias', alias);
     RealmObject.set(this, 'path', path);
+    RealmObject.set(this, 'exit', exit);
     RealmObject.set(this, 'environmentKey', environmentKey);
     RealmObject.set(this, 'version', version);
     RealmObject.set(this, 'sourceType', sourceType);
@@ -48,9 +50,9 @@ class Project extends _Project with RealmEntity, RealmObject {
   set primaryKey(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get name => RealmObject.get<String>(this, 'name') as String;
+  String? get name => RealmObject.get<String>(this, 'name') as String?;
   @override
-  set name(String value) => RealmObject.set(this, 'name', value);
+  set name(String? value) => RealmObject.set(this, 'name', value);
 
   @override
   String get alias => RealmObject.get<String>(this, 'alias') as String;
@@ -63,6 +65,11 @@ class Project extends _Project with RealmEntity, RealmObject {
   set path(String value) => RealmObject.set(this, 'path', value);
 
   @override
+  bool get exit => RealmObject.get<bool>(this, 'exit') as bool;
+  @override
+  set exit(bool value) => RealmObject.set(this, 'exit', value);
+
+  @override
   String get environmentKey =>
       RealmObject.get<String>(this, 'environmentKey') as String;
   @override
@@ -70,9 +77,9 @@ class Project extends _Project with RealmEntity, RealmObject {
       RealmObject.set(this, 'environmentKey', value);
 
   @override
-  String get version => RealmObject.get<String>(this, 'version') as String;
+  String? get version => RealmObject.get<String>(this, 'version') as String?;
   @override
-  set version(String value) => RealmObject.set(this, 'version', value);
+  set version(String? value) => RealmObject.set(this, 'version', value);
 
   @override
   int get sourceType => RealmObject.get<int>(this, 'sourceType') as int;
@@ -140,11 +147,12 @@ class Project extends _Project with RealmEntity, RealmObject {
     RealmObject.registerFactory(Project._);
     return const SchemaObject(Project, [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),
+      SchemaProperty('exit', RealmPropertyType.bool),
       SchemaProperty('environmentKey', RealmPropertyType.string),
-      SchemaProperty('version', RealmPropertyType.string),
+      SchemaProperty('version', RealmPropertyType.string, optional: true),
       SchemaProperty('sourceType', RealmPropertyType.int),
       SchemaProperty('gitSource', RealmPropertyType.object,
           optional: true, linkTarget: 'GitSource'),
@@ -167,11 +175,11 @@ class Project extends _Project with RealmEntity, RealmObject {
 class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   static var _defaultsSet = false;
 
-  AndroidPlatform(
-    String label,
-    String package, {
+  AndroidPlatform({
     String name = "android",
-    AndroidIcons? icons,
+    String? label,
+    String? package,
+    String? iconPath,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObject.setDefaults<AndroidPlatform>({
@@ -181,7 +189,7 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
     RealmObject.set(this, 'name', name);
     RealmObject.set(this, 'label', label);
     RealmObject.set(this, 'package', package);
-    RealmObject.set(this, 'icons', icons);
+    RealmObject.set(this, 'iconPath', iconPath);
   }
 
   AndroidPlatform._();
@@ -192,21 +200,19 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
   set name(String value) => RealmObject.set(this, 'name', value);
 
   @override
-  String get label => RealmObject.get<String>(this, 'label') as String;
+  String? get label => RealmObject.get<String>(this, 'label') as String?;
   @override
-  set label(String value) => RealmObject.set(this, 'label', value);
+  set label(String? value) => RealmObject.set(this, 'label', value);
 
   @override
-  String get package => RealmObject.get<String>(this, 'package') as String;
+  String? get package => RealmObject.get<String>(this, 'package') as String?;
   @override
-  set package(String value) => RealmObject.set(this, 'package', value);
+  set package(String? value) => RealmObject.set(this, 'package', value);
 
   @override
-  AndroidIcons? get icons =>
-      RealmObject.get<AndroidIcons>(this, 'icons') as AndroidIcons?;
+  String? get iconPath => RealmObject.get<String>(this, 'iconPath') as String?;
   @override
-  set icons(covariant AndroidIcons? value) =>
-      RealmObject.set(this, 'icons', value);
+  set iconPath(String? value) => RealmObject.set(this, 'iconPath', value);
 
   @override
   Stream<RealmObjectChanges<AndroidPlatform>> get changes =>
@@ -218,72 +224,9 @@ class AndroidPlatform extends _AndroidPlatform with RealmEntity, RealmObject {
     RealmObject.registerFactory(AndroidPlatform._);
     return const SchemaObject(AndroidPlatform, [
       SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('label', RealmPropertyType.string),
-      SchemaProperty('package', RealmPropertyType.string),
-      SchemaProperty('icons', RealmPropertyType.object,
-          optional: true, linkTarget: 'AndroidIcons'),
-    ]);
-  }
-}
-
-class AndroidIcons extends _AndroidIcons with RealmEntity, RealmObject {
-  AndroidIcons(
-    String hdpiIcon,
-    String mdpiIcon,
-    String xhdpiIcon,
-    String xxhdpiIcon,
-    String xxxhdpiIcon,
-  ) {
-    RealmObject.set(this, 'hdpiIcon', hdpiIcon);
-    RealmObject.set(this, 'mdpiIcon', mdpiIcon);
-    RealmObject.set(this, 'xhdpiIcon', xhdpiIcon);
-    RealmObject.set(this, 'xxhdpiIcon', xxhdpiIcon);
-    RealmObject.set(this, 'xxxhdpiIcon', xxxhdpiIcon);
-  }
-
-  AndroidIcons._();
-
-  @override
-  String get hdpiIcon => RealmObject.get<String>(this, 'hdpiIcon') as String;
-  @override
-  set hdpiIcon(String value) => RealmObject.set(this, 'hdpiIcon', value);
-
-  @override
-  String get mdpiIcon => RealmObject.get<String>(this, 'mdpiIcon') as String;
-  @override
-  set mdpiIcon(String value) => RealmObject.set(this, 'mdpiIcon', value);
-
-  @override
-  String get xhdpiIcon => RealmObject.get<String>(this, 'xhdpiIcon') as String;
-  @override
-  set xhdpiIcon(String value) => RealmObject.set(this, 'xhdpiIcon', value);
-
-  @override
-  String get xxhdpiIcon =>
-      RealmObject.get<String>(this, 'xxhdpiIcon') as String;
-  @override
-  set xxhdpiIcon(String value) => RealmObject.set(this, 'xxhdpiIcon', value);
-
-  @override
-  String get xxxhdpiIcon =>
-      RealmObject.get<String>(this, 'xxxhdpiIcon') as String;
-  @override
-  set xxxhdpiIcon(String value) => RealmObject.set(this, 'xxxhdpiIcon', value);
-
-  @override
-  Stream<RealmObjectChanges<AndroidIcons>> get changes =>
-      RealmObject.getChanges<AndroidIcons>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObject.registerFactory(AndroidIcons._);
-    return const SchemaObject(AndroidIcons, [
-      SchemaProperty('hdpiIcon', RealmPropertyType.string),
-      SchemaProperty('mdpiIcon', RealmPropertyType.string),
-      SchemaProperty('xhdpiIcon', RealmPropertyType.string),
-      SchemaProperty('xxhdpiIcon', RealmPropertyType.string),
-      SchemaProperty('xxxhdpiIcon', RealmPropertyType.string),
+      SchemaProperty('label', RealmPropertyType.string, optional: true),
+      SchemaProperty('package', RealmPropertyType.string, optional: true),
+      SchemaProperty('iconPath', RealmPropertyType.string, optional: true),
     ]);
   }
 }

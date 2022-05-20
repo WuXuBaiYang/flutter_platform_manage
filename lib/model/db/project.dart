@@ -16,7 +16,7 @@ class _Project {
   late String primaryKey;
 
   // 项目名称（pubspec中不可为中文）
-  late String name;
+  late String? name;
 
   // 项目别名
   late String alias;
@@ -24,11 +24,14 @@ class _Project {
   // 项目的本地存储路径
   late String path;
 
+  // 项目本地存储路径项目是否存在(项目根目录下是否有pubspec.yaml)
+  late bool exit;
+
   // 项目环境key
   late String environmentKey;
 
   // 项目版本号
-  late String version;
+  late String? version;
 
   // 项目数据源类型
   late int sourceType;
@@ -89,36 +92,13 @@ class _AndroidPlatform {
   late String name = "android";
 
   // 应用名
-  late String label;
+  late String? label;
 
   // 包名
-  late String package;
+  late String? package;
 
   // 图标对象
-  late _AndroidIcons? icons;
-}
-
-/*
-* android平台图标信息对象
-* @author wuxubaiyang
-* @Time 5/16/2022 6:40 PM
-*/
-@RealmModel()
-class _AndroidIcons {
-  // hdpi
-  late String hdpiIcon;
-
-  // mdpi
-  late String mdpiIcon;
-
-  // xhdpi
-  late String xhdpiIcon;
-
-  // xxhdpi
-  late String xxhdpiIcon;
-
-  // xxxhdpi
-  late String xxxhdpiIcon;
+  late String? iconPath;
 }
 
 /*

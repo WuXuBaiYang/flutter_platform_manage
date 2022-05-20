@@ -23,10 +23,7 @@ class ProjectManage extends BaseManage {
 
   // 更新项目信息
   Future<void> updateInfo(List<Project> projectList) async {
-    for (var it in projectList) {
-      // 更新基本信息
-      it.name = "";
-    }
+    for (var it in projectList) {}
   }
 }
 

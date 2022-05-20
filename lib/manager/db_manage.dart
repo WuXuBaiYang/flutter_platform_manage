@@ -28,7 +28,6 @@ class DBManage extends BaseManage {
     var config = Configuration([
       Project.schema,
       AndroidPlatform.schema,
-      AndroidIcons.schema,
       IOSPlatform.schema,
       WebPlatform.schema,
       LinuxPlatform.schema,
