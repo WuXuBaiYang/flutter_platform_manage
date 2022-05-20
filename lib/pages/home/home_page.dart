@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> with WindowListener {
         onChanged: (v) => setState(() => index = v),
         size: const NavigationPaneSize(
           openMinWidth: 120,
-          openMaxWidth: 200,
+          openMaxWidth: 160,
         ),
         header: const FlutterLogo(
           style: FlutterLogoStyle.horizontal,
