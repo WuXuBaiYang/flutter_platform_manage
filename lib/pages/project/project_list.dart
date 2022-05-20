@@ -37,7 +37,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
                     r"C:\Users\wuxubaiyang\Documents\WorkSpace\platform_test",
                     "",
                     0));
-            print(p);
+            // p?.name = "test_name1";
+            // p?.version = "1.2.3+123";
+            var a = p?.platforms.firstWhere(
+                    (element) => element.type == PlatformType.android)
+                as AndroidPlatform;
+            // a.package = "com.jt.a1";
+            // a.label = "测试项目";
+            // p?.commit();
+            var b = a.loadIcons(p?.project.path ?? "");
+            print(b);
           },
         ),
       ),

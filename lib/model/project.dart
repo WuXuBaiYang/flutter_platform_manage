@@ -110,6 +110,21 @@ class AndroidPlatform extends BasePlatform {
     this.iconPath = "",
   }) : super(type: PlatformType.android);
 
+  // 获取图标文件路径集合
+  Map<String, String> loadIcons(String path, {String suffix = ".png"}) {
+    if (iconPath.isEmpty) return {};
+    path = "$path/${type.name}/${ProjectFilePath.androidRes}";
+    var dir = iconPath.split("/").first;
+    var name = iconPath.split("/").last + suffix;
+    return {
+      "mdpi": "$path/$dir-mdpi/$name",
+      "hdpi": "$path/$dir-hdpi/$name",
+      "xhdpi": "$path/$dir-xhdpi/$name",
+      "xxhdpi": "$path/$dir-xxhdpi/$name",
+      "xxxhdpi": "$path/$dir-xxxhdpi/$name",
+    };
+  }
+
   // 应用名正则
   final _labelReg = RegExp(r'android:label=".+"');
   final _labelRegRe = RegExp(r'android:label=|"');
