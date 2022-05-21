@@ -48,6 +48,9 @@ dependencies:
   # 目录管理
   path_provider: ^2.0.10
 
+  # 附件选择
+  file_picker: ^4.5.1
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.4
