@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 
 /*
@@ -31,7 +32,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
       content: Center(
         child: TextButton(
           child: Text("click"),
-          onPressed: () async {},
+          onPressed: () async {
+            ProjectImportDialog.show(context);
+          },
         ),
       ),
     );

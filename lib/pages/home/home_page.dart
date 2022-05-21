@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/pages/project/project_list.dart';
 import 'package:flutter_platform_manage/pages/record/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/setting.dart';
 import 'package:flutter_platform_manage/widgets/window_buttons.dart';
+import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -103,30 +104,8 @@ class _HomePageState extends State<HomePage> with WindowListener {
   }
 
   @override
-  void onWindowClose() async {
-    if (await windowManager.isPreventClose()) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return ContentDialog(
-            title: const Text("关闭提醒"),
-            content: const Text("确定要关闭应用吗？"),
-            actions: [
-              FilledButton(
-                child: const Text("关闭"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  windowManager.destroy();
-                },
-              ),
-              Button(
-                child: const Text("取消"),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          );
-        },
-      );
-    }
+  void onWindowClose() {
+    // 弹出窗口关闭弹窗
+    WindowsCloseDialog.show(context);
   }
 }
