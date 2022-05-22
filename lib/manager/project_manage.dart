@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+
 import 'base_manage.dart';
 
 /*
@@ -16,6 +17,13 @@ class ProjectManage extends BaseManage {
   factory ProjectManage() => _instance;
 
   ProjectManage._internal();
+
+  // 添加项目信息
+  void add(Project project) {
+    return dbManage.write((realm) {
+      realm.add<Project>(project);
+    });
+  }
 
   // 加载所有项目信息
   Future<List<ProjectModel>> loadAll() async {

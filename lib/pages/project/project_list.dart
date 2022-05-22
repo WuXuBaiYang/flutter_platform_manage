@@ -24,7 +24,6 @@ class ProjectListPage extends StatefulWidget {
 class _ProjectListPageState extends State<ProjectListPage> {
   @override
   Widget build(BuildContext context) {
-    dbManage.deleteMany(dbManage.loadAllEnvironments());
     return ScaffoldPage(
       content: Center(
         child: TextButton(

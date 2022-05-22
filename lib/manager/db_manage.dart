@@ -77,7 +77,7 @@ class DBManage extends BaseManage {
   // 写入环境信息
   void addEnvironment(Environment env) {
     return write((realm) {
-      realm.add(env);
+      realm.add<Environment>(env);
     });
   }
 

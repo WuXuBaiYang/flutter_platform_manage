@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
@@ -336,10 +337,10 @@ abstract class BasePlatform {
 enum PlatformType {
   android,
   ios,
-  web,
   windows,
   macos,
   linux,
+  web,
 }
 
 /*
@@ -348,16 +349,39 @@ enum PlatformType {
 * @Time 5/20/2022 11:23 AM
 */
 extension PlatformTypeExtension on PlatformType {
-  // 平台信息对象对照表
-  Map get platformMap => {
-        PlatformType.android: () => AndroidPlatform(),
-        PlatformType.ios: () => IOSPlatform(),
-        PlatformType.web: () => WebPlatform(),
-        PlatformType.windows: () => WindowsPlatform(),
-        PlatformType.macos: () => MacOSPlatform(),
-        PlatformType.linux: () => LinuxPlatform(),
-      };
-
   // 创建平台信息对象
-  BasePlatform create() => platformMap[this]();
+  BasePlatform create() {
+    switch (this) {
+      case PlatformType.android:
+        return AndroidPlatform();
+      case PlatformType.ios:
+        return IOSPlatform();
+      case PlatformType.web:
+        return WebPlatform();
+      case PlatformType.windows:
+        return WindowsPlatform();
+      case PlatformType.macos:
+        return MacOSPlatform();
+      case PlatformType.linux:
+        return LinuxPlatform();
+    }
+  }
+
+  // 获取平台图标
+  String get platformImage {
+    switch (this) {
+      case PlatformType.android:
+        return Common.platformAndroid;
+      case PlatformType.ios:
+        return Common.platformIOS;
+      case PlatformType.web:
+        return Common.platformWeb;
+      case PlatformType.windows:
+        return Common.platformWindows;
+      case PlatformType.macos:
+        return Common.platformMacos;
+      case PlatformType.linux:
+        return Common.platformLinux;
+    }
+  }
 }
