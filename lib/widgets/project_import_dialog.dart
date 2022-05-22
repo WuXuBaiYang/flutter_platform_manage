@@ -229,11 +229,11 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       _errText = null;
       return const SizedBox.shrink();
     }
-    var env = dbManage.loadEnvironmentByKey(project.environmentKey);
-    var name = _projectInfo?.project.alias ?? "";
+    var name = project.alias;
     name = name.isEmpty
         ? _projectInfo?.name ?? ""
         : "$name(${_projectInfo?.name})";
+    var env = _projectInfo?.getEnvironment();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,

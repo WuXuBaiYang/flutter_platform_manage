@@ -23,7 +23,4 @@ class _Project {
 
   // 项目环境key
   late String environmentKey;
-
-  // 获取当前项目对应的环境对象
-  Environment? getEnvironment() => dbManage.find<Environment>(environmentKey);
 }

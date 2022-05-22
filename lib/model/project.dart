@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
+import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
+
+import 'db/environment.dart';
 
 /*
 *
@@ -33,6 +36,10 @@ class ProjectModel {
     this.version = "",
     this.platforms = const [],
   });
+
+  // 获取当前项目对应的环境对象
+  Environment? getEnvironment() =>
+      dbManage.find<Environment>(project.environmentKey);
 
   // 项目名称正则
   final _nameReg = RegExp(r'name: .+');
