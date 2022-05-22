@@ -57,11 +57,6 @@ class DBManage extends BaseManage {
   // 获取所有数据
   RealmResults<T> all<T extends RealmObject>() => realm.all<T>();
 
-  // 查询多条数据
-  RealmResults<T> query<T extends RealmObject>(String query,
-          [List<Object> args = const []]) =>
-      all<T>().query(query);
-
   // 监听目标数据变化
   Stream<RealmResultsChanges<T>> changes<T extends RealmObject>({
     Map<String, List<Object>> queryMap = const {},
@@ -94,6 +89,10 @@ class DBManage extends BaseManage {
   // 加载指定环境信息
   Environment? loadEnvironmentByKey(String primaryKey) =>
       find<Environment>(primaryKey);
+
+  // 判断是否存在相同环境
+  bool hasEnvironment(String path) =>
+      all<Environment>().query(r'path == $0', [path]).isNotEmpty;
 
   // 获取系统设置
   Future<Setting> loadSetting() async {

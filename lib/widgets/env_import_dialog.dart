@@ -37,7 +37,7 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
   Environment? _env;
 
   // 异常提示
-  String? _errText;
+  String? _errText = "";
 
   @override
   Widget build(BuildContext context) {
@@ -54,36 +54,8 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
               header: "flutter路径",
               readOnly: true,
               suffix: Button(
+                onPressed: doPathPicker,
                 child: const Text("选择"),
-                onPressed: () {
-                  FilePicker.platform
-                      .getDirectoryPath(
-                          dialogTitle: "选择flutter路径",
-                          lockParentWindow: true,
-                          initialDirectory: _envPathController.text)
-                      .then((v) {
-                    if (null == v || v.isEmpty) return Future.value(null);
-                    setState(() {
-                      _envPathController.text = "";
-                      _env = null;
-                    });
-                    return ScriptHandle.loadFlutterEnv(v);
-                  }).then((v) {
-                    if (null != v) {
-                      setState(() {
-                        _envPathController.text = v.path;
-                        _errText = null;
-                        _env = v;
-                      });
-                    }
-                  }).catchError((e) {
-                    setState(() {
-                      _envPathController.text = "";
-                      _errText = "环境信息读取失败";
-                      _env = null;
-                    });
-                  });
-                },
               ),
             ),
           ),
@@ -91,7 +63,9 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
           null != _env
               ? Text("Flutter ${_env?.flutter} · ${_env?.channel}"
                   "\nDart ${_env?.dart}")
-              : const Center(child: ProgressRing()),
+              : (null == _errText
+                  ? const Center(child: ProgressRing())
+                  : const SizedBox()),
         ],
       ),
       actions: [
@@ -114,5 +88,43 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
         ),
       ],
     );
+  }
+
+  // 路径选择
+  void doPathPicker() {
+    FilePicker.platform
+        .getDirectoryPath(
+            dialogTitle: "选择flutter路径",
+            lockParentWindow: true,
+            initialDirectory: _envPathController.text)
+        .then((v) {
+      if (null == v || v.isEmpty) return Future.value(null);
+      setState(() {
+        _envPathController.text = "";
+        _errText = null;
+        _env = null;
+      });
+      if (dbManage.hasEnvironment(v)) {
+        setState(() {
+          _errText = "已存在相同环境";
+        });
+        return Future.value(null);
+      }
+      return ScriptHandle.loadFlutterEnv(v);
+    }).then((v) {
+      if (null != v) {
+        setState(() {
+          _envPathController.text = v.path;
+          _errText = null;
+          _env = v;
+        });
+      }
+    }).catchError((e) {
+      setState(() {
+        _envPathController.text = "";
+        _errText = "环境信息读取失败";
+        _env = null;
+      });
+    });
   }
 }
