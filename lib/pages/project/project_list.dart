@@ -1,8 +1,4 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/manager/db_manage.dart';
-import 'package:flutter_platform_manage/utils/script_handle.dart';
-import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
-import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 
 /*
 * 项目列表页
@@ -29,7 +25,6 @@ class _ProjectListPageState extends State<ProjectListPage> {
         child: TextButton(
           child: Text("click"),
           onPressed: () async {
-            ProjectImportDialog.show(context);
           },
         ),
       ),

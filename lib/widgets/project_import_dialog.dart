@@ -52,37 +52,39 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   Widget build(BuildContext context) {
     return ContentDialog(
       constraints: const BoxConstraints(
-        maxWidth: 400,
+        maxWidth: 340,
       ),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(stepsMap.length * 2 - 1, (i) {
-              if (i.isOdd) return const Divider(size: 60);
-              i = i ~/ 2;
-              var it = stepsMap.keys.elementAt(i);
-              return RadioButton(
-                checked: _currentStep >= i,
-                content: Text(it),
-                onChanged: (v) {
-                  if (i >= _currentStep) return;
-                  setState(() => _currentStep = i);
-                },
-              );
-            }),
-          ),
-          const SizedBox(height: 14),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            child: IndexedStack(
-              index: _currentStep,
-              children: stepsMap.values.map((e) => e()).toList(),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(stepsMap.length * 2 - 1, (i) {
+                if (i.isOdd) return const Divider(size: 60);
+                i = i ~/ 2;
+                var it = stepsMap.keys.elementAt(i);
+                return RadioButton(
+                  checked: _currentStep >= i,
+                  content: Text(it),
+                  onChanged: (v) {
+                    if (i >= _currentStep) return;
+                    setState(() => _currentStep = i);
+                  },
+                );
+              }),
             ),
-          ),
-        ],
+            const SizedBox(height: 14),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 200),
+              child: IndexedStack(
+                index: _currentStep,
+                children: stepsMap.values.map((e) => e()).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         Button(
