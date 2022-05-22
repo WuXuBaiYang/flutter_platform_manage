@@ -146,6 +146,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
             onSaved: (v) => project.path = v ?? "",
             validator: (v) {
               if (null == v || v.isEmpty) return "项目路径不能为空";
+              if (projectManage.has(v)) return "项目已存在";
               if (!InfoHandle.projectExistSync(v)) {
                 return "项目不存在（缺少pubspec.yaml文件）";
               }

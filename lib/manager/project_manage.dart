@@ -18,6 +18,10 @@ class ProjectManage extends BaseManage {
 
   ProjectManage._internal();
 
+  // 判断是否存在相同项目
+  bool has(String path) =>
+      dbManage.all<Project>().query(r'path == $0', [path]).isNotEmpty;
+
   // 添加项目信息
   void add(Project project) {
     return dbManage.write((realm) {
