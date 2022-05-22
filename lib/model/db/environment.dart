@@ -13,9 +13,15 @@ class _Environment {
   @PrimaryKey()
   late String primaryKey;
 
-  // flutter目录
-  late String flutterPath;
+  // 根路径
+  late String path;
 
-  // flutter 版本号
-  late String flutterVersion;
+  // flutter版本号
+  late String flutter;
+
+  // 通道
+  late String channel;
+
+  // dart版本号
+  late String dart;
 }

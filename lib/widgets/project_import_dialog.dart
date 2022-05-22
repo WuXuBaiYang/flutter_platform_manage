@@ -4,7 +4,9 @@ import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/info_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 
 /*
 * 项目导入弹窗
@@ -135,6 +137,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
             onSaved: (v) => project.path = v ?? "",
             validator: (v) {
               if (null == v || v.isEmpty) return "项目路径不能为空";
+              if (!InfoHandle.projectExistSync(v)) {
+                return "项目不存在（缺少pubspec.yaml文件）";
+              }
               return null;
             },
             suffix: Button(
@@ -155,34 +160,44 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           InfoLabel(
             label: "运行时环境",
             child: FormField<Environment>(
-              builder: (f) => FormRow(
-                padding: EdgeInsets.zero,
-                error: (f.errorText == null) ? null : Text(f.errorText!),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Combobox<Environment>(
-                        isExpanded: true,
-                        value: f.value,
-                        onChanged: f.didChange,
-                        items: dbManage
-                            .loadAllEnvironments()
-                            .map<ComboboxItem<Environment>>((e) {
-                          return ComboboxItem(
-                            value: e,
-                            child: Text(e.flutterVersion),
-                          );
-                        }).toList(),
+              initialValue: dbManage.loadFirstEnvironment(),
+              builder: (f) {
+                return FormRow(
+                  padding: EdgeInsets.zero,
+                  error: (f.errorText == null) ? null : Text(f.errorText!),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Combobox<Environment>(
+                          isExpanded: true,
+                          value: f.value,
+                          onChanged: f.didChange,
+                          items: dbManage
+                              .loadAllEnvironments()
+                              .map<ComboboxItem<Environment>>((e) {
+                            return ComboboxItem(
+                              value: e,
+                              child:
+                                  Text("Flutter ${e.flutter} · ${e.channel}"),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 14),
-                    IconButton(
-                      icon: const Icon(FluentIcons.add),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-              ),
+                      const SizedBox(width: 14),
+                      IconButton(
+                        icon: const Icon(FluentIcons.add),
+                        onPressed: () {
+                          EnvImportDialog.show(context).then((v) {
+                            if (null != v) {
+                              f.didChange(v);
+                            }
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                );
+              },
               validator: (v) {
                 if (null == v) return "运行时环境不能为空";
                 return null;

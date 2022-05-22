@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
@@ -43,6 +44,7 @@ class ProjectModel {
   // 更新简略项目信息
   Future<bool> updateSimple() async {
     try {
+      exist = InfoHandle.projectExistSync(project.path);
       // 处理pubspec.yaml文件
       await InfoHandle.fileRead(
         "${project.path}/${ProjectFilePath.pubspec}",
@@ -67,6 +69,7 @@ class ProjectModel {
   // 更新项目信息
   Future<bool> update() async {
     try {
+      exist = InfoHandle.projectExistSync(project.path);
       // 处理pubspec.yaml文件
       await InfoHandle.fileRead(
         "${project.path}/${ProjectFilePath.pubspec}",

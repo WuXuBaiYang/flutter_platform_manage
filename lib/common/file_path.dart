@@ -7,6 +7,9 @@ class ProjectFilePath {
   // pubspec.yaml
   static const String pubspec = "pubspec.yaml";
 
+  // flutter
+  static const String flutter = "bin/flutter";
+
   // android/build.gradle
   static const String androidBuildGradle = "build.gradle";
 

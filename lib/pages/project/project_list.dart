@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
-import 'package:flutter_platform_manage/model/db/project.dart';
-import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/utils/script_handle.dart';
+import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
-import 'package:path_provider/path_provider.dart';
 
 /*
 * 项目列表页
@@ -28,6 +24,7 @@ class ProjectListPage extends StatefulWidget {
 class _ProjectListPageState extends State<ProjectListPage> {
   @override
   Widget build(BuildContext context) {
+    dbManage.deleteMany(dbManage.loadAllEnvironments());
     return ScaffoldPage(
       content: Center(
         child: TextButton(

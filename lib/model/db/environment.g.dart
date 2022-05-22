@@ -9,12 +9,16 @@ part of 'environment.dart';
 class Environment extends _Environment with RealmEntity, RealmObject {
   Environment(
     String primaryKey,
-    String flutterPath,
-    String flutterVersion,
+    String path,
+    String flutter,
+    String channel,
+    String dart,
   ) {
     RealmObject.set(this, 'primaryKey', primaryKey);
-    RealmObject.set(this, 'flutterPath', flutterPath);
-    RealmObject.set(this, 'flutterVersion', flutterVersion);
+    RealmObject.set(this, 'path', path);
+    RealmObject.set(this, 'flutter', flutter);
+    RealmObject.set(this, 'channel', channel);
+    RealmObject.set(this, 'dart', dart);
   }
 
   Environment._();
@@ -26,17 +30,24 @@ class Environment extends _Environment with RealmEntity, RealmObject {
   set primaryKey(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get flutterPath =>
-      RealmObject.get<String>(this, 'flutterPath') as String;
+  String get path => RealmObject.get<String>(this, 'path') as String;
   @override
-  set flutterPath(String value) => RealmObject.set(this, 'flutterPath', value);
+  set path(String value) => RealmObject.set(this, 'path', value);
 
   @override
-  String get flutterVersion =>
-      RealmObject.get<String>(this, 'flutterVersion') as String;
+  String get flutter => RealmObject.get<String>(this, 'flutter') as String;
   @override
-  set flutterVersion(String value) =>
-      RealmObject.set(this, 'flutterVersion', value);
+  set flutter(String value) => RealmObject.set(this, 'flutter', value);
+
+  @override
+  String get channel => RealmObject.get<String>(this, 'channel') as String;
+  @override
+  set channel(String value) => RealmObject.set(this, 'channel', value);
+
+  @override
+  String get dart => RealmObject.get<String>(this, 'dart') as String;
+  @override
+  set dart(String value) => RealmObject.set(this, 'dart', value);
 
   @override
   Stream<RealmObjectChanges<Environment>> get changes =>
@@ -48,8 +59,10 @@ class Environment extends _Environment with RealmEntity, RealmObject {
     RealmObject.registerFactory(Environment._);
     return const SchemaObject(Environment, [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('flutterPath', RealmPropertyType.string),
-      SchemaProperty('flutterVersion', RealmPropertyType.string),
+      SchemaProperty('path', RealmPropertyType.string),
+      SchemaProperty('flutter', RealmPropertyType.string),
+      SchemaProperty('channel', RealmPropertyType.string),
+      SchemaProperty('dart', RealmPropertyType.string),
     ]);
   }
 }

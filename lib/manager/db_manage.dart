@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/db/setting.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:realm/realm.dart';
+
 import 'base_manage.dart';
 
 // 事件事务回调
@@ -40,11 +41,14 @@ class DBManage extends BaseManage {
       realm.write(() => transaction(realm));
 
   // 删除数据
-  void delete<T extends RealmObject>(T item) => realm.delete<T>(item);
+  void delete<T extends RealmObject>(T item) => write((realm) {
+        realm.delete<T>(item);
+      });
 
   // 删除多条数据
-  void deleteMany<T extends RealmObject>(Iterable<T> items) =>
-      realm.deleteMany(items);
+  void deleteMany<T extends RealmObject>(Iterable<T> items) => write((realm) {
+        realm.deleteMany(items);
+      });
 
   // 查询数据
   T? find<T extends RealmObject>(Object primaryKey) =>
@@ -68,6 +72,20 @@ class DBManage extends BaseManage {
       results.query(key, value);
     });
     return results.changes;
+  }
+
+  // 写入环境信息
+  void addEnvironment(Environment env) {
+    return write((realm) {
+      realm.add(env);
+    });
+  }
+
+  // 加载第一条环境信息
+  Environment? loadFirstEnvironment() {
+    var result = loadAllEnvironments();
+    if (result.isEmpty) return null;
+    return result.first;
   }
 
   // 加载所有环境信息

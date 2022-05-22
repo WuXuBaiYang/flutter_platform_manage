@@ -1,11 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter_platform_manage/common/file_path.dart';
+
 /*
 * 项目信息处理
 * @author wuxubaiyang
 * @Time 5/20/2022 11:15 AM
 */
 class InfoHandle {
+  // 判断项目是否存在
+  static bool projectExistSync(String path) =>
+      File("$path/${ProjectFilePath.pubspec}").existsSync();
+
   // 文件读取方法
   static Future<void> fileRead(
     String path,
@@ -18,10 +24,8 @@ class InfoHandle {
   }
 
   // 文件读取方法
-  static Future<bool> fileWrite(
-    String path,
-    String Function(String source) onFileWrite,
-  ) async {
+  static Future<bool> fileWrite(String path,
+      String Function(String source) onFileWrite,) async {
     var f = File(path);
     if (!f.existsSync()) return false;
     var source = f.readAsStringSync();
