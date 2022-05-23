@@ -98,14 +98,14 @@ class _HomePageState extends State<HomePage> with WindowListener {
   }
 
   @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
-
-  @override
   void onWindowClose() {
     // 弹出窗口关闭弹窗
     WindowsCloseDialog.show(context);
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
   }
 }
