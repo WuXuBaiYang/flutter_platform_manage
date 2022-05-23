@@ -12,11 +12,13 @@ class Project extends _Project with RealmEntity, RealmObject {
     String alias,
     String path,
     String environmentKey,
+    int order,
   ) {
     RealmObject.set(this, 'primaryKey', primaryKey);
     RealmObject.set(this, 'alias', alias);
     RealmObject.set(this, 'path', path);
     RealmObject.set(this, 'environmentKey', environmentKey);
+    RealmObject.set(this, 'order', order);
   }
 
   Project._();
@@ -45,6 +47,11 @@ class Project extends _Project with RealmEntity, RealmObject {
       RealmObject.set(this, 'environmentKey', value);
 
   @override
+  int get order => RealmObject.get<int>(this, 'order') as int;
+  @override
+  set order(int value) => RealmObject.set(this, 'order', value);
+
+  @override
   Stream<RealmObjectChanges<Project>> get changes =>
       RealmObject.getChanges<Project>(this);
 
@@ -57,6 +64,7 @@ class Project extends _Project with RealmEntity, RealmObject {
       SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('environmentKey', RealmPropertyType.string),
+      SchemaProperty('order', RealmPropertyType.int),
     ]);
   }
 }

@@ -40,9 +40,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const FluentApp(
+    return FluentApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      theme: ThemeData(
+        typography: const Typography.raw(
+          title: TextStyle(
+            fontSize: 18,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      home: const HomePage(),
     );
   }
 }

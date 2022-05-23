@@ -46,7 +46,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   };
 
   // 项目信息
-  late Project project = Project(Utils.genID(), "", "", "");
+  late Project project = Project(Utils.genID(), "", "", "", 0);
 
   @override
   Widget build(BuildContext context) {

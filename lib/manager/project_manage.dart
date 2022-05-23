@@ -25,6 +25,7 @@ class ProjectManage extends BaseManage {
   // 添加项目信息
   void add(Project project) {
     return dbManage.write((realm) {
+      project.order = realm.all<Project>().length + 1;
       realm.add<Project>(project);
     });
   }
@@ -32,12 +33,26 @@ class ProjectManage extends BaseManage {
   // 加载所有项目信息
   Future<List<ProjectModel>> loadAll() async {
     var temp = <ProjectModel>[];
-    for (var it in dbManage.all<Project>()) {
+    for (var it in dbManage.all<Project>().toList()
+      ..sort((l, r) => l.order.compareTo(r.order))) {
       var p = ProjectModel(project: it);
       await p.updateSimple();
       temp.add(p);
     }
     return temp;
+  }
+
+  // 监听项目数量变化
+  Stream<List<ProjectModel>> watchCount() {
+    var count = dbManage.all<Project>().length;
+    var c = StreamController<List<ProjectModel>>();
+    dbManage.changes<Project>().listen((e) {
+      if (count != e.results.length) {
+        count = e.results.length;
+        loadAll().then((v) => c.sink.add(v));
+      }
+    });
+    return c.stream;
   }
 }
 

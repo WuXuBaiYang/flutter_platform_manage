@@ -1,5 +1,3 @@
-import 'package:flutter_platform_manage/manager/db_manage.dart';
-import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:realm/realm.dart';
 
 part 'project.g.dart';
@@ -23,4 +21,7 @@ class _Project {
 
   // 项目环境key
   late String environmentKey;
+
+  // 排序
+  late int order;
 }
