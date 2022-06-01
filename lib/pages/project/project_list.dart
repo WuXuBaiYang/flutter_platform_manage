@@ -30,13 +30,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     windowManager.addListener(this);
     super.initState();
     // 加载项目列表
-    projectManage.loadAll().then((v) {
-      setState(() => _projectList = v);
-    });
-    // 监听项目列表数量变化
-    projectManage.watchCount().listen((e) {
-      setState(() => _projectList = e);
-    });
+    updateProjectList();
   }
 
   @override
@@ -83,7 +77,17 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   }
 
   // 更新现有项目列表
-  Future<void> updateProjectList() async {}
+  void updateProjectList() {
+    projectManage.loadAll().then((v) {
+      setState(() => _projectList = v);
+    });
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("update");
+  }
 
   @override
   void onWindowFocus() {
