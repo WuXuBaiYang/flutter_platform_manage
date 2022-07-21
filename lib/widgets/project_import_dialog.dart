@@ -8,7 +8,7 @@ import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_platform_manage/widgets/platform_chip_group.dart';
 
 /*
 * 项目导入弹窗
@@ -16,13 +16,22 @@ import 'package:flutter_svg/flutter_svg.dart';
 * @Time 5/21/2022 12:32 PM
 */
 class ProjectImportDialog extends StatefulWidget {
-  const ProjectImportDialog({Key? key}) : super(key: key);
+  // 编辑项目信息时回传对象
+  final Project? project;
+
+  const ProjectImportDialog({
+    Key? key,
+    this.project,
+  }) : super(key: key);
 
   // 显示项目导入弹窗
-  static Future<ProjectModel?> show(BuildContext context) {
+  static Future<ProjectModel?> show(
+    BuildContext context, {
+    Project? project,
+  }) {
     return showDialog<ProjectModel>(
       context: context,
-      builder: (_) => const ProjectImportDialog(),
+      builder: (_) => ProjectImportDialog(project: project),
     );
   }
 
@@ -46,7 +55,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   };
 
   // 项目信息
-  late Project project = Project(Utils.genID(), "", "", "", 0);
+  late Project project =
+      widget.project ?? Project(Utils.genID(), "", "", "", 0);
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +116,10 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
             switch (_currentStep) {
               case 0: // 项目选择
                 // 执行项目选择的表单提交
-                if (!(_projectSelectKey.currentState?.validate() ?? true)) {
+                if (!(projectSelectKey.currentState?.validate() ?? true)) {
                   return;
                 }
-                _projectSelectKey.currentState?.save();
+                projectSelectKey.currentState?.save();
                 _projectInfo = ProjectModel(project: project);
                 await _projectInfo?.updateSimple();
                 // 增加步长
@@ -126,32 +136,45 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   }
 
   // 项目路径选择控制器
-  final _projectPathController = TextEditingController();
+  late TextEditingController projectPathController =
+      TextEditingController(text: project.path);
 
   // 项目选择表单的key
-  final _projectSelectKey = GlobalKey<FormState>();
+  final projectSelectKey = GlobalKey<FormState>();
 
   // 构建步骤一，项目选择
   Widget buildProjectSelect() {
     return Form(
-      key: _projectSelectKey,
+      key: projectSelectKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           TextFormBox(
+            controller: TextEditingController(text: project.alias),
             header: "别名",
-            onSaved: (v) => project.alias = v ?? "",
+            placeholder: "默认取项目名",
+            onSaved: (v) {
+              dbManage.write((realm) {
+                project.alias = v ?? "";
+              });
+            },
           ),
           const SizedBox(height: 14),
           TextFormBox(
-            controller: _projectPathController,
+            controller: projectPathController,
             header: "项目路径",
-            onSaved: (v) => project.path = v ?? "",
+            placeholder: "粘贴或选择项目根目录",
+            onSaved: (v) {
+              dbManage.write((realm) {
+                project.path = v ?? "";
+              });
+            },
             validator: (v) {
               if (null == v || v.isEmpty) return "项目路径不能为空";
-              if (projectManage.has(v)) return "项目已存在";
               if (!InfoHandle.projectExistSync(v)) {
                 return "项目不存在（缺少pubspec.yaml文件）";
               }
+              if (projectManage.has(v)) return "项目已存在";
               return null;
             },
             suffix: Button(
@@ -161,9 +184,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                     .getDirectoryPath(
                         dialogTitle: "选择项目路径",
                         lockParentWindow: true,
-                        initialDirectory: _projectPathController.text)
+                        initialDirectory: projectPathController.text)
                     .then((v) {
-                  if (null != v) _projectPathController.text = v;
+                  if (null != v) projectPathController.text = v;
                 });
               },
             ),
@@ -172,7 +195,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           InfoLabel(
             label: "运行时环境",
             child: FormField<Environment>(
-              initialValue: dbManage.loadFirstEnvironment(),
+              initialValue: dbManage.loadFirstEnvironment(
+                  environmentKey: project.environmentKey),
               builder: (f) {
                 return FormRow(
                   padding: EdgeInsets.zero,
@@ -182,6 +206,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                       Expanded(
                         child: Combobox<Environment>(
                           isExpanded: true,
+                          placeholder: const Text("请添加flutter环境"),
                           value: f.value,
                           onChanged: f.didChange,
                           items: dbManage
@@ -214,7 +239,11 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                 if (null == v) return "运行时环境不能为空";
                 return null;
               },
-              onSaved: (v) => project.environmentKey = v?.primaryKey ?? "",
+              onSaved: (v) {
+                dbManage.write((realm) {
+                  project.environmentKey = v?.primaryKey ?? "";
+                });
+              },
             ),
           ),
         ],
@@ -231,10 +260,6 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       _errText = null;
       return const SizedBox.shrink();
     }
-    var name = project.alias;
-    name = name.isEmpty
-        ? _projectInfo?.name ?? ""
-        : "$name(${_projectInfo?.name})";
     var env = _projectInfo?.getEnvironment();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -243,7 +268,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         TextBox(
           header: "项目名称",
           readOnly: true,
-          controller: TextEditingController(text: name),
+          controller: TextEditingController(
+            text: _projectInfo?.getShowTitle() ?? "",
+          ),
         ),
         const SizedBox(height: 14),
         TextBox(
@@ -272,21 +299,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         const SizedBox(height: 14),
         InfoLabel(
           label: "平台支持",
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _projectInfo?.platforms.map<Widget>((e) {
-                  return Chip.selected(
-                    image: SvgPicture.asset(
-                      e.type.platformImage,
-                      color: Colors.white,
-                      width: 20,
-                      height: 20,
-                    ),
-                    text: Text(e.type.name),
-                  );
-                }).toList() ??
-                [],
+          child: PlatformChipGroup(
+            platforms: _projectInfo?.platforms ?? [],
           ),
         ),
         null != _errText

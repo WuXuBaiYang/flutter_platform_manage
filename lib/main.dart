@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/manager/cache_manage.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/pages/home/home_page.dart';
@@ -16,12 +17,12 @@ void main() async {
       TitleBarStyle.hidden,
       windowButtonVisibility: false,
     );
-    await windowManager.setSize(const Size(720, 540));
-    await windowManager.setMinimumSize(const Size(720, 540));
-    await windowManager.center();
-    await windowManager.show();
+    await windowManager.setSize(Common.windowSize);
+    await windowManager.setMinimumSize(Common.windowMinimumSize);
     await windowManager.setPreventClose(true);
     await windowManager.setSkipTaskbar(false);
+    await windowManager.center();
+    await windowManager.show();
   });
   // 初始化业务
   await dbManage.init();

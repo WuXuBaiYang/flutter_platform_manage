@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
@@ -37,6 +36,12 @@ class ProjectModel {
     this.platforms = const [],
   });
 
+  // 获取展示标题
+  String getShowTitle() {
+    var t = project.alias;
+    return t.isEmpty ? name : "$t($name)";
+  }
+
   // 获取当前项目对应的环境对象
   Environment? getEnvironment() =>
       dbManage.find<Environment>(project.environmentKey);
@@ -48,6 +53,17 @@ class ProjectModel {
   // 项目版本号正则
   final _versionReg = RegExp(r'version: .+\+.+');
   final _versionRegRe = RegExp(r'version: ');
+
+  // 获取应用图标
+  Map<PlatformType, String> getProjectIcon() {
+    for (var it in platforms) {
+      var path = it.getProjectIcon(project.path);
+      if (null != path) {
+        return {it.type: path};
+      }
+    }
+    return {};
+  }
 
   // 更新简略项目信息
   Future<bool> updateSimple() async {
@@ -221,6 +237,20 @@ class AndroidPlatform extends BasePlatform {
     }
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {
+    try {
+      var icons = loadIcons(projectPath);
+      return icons.values
+          .toList()
+          .reversed
+          .firstWhere((e) => File(e).existsSync());
+    } catch (e) {
+      // 未找到
+    }
+    return null;
+  }
 }
 
 /*
@@ -240,6 +270,9 @@ class IOSPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {}
 }
 
 /*
@@ -259,6 +292,9 @@ class WebPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {}
 }
 
 /*
@@ -278,6 +314,9 @@ class WindowsPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {}
 }
 
 /*
@@ -297,6 +336,9 @@ class MacOSPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {}
 }
 
 /*
@@ -316,6 +358,9 @@ class LinuxPlatform extends BasePlatform {
   Future<bool> commit(String path) async {
     return true;
   }
+
+  @override
+  String? getProjectIcon(String projectPath) {}
 }
 
 /*
@@ -334,6 +379,9 @@ abstract class BasePlatform {
 
   // 提交信息变动
   Future<bool> commit(String path);
+
+  // 获取应用图标
+  String? getProjectIcon(String projectPath);
 }
 
 /*

@@ -1,6 +1,14 @@
+import 'package:fluent_ui/fluent_ui.dart';
+
 class Common {
   // 应用名
   static const String appName = "Flutter平台管理工具";
+
+  // 屏幕默认尺寸
+  static const Size windowSize = Size(720, 540);
+
+  // 屏幕最小尺寸
+  static const Size windowMinimumSize = Size(720, 540);
 
   // 平台图标-android
   static const String platformAndroid = "assets/images/platform_android.svg";
@@ -19,4 +27,7 @@ class Common {
 
   // 平台图标-macos
   static const String platformMacos = "assets/images/platform_macos.svg";
+
+  // 空盒子提示图
+  static const String EmptyBoxImage = "assets/images/empty_box.svg";
 }

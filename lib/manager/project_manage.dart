@@ -36,7 +36,8 @@ class ProjectManage extends BaseManage {
     for (var it in dbManage.all<Project>().toList()
       ..sort((l, r) => l.order.compareTo(r.order))) {
       var p = ProjectModel(project: it);
-      await p.updateSimple();
+      await p.update();
+      // await p.updateSimple();
       temp.add(p);
     }
     return temp;

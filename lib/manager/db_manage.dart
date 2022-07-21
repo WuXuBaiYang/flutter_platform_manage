@@ -77,9 +77,14 @@ class DBManage extends BaseManage {
   }
 
   // 加载第一条环境信息
-  Environment? loadFirstEnvironment() {
+  Environment? loadFirstEnvironment({String? environmentKey}) {
     var result = loadAllEnvironments();
     if (result.isEmpty) return null;
+    for (var it in result) {
+      if (it.primaryKey == environmentKey) {
+        return it;
+      }
+    }
     return result.first;
   }
 
