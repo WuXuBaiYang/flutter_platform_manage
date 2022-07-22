@@ -25,7 +25,9 @@ class ProjectManage extends BaseManage {
   // 添加项目信息
   void add(Project project) {
     return dbManage.write((realm) {
-      project.order = realm.all<Project>().length + 1;
+      if (!project.isManaged) {
+        project.order = realm.all<Project>().length + 1;
+      }
       realm.add<Project>(project);
     });
   }

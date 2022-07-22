@@ -9,7 +9,7 @@ import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
-import 'package:flutter_platform_manage/widgets/platform_chip_group.dart';
+import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
@@ -189,7 +189,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
               const SizedBox(height: 12),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: PlatformChipGroup(
+                child: PlatformTagGroup(
                   platforms: item.platforms,
                   chipSize: PlatformChipSize.small,
                 ),

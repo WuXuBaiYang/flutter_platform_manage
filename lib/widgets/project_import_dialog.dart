@@ -8,7 +8,7 @@ import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
-import 'package:flutter_platform_manage/widgets/platform_chip_group.dart';
+import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 
 /*
 * 项目导入弹窗
@@ -174,7 +174,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
               if (!InfoHandle.projectExistSync(v)) {
                 return "项目不存在（缺少pubspec.yaml文件）";
               }
-              if (projectManage.has(v)) return "项目已存在";
+              if (!project.isManaged && projectManage.has(v)) {
+                return "项目已存在";
+              }
               return null;
             },
             suffix: Button(
@@ -299,7 +301,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         const SizedBox(height: 14),
         InfoLabel(
           label: "平台支持",
-          child: PlatformChipGroup(
+          child: PlatformTagGroup(
             platforms: _projectInfo?.platforms ?? [],
           ),
         ),
