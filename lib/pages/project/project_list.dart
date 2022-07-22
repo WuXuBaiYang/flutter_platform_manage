@@ -1,16 +1,17 @@
 import 'dart:io';
+import 'package:contextmenu/contextmenu.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' as material;
-import 'package:flutter_draggable_gridview/flutter_draggable_gridview.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/widgets/empty_box_notice.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/platform_chip_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
+import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -85,142 +86,65 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   // 控制列数量
   int gridCrossCount = 2;
 
+  // 滚动控制器
+  final _scrollController = ScrollController();
+
+  // grid Key
+  final _gridViewKey = GlobalKey();
+
   // 构建项目列表
   Widget buildProjectGrid() {
-    return DraggableGridViewBuilder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        mainAxisExtent: 120,
-        mainAxisSpacing: 14,
-        crossAxisSpacing: 14,
-        crossAxisCount: gridCrossCount,
-      ),
-      isOnlyLongPress: false,
-      children: List.generate(projectList.length, (i) {
-        var item = projectList[i];
-        return DraggableGridItem(
-          isDraggable: true,
-          child: buildProjectGridItem(item),
-        );
-      }),
-      dragCompletion: (list, beforeIndex, afterIndex) {
+    return ReorderableBuilder(
+      scrollController: _scrollController,
+      onReorder: (entities) {
+        for (final entity in entities) {
+          final item = projectList.removeAt(entity.oldIndex);
+          projectList.insert(entity.newIndex, item);
+        }
         dbManage.write((realm) {
-          var it = projectList.removeAt(beforeIndex);
-          projectList.insert(afterIndex, it);
           for (var i = 0; i < projectList.length; i++) {
             projectList[i].project.order = i;
           }
         });
       },
-      dragFeedback: (list, i) {
-        var item = projectList[i];
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Chip(
-            image: buildProjectGridItemIcon(item),
-            text: Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Text(item.getShowTitle()),
-            ),
-          ),
-        );
-      },
-      dragPlaceHolder: (list, i) {
-        return const PlaceHolderWidget(
-          child: SizedBox(),
-        );
-      },
+      builder: (children) => GridView(
+        key: _gridViewKey,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
+          mainAxisExtent: 120,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+        ),
+        children: children,
+      ),
+      children: List.generate(
+        projectList.length,
+        (i) => buildProjectGridItem(projectList[i]),
+      ),
     );
   }
 
   // 构建项目表格子项
   Widget buildProjectGridItem(ProjectModel item) {
-    return Listener(
-      child: HoverButton(
-        builder: (_, states) {
-          states.add(ButtonStates.hovering);
-          return RepaintBoundary(
-            child: AnimatedContainer(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
-              duration: FluentTheme.of(context).fasterAnimationDuration,
-              decoration: BoxDecoration(
-                color: ButtonThemeData.uncheckedInputColor(
-                  FluentTheme.of(context),
-                  states,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListTile(
-                    isThreeLine: true,
-                    contentPadding: EdgeInsets.zero,
-                    leading: buildProjectGridItemIcon(item),
-                    title: Text(
-                      !item.exist ? "项目信息丢失" : item.getShowTitle(),
-                      style: TextStyle(
-                        color: !item.exist ? Colors.red : null,
-                      ),
-                    ),
-                    subtitle:
-                        Text(!item.exist ? item.project.alias : item.version),
-                  ),
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: PlatformChipGroup(
-                      platforms: item.platforms,
-                      chipSize: PlatformChipSize.small,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        onPressed: () {
-          if (!item.exist) return modifyProjectInfo(item);
-
-          /// 跳转详情页
-        },
-      ),
-      onPointerDown: (event) => onMouseRightClick(event, item),
-    );
-  }
-
-  // 实现右键点击弹出菜单功能
-  void onMouseRightClick(PointerEvent event, ProjectModel item) async {
-    if (event.kind == PointerDeviceKind.mouse &&
-        event.buttons == kSecondaryMouseButton) {
-      final overlay =
-          Overlay.of(context)?.context.findRenderObject() as RenderBox;
-      material
-          .showMenu<int>(
-              context: context,
-              items: [
-                const material.PopupMenuItem(
-                  value: 0,
-                  child: Text('编辑'),
-                ),
-                const material.PopupMenuItem(
-                  value: 1,
-                  child: Text(
-                    '删除',
-                    style: TextStyle(color: material.Colors.red),
-                  ),
-                ),
-              ],
-              position: RelativeRect.fromSize(
-                event.position & const Size(48.0, 48.0),
-                overlay.size,
-              ))
-          .then((v) {
-        switch (v) {
-          case 0: //编辑
+    return MouseRightClickMenu(
+      key: Key(item.project.primaryKey),
+      menuItems: [
+        TappableListTile(
+          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
+          title: const Text("编辑"),
+          onTap: () {
+            Navigator.pop(context);
             modifyProjectInfo(item);
-            break;
-          case 1: //删除
+          },
+        ),
+        TappableListTile(
+          leading: Icon(FluentIcons.delete, size: 14, color: Colors.red),
+          title: Text(
+            "删除",
+            style: TextStyle(color: Colors.red),
+          ),
+          onTap: () {
+            Navigator.pop(context);
             ImportantOptionDialog.show(
               context,
               message: "是否删除该项目(${item.getShowTitle()})",
@@ -230,10 +154,50 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
                 updateProjectList();
               },
             );
-            break;
-        }
-      });
-    }
+          },
+        ),
+      ],
+      child: GestureDetector(
+        onTapDown: (details) {
+          if (!item.exist) return modifyProjectInfo(item);
+
+          /// 跳转详情页
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          decoration: BoxDecoration(
+            color: const Color(0xe0F6F6F6),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                isThreeLine: true,
+                contentPadding: EdgeInsets.zero,
+                leading: buildProjectGridItemIcon(item),
+                title: Text(
+                  !item.exist ? "项目信息丢失" : item.getShowTitle(),
+                  style: TextStyle(
+                    color: !item.exist ? Colors.red : null,
+                  ),
+                ),
+                subtitle: Text(!item.exist ? item.project.alias : item.version),
+              ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: PlatformChipGroup(
+                  platforms: item.platforms,
+                  chipSize: PlatformChipSize.small,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // 图标尺寸
