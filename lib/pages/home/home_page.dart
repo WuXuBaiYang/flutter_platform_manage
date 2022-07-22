@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/pages/project/project_list.dart';
 import 'package:flutter_platform_manage/pages/record/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/setting.dart';
+import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/window_buttons.dart';
 import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
 import 'package:window_manager/window_manager.dart';
@@ -25,9 +26,6 @@ class HomePage extends StatefulWidget {
 * @Time 2022/5/12 12:49
 */
 class _HomePageState extends State<HomePage> with WindowListener {
-  // 导航组件key
-  final viewKey = GlobalKey();
-
   // 导航当前下标
   int index = 0;
 
@@ -39,21 +37,9 @@ class _HomePageState extends State<HomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationView(
-      key: viewKey,
-      appBar: NavigationAppBar(
-        automaticallyImplyLeading: false,
-        title: const DragToMoveArea(
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text("  ${Common.appName}"),
-          ),
-        ),
-        actions: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [Spacer(), WindowButtons()],
-        ),
-      ),
+    return AppPage(
+      title: Common.appName,
+      showBack: false,
       pane: NavigationPane(
         selected: index,
         onChanged: (v) => setState(() => index = v),

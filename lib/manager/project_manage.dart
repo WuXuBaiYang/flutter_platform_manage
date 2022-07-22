@@ -43,6 +43,15 @@ class ProjectManage extends BaseManage {
     return temp;
   }
 
+  // 根据项目key获取项目完整信息
+  Future<ProjectModel?> getProjectInfo(String key) async {
+    var t = dbManage.find<Project>(key);
+    if (null == t) return null;
+    var p = ProjectModel(project: t);
+    await p.update();
+    return p;
+  }
+
   // 监听项目数量变化
   Stream<List<ProjectModel>> watchCount() {
     var count = dbManage.all<Project>().length;

@@ -1,7 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/cache_manage.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/pages/home/home_page.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -42,7 +44,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FluentApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: debugMode,
+      navigatorKey: jRouter.navigateKey,
       theme: ThemeData(
         typography: const Typography.raw(
           title: TextStyle(
@@ -51,6 +54,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      routes: RoutePath.routeMap,
       home: const HomePage(),
     );
   }

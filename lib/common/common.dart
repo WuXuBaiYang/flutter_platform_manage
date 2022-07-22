@@ -29,5 +29,8 @@ class Common {
   static const String platformMacos = "assets/images/platform_macos.svg";
 
   // 空盒子提示图
-  static const String EmptyBoxImage = "assets/images/empty_box.svg";
+  static const String emptyBoxImage = "assets/images/notice_empty.svg";
+
+  // 异常盒子提示图
+  static const String warningBoxImage = "assets/images/notice_warning.svg";
 }

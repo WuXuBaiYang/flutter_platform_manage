@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
+import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/widgets/empty_box_notice.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
+import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_chip_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -50,7 +52,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       ),
       content: projectList.isEmpty
           ? Center(
-              child: EmptyBoxNotice(
+              child: NoticeBox.empty(
               message: "点击右上角添加一个项目",
             ))
           : buildProjectGrid(),
@@ -80,9 +82,6 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       ],
     );
   }
-
-  // 控制列数量
-  int gridCrossCount = 2;
 
   // 滚动控制器
   final _scrollController = ScrollController();
@@ -158,8 +157,9 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       child: GestureDetector(
         onTapDown: (details) {
           if (!item.exist) return modifyProjectInfo(item);
-
-          /// 跳转详情页
+          jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+            "key": item.project.primaryKey,
+          })?.then((_) => updateProjectList());
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
@@ -235,16 +235,6 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     return projectManage.loadAll().then((v) {
       setState(() => projectList = v);
       return v;
-    });
-  }
-
-  @override
-  void onWindowResize() {
-    windowManager.getSize().then((v) {
-      var count = v.width ~/ (Common.windowMinimumSize.width ~/ 2);
-      if (gridCrossCount != count) {
-        setState(() => gridCrossCount = count);
-      }
     });
   }
 
