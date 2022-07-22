@@ -1,0 +1,70 @@
+import 'dart:io';
+
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/model/project.dart';
+
+/*
+* 项目图标组件
+* @author JTech JH
+* @Time 2022-07-22 17:14:34
+*/
+class ProjectLogo extends StatelessWidget {
+  // 项目信息
+  final ProjectModel projectInfo;
+
+  // 项目图标尺寸
+  final ProjectLogoSize logoSize;
+
+  const ProjectLogo({
+    Key? key,
+    required this.projectInfo,
+    this.logoSize = ProjectLogoSize.middle,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var iconSize = logoSize.size;
+    if (!projectInfo.exist) {
+      return Icon(
+        FluentIcons.warning,
+        color: Colors.red,
+        size: iconSize,
+      );
+    }
+    var iconMap = projectInfo.getProjectIcon();
+    if (iconMap.isEmpty) return FlutterLogo(size: iconSize);
+    var icon = iconMap.entries.first;
+    return Image.file(
+      File(icon.value),
+      width: iconSize,
+      height: iconSize,
+    );
+  }
+}
+
+/*
+* 图标尺寸
+* @author JTech JH
+* @Time 2022-07-22 17:16:06
+*/
+enum ProjectLogoSize { small, middle, large }
+
+/*
+* 图标尺寸方法扩展
+* @author JTech JH
+* @Time 2022-07-22 17:16:26
+*/
+extension ProjectlogoSizeExtension on ProjectLogoSize {
+  // 获取图标尺寸
+  double get size {
+    switch (this) {
+      case ProjectLogoSize.small:
+        return 35;
+      case ProjectLogoSize.large:
+        return 65;
+      case ProjectLogoSize.middle:
+      default:
+        return 50;
+    }
+  }
+}

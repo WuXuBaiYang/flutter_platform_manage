@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -145,15 +145,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           ),
           onTap: () {
             Navigator.pop(context);
-            ImportantOptionDialog.show(
-              context,
-              message: "是否删除该项目(${item.getShowTitle()})",
-              confirm: "删除",
-              onConfirmTap: () {
-                dbManage.delete(item.project);
-                updateProjectList();
-              },
-            );
+            deleteProjectInfo(item);
           },
         ),
       ],
@@ -164,12 +156,8 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             "key": item.project.primaryKey,
           })?.then((_) => updateProjectList());
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
-          decoration: BoxDecoration(
-            color: const Color(0xe0F6F6F6),
-            borderRadius: BorderRadius.circular(8),
-          ),
+        child: Card(
+          elevation: 0,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +165,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
               ListTile(
                 isThreeLine: true,
                 contentPadding: EdgeInsets.zero,
-                leading: buildProjectGridItemIcon(item),
+                leading: ProjectLogo(projectInfo: item),
                 title: Text(
                   !item.exist ? "项目信息丢失" : item.getShowTitle(),
                   style: TextStyle(
@@ -191,35 +179,13 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
                 scrollDirection: Axis.horizontal,
                 child: PlatformTagGroup(
                   platforms: item.platforms,
-                  chipSize: PlatformChipSize.small,
+                  tagSize: PlatformTagSize.small,
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // 图标尺寸
-  final double iconSize = 50;
-
-  // 构造项目图标
-  Widget buildProjectGridItemIcon(ProjectModel item) {
-    if (!item.exist) {
-      return Icon(
-        FluentIcons.warning,
-        color: Colors.red,
-        size: iconSize,
-      );
-    }
-    var iconMap = item.getProjectIcon();
-    if (iconMap.isEmpty) return FlutterLogo(size: iconSize);
-    var icon = iconMap.entries.first;
-    return Image.file(
-      File(icon.value),
-      width: iconSize,
-      height: iconSize,
     );
   }
 
@@ -231,6 +197,19 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     ).then((v) {
       if (null != v) updateProjectList();
     });
+  }
+
+  // 删除项目信息
+  void deleteProjectInfo(ProjectModel item) {
+    ImportantOptionDialog.show(
+      context,
+      message: "是否删除该项目 ${item.getShowTitle()}",
+      confirm: "删除",
+      onConfirmTap: () {
+        dbManage.delete(item.project);
+        updateProjectList();
+      },
+    );
   }
 
   // 更新现有项目列表

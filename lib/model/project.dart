@@ -36,6 +36,20 @@ class ProjectModel {
     this.platforms = const [],
   });
 
+  // 根据平台类型获取平台信息
+  T? getPlatformModel<T extends BasePlatform>(PlatformType type) {
+    try {
+      if (platforms.isNotEmpty) {
+        return platforms.firstWhere(
+          (e) => e.type == type,
+        ) as T;
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return null;
+  }
+
   // 获取展示标题
   String getShowTitle() {
     var t = project.alias;

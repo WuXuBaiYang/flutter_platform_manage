@@ -13,12 +13,12 @@ class PlatformTagGroup extends StatelessWidget {
   final List<BasePlatform> platforms;
 
   // 标签尺寸
-  final PlatformChipSize chipSize;
+  final PlatformTagSize tagSize;
 
   const PlatformTagGroup({
     Key? key,
     required this.platforms,
-    this.chipSize = PlatformChipSize.middle,
+    this.tagSize = PlatformTagSize.middle,
   }) : super(key: key);
 
   @override
@@ -39,14 +39,14 @@ class PlatformTagGroup extends StatelessWidget {
               SvgPicture.asset(
                 e.type.platformImage,
                 color: Colors.white,
-                width: chipSize.getSize(),
-                height: chipSize.getSize(),
+                width: tagSize.size,
+                height: tagSize.size,
               ),
               const SizedBox(width: 4),
               Text(
                 e.type.name,
                 style: TextStyle(
-                  fontSize: chipSize.getSize(),
+                  fontSize: tagSize.size,
                   color: Colors.white,
                 ),
               ),
@@ -63,20 +63,20 @@ class PlatformTagGroup extends StatelessWidget {
 * @author JTech JH
 * @Time 2022-07-21 17:58:51
 */
-enum PlatformChipSize { small, middle }
+enum PlatformTagSize { small, middle }
 
 /*
 * 平台类型标签大小扩展
 * @author JTech JH
 * @Time 2022-07-21 18:00:02
 */
-extension PlatformChipSizeExtension on PlatformChipSize {
+extension PlatformTagSizeExtension on PlatformTagSize {
   // 获取实际尺寸
-  double getSize() {
+  double get size {
     switch (this) {
-      case PlatformChipSize.small:
+      case PlatformTagSize.small:
         return 10;
-      case PlatformChipSize.middle:
+      case PlatformTagSize.middle:
       default:
         return 14;
     }

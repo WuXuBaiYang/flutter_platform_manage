@@ -65,7 +65,7 @@ class NoticeBox extends StatelessWidget {
 
   // 构建盒子提示图片
   Widget buildBoxImage() {
-    var size = boxSize.getSize();
+    var size = boxSize.size;
     return SvgPicture.asset(svgAssetsPath,
         color: color, width: size, height: size);
   }
@@ -85,7 +85,7 @@ enum NoticeBoxSize { small, middle, large }
 */
 extension WarningBoxSizeExtension on NoticeBoxSize {
   // 根据枚举获取具体尺寸
-  double getSize() {
+  double get size {
     switch (this) {
       case NoticeBoxSize.small:
         return 45;
