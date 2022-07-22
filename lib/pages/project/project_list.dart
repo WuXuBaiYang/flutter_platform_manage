@@ -61,25 +61,28 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
 
   // 构建动作菜单
   Widget buildCommandBar() {
-    return CommandBar(
-      overflowBehavior: CommandBarOverflowBehavior.noWrap,
-      primaryItems: [
-        CommandBarButton(
-          icon: const Icon(FluentIcons.add),
-          label: const Text("添加"),
-          onPressed: () {
-            ProjectImportDialog.show(context).then((v) {
-              if (null != v) updateProjectList();
-            });
-          },
-        ),
-        CommandBarButton(
-          icon: const Icon(FluentIcons.refresh),
-          label: const Text("刷新"),
-          onPressed: () => updateProjectList().then((_) =>
-              showSnackbar(context, const Snackbar(content: Text("项目信息已刷新")))),
-        ),
-      ],
+    return CommandBarCard(
+      elevation: 0,
+      child: CommandBar(
+        overflowBehavior: CommandBarOverflowBehavior.noWrap,
+        primaryItems: [
+          CommandBarButton(
+            icon: const Icon(FluentIcons.add),
+            label: const Text("添加"),
+            onPressed: () {
+              ProjectImportDialog.show(context).then((v) {
+                if (null != v) updateProjectList();
+              });
+            },
+          ),
+          CommandBarButton(
+            icon: const Icon(FluentIcons.refresh),
+            label: const Text("刷新"),
+            onPressed: () => updateProjectList().then((_) => showSnackbar(
+                context, const Snackbar(content: Text("项目信息已刷新")))),
+          ),
+        ],
+      ),
     );
   }
 
@@ -155,7 +158,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
         ),
       ],
       child: GestureDetector(
-        onTapDown: (details) {
+        onTap: () {
           if (!item.exist) return modifyProjectInfo(item);
           jRouter.pushNamed(RoutePath.projectDetail, parameters: {
             "key": item.project.primaryKey,
