@@ -4,7 +4,6 @@ import 'package:flutter_platform_manage/pages/project/project_list.dart';
 import 'package:flutter_platform_manage/pages/record/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/setting.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
-import 'package:flutter_platform_manage/widgets/window_buttons.dart';
 import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -27,7 +26,7 @@ class HomePage extends StatefulWidget {
 */
 class _HomePageState extends State<HomePage> with WindowListener {
   // 导航当前下标
-  int index = 0;
+  int index = 2;
 
   @override
   void initState() {
