@@ -32,6 +32,7 @@ class Utils {
         action: action,
         extended: true,
       ),
+      duration: const Duration(milliseconds: 2500),
     );
   }
 

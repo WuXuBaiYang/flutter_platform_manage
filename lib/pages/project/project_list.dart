@@ -112,7 +112,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
         key: _gridViewKey,
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
-          mainAxisExtent: 120,
+          mainAxisExtent: 90,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
         ),
@@ -150,40 +150,30 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           },
         ),
       ],
-      child: GestureDetector(
-        onTap: () {
-          if (!item.exist) return modifyProjectInfo(item);
-          jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-            "key": item.project.primaryKey,
-          })?.then((_) => updateProjectList());
-        },
-        child: Card(
-          elevation: 0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                isThreeLine: true,
-                contentPadding: EdgeInsets.zero,
-                leading: ProjectLogo(projectInfo: item),
-                title: Text(
-                  !item.exist ? "项目信息丢失" : item.getShowTitle(),
-                  style: TextStyle(
-                    color: !item.exist ? Colors.red : null,
-                  ),
-                ),
-                subtitle: Text(!item.exist ? item.project.alias : item.version),
-              ),
-              const SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: PlatformTagGroup(
-                  platforms: item.platformList,
-                  tagSize: PlatformTagSize.small,
+      child: Center(
+        child: GestureDetector(
+          onTap: () {
+            if (!item.exist) return modifyProjectInfo(item);
+            jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+              "key": item.project.primaryKey,
+            })?.then((_) => updateProjectList());
+          },
+          child: Card(
+            elevation: 0,
+            child: ListTile(
+              isThreeLine: true,
+              contentPadding: EdgeInsets.zero,
+              leading: ProjectLogo(projectInfo: item),
+              title: Text(
+                !item.exist ? "项目信息丢失" : item.getShowTitle(),
+                style: TextStyle(
+                  color: !item.exist ? Colors.red : null,
                 ),
               ),
-            ],
+              subtitle: Text(
+                  "${!item.exist ? item.project.alias : item.version}"
+                      "\nFlutter · ${item.getEnvironment()?.flutter}"),
+            ),
           ),
         ),
       ),

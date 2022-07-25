@@ -45,9 +45,12 @@ class ProjectModel {
     return t.isEmpty ? name : "$t($name)";
   }
 
+  // 缓存环境信息
+  Environment? _environment;
+
   // 获取当前项目对应的环境对象
   Environment? getEnvironment() =>
-      dbManage.find<Environment>(project.environmentKey);
+      _environment ??= dbManage.find<Environment>(project.environmentKey);
 
   // 项目名称正则
   final _nameReg = RegExp(r'name: .+');
@@ -88,6 +91,7 @@ class ProjectModel {
         platformMap[t] = t.create();
       }
       platformList = platformMap.values.toList();
+      _environment = null;
     } catch (e) {
       return false;
     }
@@ -116,6 +120,7 @@ class ProjectModel {
         platformMap[t] = p;
       }
       platformList = platformMap.values.toList();
+      _environment = null;
     } catch (e) {
       return false;
     }
@@ -140,6 +145,7 @@ class ProjectModel {
         var path = "${project.path}/${p.type.name}";
         if (!await p.commit(path)) return false;
       }
+      _environment = null;
     } catch (e) {
       return false;
     }

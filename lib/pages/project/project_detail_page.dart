@@ -134,7 +134,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                     ),
                   ),
                   subtitle:
-                      Text(!item.exist ? item.project.alias : item.version),
+                      Text("${!item.exist ? item.project.alias : item.version}"
+                          "\nFlutter · ${item.getEnvironment()?.flutter}"),
                 ),
               ),
               const Divider(
@@ -249,7 +250,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       confirm: "删除",
       onConfirmTap: () {
         dbManage.delete(item.project);
-        refreshProject();
+        Navigator.pop(context);
       },
     );
   }

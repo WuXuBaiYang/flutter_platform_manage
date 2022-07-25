@@ -24,8 +24,8 @@ class PlatformTagGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: tagSize.gapSize,
+      runSpacing: tagSize.gapSize,
       children: platforms.map<Widget>((e) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
@@ -79,6 +79,17 @@ extension PlatformTagSizeExtension on PlatformTagSize {
       case PlatformTagSize.middle:
       default:
         return 14;
+    }
+  }
+
+  // 获取间隔尺寸
+  double get gapSize {
+    switch (this) {
+      case PlatformTagSize.small:
+        return 4;
+      case PlatformTagSize.middle:
+      default:
+        return 8;
     }
   }
 }
