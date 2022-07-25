@@ -8,11 +8,11 @@ import 'package:flutter_platform_manage/model/project.dart';
 */
 class PlatformLinuxPage extends StatefulWidget {
   // 平台信息
-  final LinuxPlatform? platform;
+  final LinuxPlatform platformInfo;
 
   const PlatformLinuxPage({
     Key? key,
-    required this.platform,
+    required this.platformInfo,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _PlatformLinuxPageState extends State<PlatformLinuxPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(widget.platform?.type.name ?? "平台不存在"),
+      child: Text("linux"),
     );
   }
 }

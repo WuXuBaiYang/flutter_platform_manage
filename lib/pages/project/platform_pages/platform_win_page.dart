@@ -8,11 +8,11 @@ import 'package:flutter_platform_manage/model/project.dart';
 */
 class PlatformWinPage extends StatefulWidget {
   // 平台信息
-  final WindowsPlatform? platform;
+  final WindowsPlatform platformInfo;
 
   const PlatformWinPage({
     Key? key,
-    required this.platform,
+    required this.platformInfo,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _PlatformWinPageState extends State<PlatformWinPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(widget.platform?.type.name ?? "平台不存在"),
+      child: Text("win"),
     );
   }
 }

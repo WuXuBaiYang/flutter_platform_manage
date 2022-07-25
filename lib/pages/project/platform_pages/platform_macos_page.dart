@@ -8,11 +8,11 @@ import 'package:flutter_platform_manage/model/project.dart';
 */
 class PlatformMacOSPage extends StatefulWidget {
   // 平台信息
-  final MacOSPlatform? platform;
+  final MacOSPlatform platformInfo;
 
   const PlatformMacOSPage({
     Key? key,
-    required this.platform,
+    required this.platformInfo,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _PlatformMacOSPageState extends State<PlatformMacOSPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(widget.platform?.type.name ?? "平台不存在"),
+      child: Text("macos"),
     );
   }
 }

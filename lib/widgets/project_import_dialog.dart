@@ -302,7 +302,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         InfoLabel(
           label: "平台支持",
           child: PlatformTagGroup(
-            platforms: _projectInfo?.platforms ?? [],
+            platforms: _projectInfo?.platformList ?? [],
           ),
         ),
         null != _errText

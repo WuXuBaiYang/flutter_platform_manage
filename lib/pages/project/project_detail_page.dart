@@ -9,6 +9,8 @@ import 'package:flutter_platform_manage/pages/project/platform_pages/platform_li
 import 'package:flutter_platform_manage/pages/project/platform_pages/platform_macos_page.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/platform_web_page.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/platform_win_page.dart';
+import 'package:flutter_platform_manage/utils/script_handle.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
@@ -29,6 +31,9 @@ class ProjectDetailPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ProjectDetailPageState();
 }
+
+// 构造平台页面方法
+typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 
 /*
 * 项目详情页-状态
@@ -89,28 +94,28 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                 icon: const Icon(FluentIcons.access_logo),
                 label: const Text("修改版本号"),
                 onPressed: () {
-                  showSnackbar(context, const Snackbar(content: Text("开发中")));
+                  Utils.showSnack(context, "开发中");
                 },
               ),
               CommandBarButton(
                 icon: const Icon(FluentIcons.access_logo),
                 label: const Text("修改名称"),
                 onPressed: () {
-                  showSnackbar(context, const Snackbar(content: Text("开发中")));
+                  Utils.showSnack(context, "开发中");
                 },
               ),
               CommandBarButton(
                 icon: const Icon(FluentIcons.access_logo),
                 label: const Text("添加权限"),
                 onPressed: () {
-                  showSnackbar(context, const Snackbar(content: Text("开发中")));
+                  Utils.showSnack(context, "开发中");
                 },
               ),
               CommandBarButton(
                 icon: const Icon(FluentIcons.access_logo),
                 label: const Text("替换图标"),
                 onPressed: () {
-                  showSnackbar(context, const Snackbar(content: Text("开发中")));
+                  Utils.showSnack(context, "开发中");
                 },
               ),
             ],
@@ -146,8 +151,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       label: const Text("刷新"),
                       onPressed: () {
                         refreshProject();
-                        showSnackbar(
-                            context, const Snackbar(content: Text("项目信息已刷新")));
+                        Utils.showSnack(context, "项目信息已刷新");
                       },
                     ),
                     CommandBarButton(
@@ -167,13 +171,23 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
           ),
           const SizedBox(height: 8),
           PlatformTagGroup(
-            platforms: item.platforms,
+            platforms: item.platformList,
             tagSize: PlatformTagSize.small,
           ),
         ],
       ),
     );
   }
+
+  // 平台对照表
+  final Map<PlatformType, PlatformPageBuilder> platformPage = {
+    PlatformType.android: (p) => PlatformAndroidPage(platformInfo: p),
+    PlatformType.ios: (p) => PlatformIosPage(platformInfo: p),
+    PlatformType.web: (p) => PlatformWebPage(platformInfo: p),
+    PlatformType.windows: (p) => PlatformWinPage(platformInfo: p),
+    PlatformType.linux: (p) => PlatformLinuxPage(platformInfo: p),
+    PlatformType.macos: (p) => PlatformMacOSPage(platformInfo: p),
+  };
 
   // 构建平台信息切页
   Widget buildPlatformView(ProjectModel item) {
@@ -182,18 +196,36 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       builder: (_, v, child) {
         return IndexedStack(
           index: bottomBarIndex.value,
-          children: [
-            PlatformAndroidPage(
-                platform: item.getPlatformModel(PlatformType.android)),
-            PlatformIosPage(platform: item.getPlatformModel(PlatformType.ios)),
-            PlatformWinPage(
-                platform: item.getPlatformModel(PlatformType.windows)),
-            PlatformMacOSPage(
-                platform: item.getPlatformModel(PlatformType.macos)),
-            PlatformLinuxPage(
-                platform: item.getPlatformModel(PlatformType.linux)),
-            PlatformWebPage(platform: item.getPlatformModel(PlatformType.web)),
-          ],
+          children: List.generate(PlatformType.values.length, (i) {
+            var t = PlatformType.values[i];
+            var p = item.platformMap[t];
+            if (null != p) return platformPage[t]!(p);
+            return Center(
+              child: CommandBar(
+                mainAxisAlignment: MainAxisAlignment.center,
+                primaryItems: [
+                  CommandBarButton(
+                    icon: const Icon(FluentIcons.add),
+                    label: const Text("创建平台"),
+                    onPressed: () {
+                      Utils.showLoading<bool>(
+                        context,
+                        loadFuture: ScriptHandle.createPlatforms(item, [t]),
+                      ).then((value) {
+                        if (value!) {
+                          refreshProject();
+                          return Utils.showSnack(context, "平台创建成功");
+                        }
+                        throw Exception("平台创建失败");
+                      }).catchError((e) {
+                        Utils.showSnack(context, e.toString());
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          }),
         );
       },
     );

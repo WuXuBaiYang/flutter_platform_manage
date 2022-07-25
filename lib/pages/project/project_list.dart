@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
@@ -78,8 +79,8 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           CommandBarButton(
             icon: const Icon(FluentIcons.refresh),
             label: const Text("刷新"),
-            onPressed: () => updateProjectList().then((_) => showSnackbar(
-                context, const Snackbar(content: Text("项目信息已刷新")))),
+            onPressed: () => updateProjectList()
+                .then((_) => Utils.showSnack(context, "项目信息已刷新")),
           ),
         ],
       ),
@@ -178,7 +179,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: PlatformTagGroup(
-                  platforms: item.platforms,
+                  platforms: item.platformList,
                   tagSize: PlatformTagSize.small,
                 ),
               ),

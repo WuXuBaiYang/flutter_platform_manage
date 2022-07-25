@@ -26,29 +26,18 @@ class ProjectModel {
   String version;
 
   // 平台集合
-  List<BasePlatform> platforms;
+  List<BasePlatform> platformList;
+
+  // 平台表
+  Map<PlatformType, BasePlatform> platformMap;
 
   ProjectModel({
     required this.project,
     this.exist = true,
     this.name = "",
     this.version = "",
-    this.platforms = const [],
-  });
-
-  // 根据平台类型获取平台信息
-  T? getPlatformModel<T extends BasePlatform>(PlatformType type) {
-    try {
-      if (platforms.isNotEmpty) {
-        return platforms.firstWhere(
-          (e) => e.type == type,
-        ) as T;
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-    return null;
-  }
+    this.platformMap = const {},
+  }) : platformList = platformMap.values.toList();
 
   // 获取展示标题
   String getShowTitle() {
@@ -70,7 +59,7 @@ class ProjectModel {
 
   // 获取应用图标
   Map<PlatformType, String> getProjectIcon() {
-    for (var it in platforms) {
+    for (var it in platformList) {
       var path = it.getProjectIcon(project.path);
       if (null != path) {
         return {it.type: path};
@@ -92,12 +81,13 @@ class ProjectModel {
         },
       );
       // 处理平台信息
-      platforms = [];
+      platformMap = {};
       for (var t in PlatformType.values) {
         var d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
-        platforms.add(t.create());
+        platformMap[t] = t.create();
       }
+      platformList = platformMap.values.toList();
     } catch (e) {
       return false;
     }
@@ -117,14 +107,15 @@ class ProjectModel {
         },
       );
       // 处理平台信息
-      platforms = [];
+      platformMap = {};
       for (var t in PlatformType.values) {
         var d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
         var p = t.create();
         if (!await p.update(d.path)) return false;
-        platforms.add(p);
+        platformMap[t] = p;
       }
+      platformList = platformMap.values.toList();
     } catch (e) {
       return false;
     }
@@ -145,7 +136,7 @@ class ProjectModel {
         },
       );
       // 处理平台信息
-      for (var p in platforms) {
+      for (var p in platformList) {
         var path = "${project.path}/${p.type.name}";
         if (!await p.commit(path)) return false;
       }

@@ -8,11 +8,11 @@ import 'package:flutter_platform_manage/model/project.dart';
 */
 class PlatformAndroidPage extends StatefulWidget {
   // 平台信息
-  final AndroidPlatform? platform;
+  final AndroidPlatform platformInfo;
 
   const PlatformAndroidPage({
     Key? key,
-    required this.platform,
+    required this.platformInfo,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _PlatformAndroidPageState extends State<PlatformAndroidPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(widget.platform?.type.name ?? "平台不存在"),
+      child: Text("android"),
     );
   }
 }
