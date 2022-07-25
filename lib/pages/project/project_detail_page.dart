@@ -84,46 +84,13 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   Widget buildProjectInfo(ProjectModel item) {
     return Card(
       elevation: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          CommandBar(
-            mainAxisAlignment: MainAxisAlignment.end,
-            primaryItems: [
-              CommandBarButton(
-                icon: const Icon(FluentIcons.access_logo),
-                label: const Text("修改版本号"),
-                onPressed: () {
-                  Utils.showSnack(context, "开发中");
-                },
-              ),
-              CommandBarButton(
-                icon: const Icon(FluentIcons.access_logo),
-                label: const Text("修改名称"),
-                onPressed: () {
-                  Utils.showSnack(context, "开发中");
-                },
-              ),
-              CommandBarButton(
-                icon: const Icon(FluentIcons.access_logo),
-                label: const Text("添加权限"),
-                onPressed: () {
-                  Utils.showSnack(context, "开发中");
-                },
-              ),
-              CommandBarButton(
-                icon: const Icon(FluentIcons.access_logo),
-                label: const Text("替换图标"),
-                onPressed: () {
-                  Utils.showSnack(context, "开发中");
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: ListTile(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
                   isThreeLine: true,
                   contentPadding: EdgeInsets.zero,
                   leading: ProjectLogo(projectInfo: item),
@@ -137,15 +104,64 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       Text("${!item.exist ? item.project.alias : item.version}"
                           "\nFlutter · ${item.getEnvironment()?.flutter}"),
                 ),
-              ),
-              const Divider(
-                direction: Axis.vertical,
-                size: 35,
-                style: DividerThemeData(thickness: 0.5),
-              ),
-              Expanded(
-                child: CommandBar(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 8),
+                PlatformTagGroup(
+                  platforms: item.platformList,
+                  tagSize: PlatformTagSize.small,
+                ),
+              ],
+            ),
+          ),
+          const Divider(
+            direction: Axis.vertical,
+            size: 65,
+            style: DividerThemeData(thickness: 0.5),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                CommandBar(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  primaryItems: [
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.access_logo),
+                      label: const Text("打包"),
+                      onPressed: () {
+                        Utils.showSnack(context, "开发中");
+                      },
+                    ),
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.access_logo),
+                      label: const Text("修改名称"),
+                      onPressed: () {
+                        Utils.showSnack(context, "开发中");
+                      },
+                    ),
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.access_logo),
+                      label: const Text("添加权限"),
+                      onPressed: () {
+                        Utils.showSnack(context, "开发中");
+                      },
+                    ),
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.access_logo),
+                      label: const Text("替换图标"),
+                      onPressed: () {
+                        Utils.showSnack(context, "开发中");
+                      },
+                    ),
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.access_logo),
+                      label: const Text("修改版本号"),
+                      onPressed: () {
+                        Utils.showSnack(context, "开发中");
+                      },
+                    ),
+                  ],
+                ),
+                CommandBar(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   primaryItems: [
                     CommandBarButton(
                       icon: const Icon(FluentIcons.refresh),
@@ -166,14 +182,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       onPressed: () => deleteProjectInfo(item),
                     ),
                   ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          PlatformTagGroup(
-            platforms: item.platformList,
-            tagSize: PlatformTagSize.small,
+                )
+              ],
+            ),
           ),
         ],
       ),
