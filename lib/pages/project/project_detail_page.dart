@@ -104,7 +104,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       Text("${!item.exist ? item.project.alias : item.version}"
                           "\nFlutter · ${item.getEnvironment()?.flutter}"),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 PlatformTagGroup(
                   platforms: item.platformList,
                   tagSize: PlatformTagSize.small,
