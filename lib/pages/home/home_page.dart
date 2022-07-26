@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 */
 class _HomePageState extends State<HomePage> with WindowListener {
   // 导航当前下标
-  int index = 2;
+  final navigationIndex = ValueNotifier(0);
 
   @override
   void initState() {
@@ -36,49 +36,54 @@ class _HomePageState extends State<HomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
-      title: Common.appName,
-      showBack: false,
-      pane: NavigationPane(
-        selected: index,
-        onChanged: (v) => setState(() => index = v),
-        size: const NavigationPaneSize(
-          openMinWidth: 120,
-          openMaxWidth: 160,
-        ),
-        header: const FlutterLogo(
-          style: FlutterLogoStyle.horizontal,
-          size: 100,
-        ),
-        indicator: const StickyNavigationIndicator(
-          duration: Duration(milliseconds: 120),
-        ),
-        items: [
-          PaneItem(
-            icon: const Icon(FluentIcons.project_management),
-            title: const Text("项目管理"),
+    return ValueListenableBuilder<int>(
+      valueListenable: navigationIndex,
+      builder: (_, value, child) {
+        return AppPage(
+          title: Common.appName,
+          showBack: false,
+          pane: NavigationPane(
+            selected: value,
+            onChanged: (v) => navigationIndex.value = v,
+            size: const NavigationPaneSize(
+              openMinWidth: 120,
+              openMaxWidth: 160,
+            ),
+            header: const FlutterLogo(
+              style: FlutterLogoStyle.horizontal,
+              size: 100,
+            ),
+            indicator: const StickyNavigationIndicator(
+              duration: Duration(milliseconds: 120),
+            ),
+            items: [
+              PaneItem(
+                icon: const Icon(FluentIcons.project_management),
+                title: const Text("项目管理"),
+              ),
+              PaneItem(
+                icon: const Icon(FluentIcons.packages),
+                title: const Text("打包记录"),
+              )
+            ],
+            footerItems: [
+              PaneItemSeparator(),
+              PaneItem(
+                icon: const Icon(FluentIcons.settings),
+                title: const Text("设置"),
+              ),
+            ],
           ),
-          PaneItem(
-            icon: const Icon(FluentIcons.packages),
-            title: const Text("打包记录"),
-          )
-        ],
-        footerItems: [
-          PaneItemSeparator(),
-          PaneItem(
-            icon: const Icon(FluentIcons.settings),
-            title: const Text("设置"),
+          content: NavigationBody(
+            index: value,
+            children: const [
+              ProjectListPage(),
+              PackageRecordPage(),
+              SettingPage(),
+            ],
           ),
-        ],
-      ),
-      content: NavigationBody(
-        index: index,
-        children: const [
-          ProjectListPage(),
-          PackageRecordPage(),
-          SettingPage(),
-        ],
-      ),
+        );
+      },
     );
   }
 

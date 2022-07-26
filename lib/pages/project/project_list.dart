@@ -113,7 +113,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
           mainAxisExtent: 90,
-          mainAxisSpacing: 14,
+          mainAxisSpacing: 8,
           crossAxisSpacing: 14,
         ),
         children: children,
