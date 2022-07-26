@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 
 /*
@@ -27,8 +28,6 @@ class PlatformAndroidPage extends StatefulWidget {
 class _PlatformAndroidPageState extends State<PlatformAndroidPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text("android"),
-    );
+    return SizedBox();
   }
 }

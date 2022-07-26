@@ -9,7 +9,6 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
-import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -169,10 +168,15 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
                 style: TextStyle(
                   color: !item.exist ? Colors.red : null,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
               subtitle: Text(
-                  "${!item.exist ? item.project.alias : item.version}"
-                      "\nFlutter · ${item.getEnvironment()?.flutter}"),
+                "${!item.exist ? item.project.alias : item.version}"
+                "\nFlutter · ${item.getEnvironment()?.flutter}",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
             ),
           ),
         ),

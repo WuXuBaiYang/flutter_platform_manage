@@ -28,7 +28,7 @@ class _PlatformWinPageState extends State<PlatformWinPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("win"),
+      child: Text("开发中"),
     );
   }
 }

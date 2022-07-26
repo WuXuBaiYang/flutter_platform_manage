@@ -28,7 +28,7 @@ class _PlatformLinuxPageState extends State<PlatformLinuxPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("linux"),
+      child: Text("开发中"),
     );
   }
 }

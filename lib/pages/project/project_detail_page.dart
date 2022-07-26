@@ -88,6 +88,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
     return Card(
       elevation: 0,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
@@ -116,9 +117,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             ),
           ),
           const Divider(
+            size: 70,
             direction: Axis.vertical,
-            size: 65,
-            style: DividerThemeData(thickness: 0.5),
+            style: DividerThemeData(
+              thickness: 0.5,
+              verticalMargin: EdgeInsets.all(8),
+            ),
           ),
           Expanded(
             child: Column(

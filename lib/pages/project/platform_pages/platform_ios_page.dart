@@ -28,7 +28,7 @@ class _PlatformIosPageState extends State<PlatformIosPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("ios"),
+      child: Text("开发中"),
     );
   }
 }

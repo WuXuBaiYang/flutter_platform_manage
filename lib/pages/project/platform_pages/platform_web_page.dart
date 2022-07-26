@@ -28,7 +28,7 @@ class _PlatformWebPageState extends State<PlatformWebPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("web"),
+      child: Text("开发中"),
     );
   }
 }

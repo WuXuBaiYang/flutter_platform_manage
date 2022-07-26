@@ -28,7 +28,7 @@ class _PlatformMacOSPageState extends State<PlatformMacOSPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("macos"),
+      child: Text("开发中"),
     );
   }
 }
