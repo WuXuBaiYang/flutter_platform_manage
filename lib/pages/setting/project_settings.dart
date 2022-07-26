@@ -1,7 +1,10 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
+import 'package:flutter_platform_manage/pages/setting/setting.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 
 /*
@@ -21,15 +24,12 @@ class ProjectSettings extends StatefulWidget {
 * @author JTech JH
 * @Time 2022-07-25 17:22:43
 */
-class _ProjectSettingsState extends State<ProjectSettings> {
+class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
+  List<Widget> get loadSettingList => [
         buildEnvironmentList(),
-      ],
-    );
-  }
+        buildAppSourceInfo(),
+      ];
 
   // 构建环境列表设置项
   Widget buildEnvironmentList() {
@@ -37,10 +37,8 @@ class _ProjectSettingsState extends State<ProjectSettings> {
       future: Future.value(dbManage.loadAllEnvironments().toList()),
       builder: (_, snap) {
         if (snap.hasData) {
-          return Card(
-            elevation: 0,
-            padding: const EdgeInsets.all(4),
-            child: Expander(
+          return buildSettingItem(
+            Expander(
               trailing: IconButton(
                 icon: const Icon(FluentIcons.add),
                 onPressed: () {
@@ -94,6 +92,29 @@ class _ProjectSettingsState extends State<ProjectSettings> {
           child: ProgressRing(),
         );
       },
+    );
+  }
+
+  // 构建应用源码说明文档
+  Widget buildAppSourceInfo() {
+    return buildSettingItem(
+      Button(
+        style: ButtonStyle(
+          padding: ButtonState.all(
+            const EdgeInsets.all(14),
+          ),
+        ),
+        child: const Text(
+          "查看本项目源码以及说明文档",
+          textAlign: TextAlign.start,
+        ),
+        onPressed: () async {
+          var uri = Uri.parse(Common.appSourceUrl);
+          if (!await launchUrl(uri)) {
+            Utils.showSnack(context, "网址打开失败");
+          }
+        },
+      ),
     );
   }
 }

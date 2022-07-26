@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   realm
+  url_launcher_windows
   window_manager
 )
 
