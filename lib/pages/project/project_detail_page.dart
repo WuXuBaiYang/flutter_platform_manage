@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
@@ -18,6 +20,7 @@ import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -220,6 +223,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                     icon: const Icon(FluentIcons.add),
                     label: const Text("创建平台"),
                     onPressed: () {
+                      var projectDir =
+                          item.project.path.split(RegExp(r'\\|/')).last;
+                      if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
+                        Utils.showSnack(context, "创建失败，本地目录名称只能使用字母数字下划线");
+                        return;
+                      }
                       Utils.showLoading<bool>(
                         context,
                         loadFuture: ScriptHandle.createPlatforms(item, [t]),
