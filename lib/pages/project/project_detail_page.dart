@@ -183,12 +183,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                     CommandBarButton(
                       icon: const Icon(FluentIcons.app_icon_default_edit),
                       label: const Text("编辑"),
-                      onPressed: () => modifyProjectInfo(item),
+                      onPressed: () => modifyProject(item),
                     ),
                     CommandBarButton(
                       icon: Icon(FluentIcons.delete, color: Colors.red),
                       label: Text("删除", style: TextStyle(color: Colors.red)),
-                      onPressed: () => deleteProjectInfo(item),
+                      onPressed: () => deleteProject(item),
                     ),
                   ],
                 )
@@ -259,7 +259,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   }
 
   // 重新编辑项目信息
-  void modifyProjectInfo(ProjectModel item) {
+  void modifyProject(ProjectModel item) {
     ProjectImportDialog.show(
       context,
       project: item.project,
@@ -269,7 +269,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   }
 
   // 删除项目信息
-  void deleteProjectInfo(ProjectModel item) {
+  void deleteProject(ProjectModel item) {
     ImportantOptionDialog.show(
       context,
       message: "是否删除该项目 ${item.getShowTitle()}",
