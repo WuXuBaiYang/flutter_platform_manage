@@ -59,7 +59,7 @@ abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
   List<Widget> get loadSettingList;
 
   // 构建设置项基础结构
-  Widget buildSettingItem(Widget child) {
+  Widget buildItem(Widget child) {
     return Card(
       elevation: 0,
       padding: const EdgeInsets.all(4),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
@@ -14,13 +12,13 @@ import 'package:flutter_platform_manage/pages/project/platform_pages/platform_wi
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
+import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -45,6 +43,9 @@ typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 */
 class _ProjectDetailPageState extends State<ProjectDetailPage>
     with WindowListener {
+  // 异步缓存加载控制器
+  final controller = CacheFutureBuilderController<ProjectModel>();
+
   @override
   void initState() {
     windowManager.addListener(this);
@@ -56,8 +57,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
     return AppPage(
       title: "项目详情",
       content: ScaffoldPage.withPadding(
-        content: FutureBuilder<ProjectModel>(
-          future: loadProjectInfo(),
+        content: CacheFutureBuilder<ProjectModel>(
+          controller: controller,
+          future: loadProjectInfo,
           builder: (_, snap) {
             if (snap.hasData) {
               var item = snap.data!;
@@ -174,7 +176,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       icon: const Icon(FluentIcons.refresh),
                       label: const Text("刷新"),
                       onPressed: () {
-                        refreshProject();
+                        controller.refreshValue();
                         Utils.showSnack(context, "项目信息已刷新");
                       },
                     ),
@@ -228,7 +230,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                     label: const Text("创建平台"),
                     onPressed: () {
                       var projectDir =
-                          item.project.path.split(RegExp(r'\\|/')).last;
+                          item.project.path.split(RegExp(r'[\\/]')).last;
                       if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
                         Utils.showSnack(context, "创建失败，本地目录名称只能使用字母数字下划线");
                         return;
@@ -238,7 +240,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                         loadFuture: ScriptHandle.createPlatforms(item, [t]),
                       ).then((value) {
                         if (value!) {
-                          refreshProject();
+                          controller.refreshValue();
                           return Utils.showSnack(context, "平台创建成功");
                         }
                         throw Exception("平台创建失败");
@@ -262,7 +264,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       context,
       project: item.project,
     ).then((v) {
-      if (null != v) refreshProject();
+      if (null != v) controller.refreshValue();
     });
   }
 
@@ -308,31 +310,23 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
         });
   }
 
-  // 项目信息
-  ProjectModel? _cacheProject;
-
   // 更新当前项目信息
   Future<ProjectModel> loadProjectInfo() async {
-    if (null == _cacheProject) {
-      var key = jRouter.find<String>(context, "key");
-      if (null == key || key.isEmpty) throw Exception("项目key不能为空");
-      _cacheProject = await projectManage.getProjectInfo(key);
-      if (null == _cacheProject) throw Exception("项目信息不存在");
-    }
-    return Future.value(_cacheProject);
+    var key = jRouter.find<String>(context, "key");
+    if (null == key || key.isEmpty) throw Exception("项目key不能为空");
+    var value = await projectManage.getProjectInfo(key);
+    if (null == value) throw Exception("项目信息不存在");
+    return Future.value(value);
   }
-
-  // 刷新项目信息
-  void refreshProject() => setState(() => _cacheProject = null);
 
   @override
   void onWindowFocus() {
-    refreshProject();
+    controller.refreshValue();
   }
 
   @override
   void onWindowRestore() {
-    refreshProject();
+    controller.refreshValue();
   }
 
   @override

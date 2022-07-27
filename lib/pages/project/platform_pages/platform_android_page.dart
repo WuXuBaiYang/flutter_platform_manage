@@ -1,6 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
 /*
 * android平台分页
@@ -25,9 +25,7 @@ class PlatformAndroidPage extends StatefulWidget {
 * @author JTech JH
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformAndroidPageState extends State<PlatformAndroidPage> {
+class _PlatformAndroidPageState extends BasePlatformState<PlatformAndroidPage> {
   @override
-  Widget build(BuildContext context) {
-    return SizedBox();
-  }
+  List<Widget> get loadSettingList => [];
 }

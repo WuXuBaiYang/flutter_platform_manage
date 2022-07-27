@@ -6,6 +6,7 @@ import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
@@ -32,15 +33,13 @@ class ProjectListPage extends StatefulWidget {
 * @Time 5/18/2022 5:14 PM
 */
 class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
-  // 项目列表
-  late List<ProjectModel> projectList = [];
+  // 异步加载控制器
+  final controller = CacheFutureBuilderController<List<ProjectModel>>();
 
   @override
   void initState() {
     windowManager.addListener(this);
     super.initState();
-    // 加载项目列表
-    updateProjectList();
   }
 
   @override
@@ -50,12 +49,21 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
         title: const Text("项目列表"),
         commandBar: buildCommandBar(),
       ),
-      content: projectList.isEmpty
-          ? Center(
-              child: NoticeBox.empty(
+      content: CacheFutureBuilder<List<ProjectModel>>(
+        controller: controller,
+        future: () => projectManage.loadAll(),
+        builder: (_, snap) {
+          var value = snap.data;
+          if (null != value && value.isNotEmpty) {
+            return buildProjectGrid(value);
+          }
+          return Center(
+            child: NoticeBox.empty(
               message: "点击右上角添加一个项目",
-            ))
-          : buildProjectGrid(),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -71,15 +79,17 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             label: const Text("添加"),
             onPressed: () {
               ProjectImportDialog.show(context).then((v) {
-                if (null != v) updateProjectList();
+                if (null != v) controller.refreshValue();
               });
             },
           ),
           CommandBarButton(
             icon: const Icon(FluentIcons.refresh),
             label: const Text("刷新"),
-            onPressed: () => updateProjectList()
-                .then((_) => Utils.showSnack(context, "项目信息已刷新")),
+            onPressed: () {
+              controller.refreshValue();
+              Utils.showSnack(context, "项目信息已刷新");
+            },
           ),
         ],
       ),
@@ -93,7 +103,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   final _gridViewKey = GlobalKey();
 
   // 构建项目列表
-  Widget buildProjectGrid() {
+  Widget buildProjectGrid(List<ProjectModel> projectList) {
     return ReorderableBuilder(
       scrollController: _scrollController,
       onReorder: (entities) {
@@ -155,7 +165,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             if (!item.exist) return modifyProjectInfo(item);
             jRouter.pushNamed(RoutePath.projectDetail, parameters: {
               "key": item.project.primaryKey,
-            })?.then((_) => updateProjectList());
+            })?.then((_) => controller.refreshValue());
           },
           child: Card(
             elevation: 0,
@@ -190,7 +200,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       context,
       project: item.project,
     ).then((v) {
-      if (null != v) updateProjectList();
+      if (null != v) controller.refreshValue();
     });
   }
 
@@ -202,27 +212,19 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       confirm: "删除",
       onConfirmTap: () {
         dbManage.delete(item.project);
-        updateProjectList();
+        controller.refreshValue();
       },
     );
   }
 
-  // 更新现有项目列表
-  Future<List<ProjectModel>> updateProjectList() {
-    return projectManage.loadAll().then((v) {
-      setState(() => projectList = v);
-      return v;
-    });
-  }
-
   @override
   void onWindowFocus() {
-    updateProjectList();
+    controller.refreshValue();
   }
 
   @override
   void onWindowRestore() {
-    updateProjectList();
+    controller.refreshValue();
   }
 
   @override

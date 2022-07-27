@@ -37,7 +37,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
       future: Future.value(dbManage.loadAllEnvironments().toList()),
       builder: (_, snap) {
         if (snap.hasData) {
-          return buildSettingItem(
+          return buildItem(
             Expander(
               trailing: IconButton(
                 icon: const Icon(FluentIcons.add),
@@ -97,7 +97,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
 
   // 构建应用源码说明文档
   Widget buildAppSourceInfo() {
-    return buildSettingItem(
+    return buildItem(
       Button(
         style: ButtonStyle(
           padding: ButtonState.all(
