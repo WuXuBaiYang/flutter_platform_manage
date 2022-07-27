@@ -45,9 +45,7 @@ class _CacheFutureBuilderState<T> extends State<CacheFutureBuilder<T>> {
   void initState() {
     super.initState();
     // 监听值变化
-    controller.addListener(() {
-      setState(() => setState(() {}));
-    });
+    controller.addListener(() => setState(() {}));
   }
 
   @override
