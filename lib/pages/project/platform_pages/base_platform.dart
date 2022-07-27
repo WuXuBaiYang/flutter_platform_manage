@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -24,11 +25,7 @@ abstract class BasePlatformState<T extends StatefulWidget> extends State<T>
 
   // 构建平台参数设置项基础结构
   Widget buildItem(Widget child) {
-    return Card(
-      elevation: 0,
-      padding: const EdgeInsets.all(4),
-      child: child,
-    );
+    return CardItem(child: child);
   }
 
   @override

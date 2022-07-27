@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/pages/setting/project_settings.dart';
+import 'package:flutter_platform_manage/widgets/card_item.dart';
 
 /*
 * 设置页
@@ -60,10 +61,6 @@ abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
 
   // 构建设置项基础结构
   Widget buildItem(Widget child) {
-    return Card(
-      elevation: 0,
-      padding: const EdgeInsets.all(4),
-      child: child,
-    );
+    return CardItem(child: child);
   }
 }
