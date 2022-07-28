@@ -132,7 +132,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
               children: [
                 CommandBar(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  primaryItems: ProjectCommandMenu.getCommandList(context),
+                  primaryItems: ProjectCommandMenu.getCommandList(
+                    context,
+                    controller,
+                  ),
                 ),
                 CommandBar(
                   mainAxisAlignment: MainAxisAlignment.end,

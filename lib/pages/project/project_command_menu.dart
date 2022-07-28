@@ -1,5 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
+import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
 
 /*
 * 项目功能菜单
@@ -8,7 +11,11 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 */
 class ProjectCommandMenu {
   // 获取功能菜单列表
-  static List<CommandBarItem> getCommandList(BuildContext context) => [
+  static List<CommandBarItem> getCommandList(
+    BuildContext context,
+    CacheFutureBuilderController<ProjectModel> controller,
+  ) =>
+      [
         CommandBarButton(
           icon: const Icon(FluentIcons.access_logo),
           label: const Text("打包"),
@@ -20,7 +27,13 @@ class ProjectCommandMenu {
           icon: const Icon(FluentIcons.access_logo),
           label: const Text("修改名称"),
           onPressed: () {
-            Utils.showSnack(context, "开发中");
+            if (null == controller.value) return;
+            ProjectReNameDialog.show(
+              context,
+              projectInfo: controller.value!,
+            ).then((v) {
+              if (null != v) controller.refreshValue();
+            });
           },
         ),
         CommandBarButton(
