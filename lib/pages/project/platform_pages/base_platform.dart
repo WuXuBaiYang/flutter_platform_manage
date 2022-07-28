@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/widgets/card_item.dart';
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -17,7 +17,13 @@ abstract class BasePlatformState<T extends StatefulWidget> extends State<T>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return SingleChildScrollView(
+      child: Wrap(
+        spacing: 14,
+        runSpacing: 14,
+        children: loadSettingList,
+      ),
+    );
   }
 
   // 加载设置项集合
@@ -25,7 +31,12 @@ abstract class BasePlatformState<T extends StatefulWidget> extends State<T>
 
   // 构建平台参数设置项基础结构
   Widget buildItem(Widget child) {
-    return CardItem(child: child);
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: Common.windowMinimumSize.width,
+      ),
+      child: child,
+    );
   }
 
   @override

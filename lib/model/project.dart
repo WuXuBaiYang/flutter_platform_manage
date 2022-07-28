@@ -127,12 +127,15 @@ class ProjectModel {
     return true;
   }
 
+  // pubspec文件绝对路径
+  String get _pubspecFilePath => "${project.path}/${ProjectFilePath.pubspec}";
+
   // 执行项目信息变动
   Future<bool> commit() async {
     try {
       // 处理pubspec.yaml文件
       InfoHandle.fileWrite(
-        "${project.path}/${ProjectFilePath.pubspec}",
+        _pubspecFilePath,
         (source) {
           source = InfoHandle.sourceReplace(source, _nameReg, "name: $name");
           source = InfoHandle.sourceReplace(
@@ -150,6 +153,24 @@ class ProjectModel {
       return false;
     }
     return true;
+  }
+
+  // 修改pubspec中的项目名称
+  Future<bool> modifyProjectName(String name) {
+    return InfoHandle.fileWrite(
+      _pubspecFilePath,
+      (source) =>
+          source = InfoHandle.sourceReplace(source, _nameReg, "name: $name"),
+    );
+  }
+
+  // 修改pubspec中的应用版本号
+  Future<bool> modifyProjectVersion(String version) {
+    return InfoHandle.fileWrite(
+      _pubspecFilePath,
+      (source) => source =
+          InfoHandle.sourceReplace(source, _versionReg, "version: $version"),
+    );
   }
 }
 

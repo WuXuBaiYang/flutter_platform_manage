@@ -27,5 +27,14 @@ class PlatformAndroidPage extends StatefulWidget {
 */
 class _PlatformAndroidPageState extends BasePlatformState<PlatformAndroidPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> get loadSettingList => [
+        buildItem(Text("第一行")),
+        buildItem(Text("第二行")),
+        buildItem(Text("第三行")),
+        buildItem(Text("第四行")),
+        buildItem(Text("第五行")),
+        buildItem(Text("第六行")),
+        buildItem(Text("第七行")),
+        buildItem(Text("第八行")),
+      ];
 }
