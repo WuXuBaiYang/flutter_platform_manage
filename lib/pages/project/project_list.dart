@@ -143,7 +143,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       menuItems: [
         TappableListTile(
           leading: const Icon(FluentIcons.rename, size: 14),
-          title: const Text("修改名称"),
+          title: const Text("项目名称"),
           onTap: () {
             Navigator.pop(context);
             ProjectReNameDialog.show(

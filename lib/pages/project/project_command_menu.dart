@@ -44,13 +44,20 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("修改名称"),
+              label: const Text("项目名称"),
               onPressed: () => ProjectReNameDialog.show(
                 context,
                 projectModel: projectModel,
               ).then((v) {
                 if (null != v) controller.refreshValue();
               }),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text("应用名称"),
+              onPressed: () {
+                Utils.showSnack(context, "开发中");
+              },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
