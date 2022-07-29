@@ -128,40 +128,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             ),
           ),
           Expanded(
-            child: Column(
-              children: [
-                CommandBar(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  primaryItems: ProjectCommandMenu.getCommandList(
-                    context,
-                    controller,
-                  ),
-                ),
-                CommandBar(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  primaryItems: [
-                    CommandBarButton(
-                      icon: const Icon(FluentIcons.refresh),
-                      label: const Text("刷新"),
-                      onPressed: () {
-                        controller.refreshValue();
-                        Utils.showSnack(context, "项目信息已刷新");
-                      },
-                    ),
-                    CommandBarButton(
-                      icon: const Icon(FluentIcons.app_icon_default_edit),
-                      label: const Text("编辑"),
-                      onPressed: () => modifyProject(item),
-                    ),
-                    CommandBarButton(
-                      icon: Icon(FluentIcons.delete, color: Colors.red),
-                      label: Text("删除", style: TextStyle(color: Colors.red)),
-                      onPressed: () => deleteProject(item),
-                    ),
-                  ],
-                )
-              ],
-            ),
+            child: ProjectCommandMenu.getProjectCommands(
+                context, item, controller),
           ),
         ],
       ),
@@ -222,29 +190,6 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             );
           }),
         );
-      },
-    );
-  }
-
-  // 重新编辑项目信息
-  void modifyProject(ProjectModel item) {
-    ProjectImportDialog.show(
-      context,
-      project: item.project,
-    ).then((v) {
-      if (null != v) controller.refreshValue();
-    });
-  }
-
-  // 删除项目信息
-  void deleteProject(ProjectModel item) {
-    ImportantOptionDialog.show(
-      context,
-      message: "是否删除该项目 ${item.getShowTitle()}",
-      confirm: "删除",
-      onConfirmTap: () {
-        dbManage.delete(item.project);
-        Navigator.pop(context);
       },
     );
   }
