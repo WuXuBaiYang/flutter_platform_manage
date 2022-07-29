@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
@@ -7,14 +8,11 @@ import 'package:flutter_platform_manage/pages/project/platform_pages/base_platfo
 * @author JTech JH
 * @Time 2022-07-22 17:48:47
 */
-class PlatformAndroidPage extends StatefulWidget {
-  // 平台信息
-  final AndroidPlatform platformInfo;
-
+class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
   const PlatformAndroidPage({
     Key? key,
-    required this.platformInfo,
-  }) : super(key: key);
+    required AndroidPlatform platformInfo,
+  }) : super(key: key, platformInfo: platformInfo);
 
   @override
   State<StatefulWidget> createState() => _PlatformAndroidPageState();
@@ -25,16 +23,65 @@ class PlatformAndroidPage extends StatefulWidget {
 * @author JTech JH
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformAndroidPageState extends BasePlatformState<PlatformAndroidPage> {
+class _PlatformAndroidPageState
+    extends BasePlatformPageState<PlatformAndroidPage> {
   @override
   List<Widget> get loadSettingList => [
-        buildItem(Text("第一行")),
-        buildItem(Text("第二行")),
-        buildItem(Text("第三行")),
-        buildItem(Text("第四行")),
-        buildItem(Text("第五行")),
-        buildItem(Text("第六行")),
-        buildItem(Text("第七行")),
-        buildItem(Text("第八行")),
+        buildAppNameItem(),
+        buildPackageNameItem(),
       ];
+
+  // 构建应用名称编辑项
+  Widget buildAppNameItem() {
+    var info = widget.platformInfo;
+    return buildItem(
+      InfoLabel(
+        label: "应用名称（安装之后的名称）",
+        child: TextFormBox(
+          autofocus: true,
+          initialValue: info.label,
+          validator: (v) {
+            if (null == v || v.isEmpty) {
+              return "不能为空";
+            }
+            return null;
+          },
+          onSaved: (v) {
+            if (null == v || v.isEmpty) return;
+            info.label = v;
+          },
+        ),
+      ),
+    );
+  }
+
+  // 应用包名输入校验
+  final packageNameRegExp = RegExp(r"[A-Z,a-z,0-9,.]");
+
+  // 构建应用包名编辑项目
+  Widget buildPackageNameItem() {
+    var info = widget.platformInfo;
+    return buildItem(
+      InfoLabel(
+        label: "应用包名",
+        child: TextFormBox(
+          autofocus: true,
+          initialValue: info.package,
+          validator: (v) {
+            if (null == v || v.isEmpty) {
+              return "不能为空";
+            }
+            return null;
+          },
+          onSaved: (v) {
+            if (null == v || v.isEmpty) return;
+            info.package = v;
+          },
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(packageNameRegExp),
+          ],
+        ),
+      ),
+    );
+  }
 }

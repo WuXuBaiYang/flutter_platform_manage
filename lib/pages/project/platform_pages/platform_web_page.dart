@@ -1,19 +1,17 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
 /*
 * web平台分页
 * @author JTech JH
 * @Time 2022-07-22 17:48:47
 */
-class PlatformWebPage extends StatefulWidget {
-  // 平台信息
-  final WebPlatform platformInfo;
-
+class PlatformWebPage extends BasePlatformPage<WebPlatform> {
   const PlatformWebPage({
     Key? key,
-    required this.platformInfo,
-  }) : super(key: key);
+    required WebPlatform platformInfo,
+  }) : super(key: key, platformInfo: platformInfo);
 
   @override
   State<StatefulWidget> createState() => _PlatformWebPageState();
@@ -24,11 +22,7 @@ class PlatformWebPage extends StatefulWidget {
 * @author JTech JH
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformWebPageState extends State<PlatformWebPage> {
+class _PlatformWebPageState extends BasePlatformPageState<PlatformWebPage> {
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("开发中"),
-    );
-  }
+  List<Widget> get loadSettingList => [];
 }

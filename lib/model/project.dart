@@ -63,7 +63,7 @@ class ProjectModel {
   // 获取应用图标
   Map<PlatformType, String> getProjectIcon() {
     for (var it in platformList) {
-      var path = it.getProjectIcon(project.path);
+      var path = it.getProjectIcon();
       if (null != path) {
         return {it.type: path};
       }
@@ -88,7 +88,7 @@ class ProjectModel {
       for (var t in PlatformType.values) {
         var d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
-        platformMap[t] = t.create();
+        platformMap[t] = t.create(d.path);
       }
       platformList = platformMap.values.toList();
       _environment = null;
@@ -115,8 +115,8 @@ class ProjectModel {
       for (var t in PlatformType.values) {
         var d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
-        var p = t.create();
-        if (!await p.update(d.path)) return false;
+        var p = t.create(d.path);
+        if (!await p.update()) return false;
         platformMap[t] = p;
       }
       platformList = platformMap.values.toList();
@@ -145,8 +145,7 @@ class ProjectModel {
       );
       // 处理平台信息
       for (var p in platformList) {
-        var path = "${project.path}/${p.type.name}";
-        if (!await p.commit(path)) return false;
+        if (!await p.commit()) return false;
       }
       _environment = null;
     } catch (e) {
@@ -190,15 +189,16 @@ class AndroidPlatform extends BasePlatform {
   String iconPath;
 
   AndroidPlatform({
+    required String platformPath,
     this.label = "",
     this.package = "",
     this.iconPath = "",
-  }) : super(type: PlatformType.android);
+  }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
-  Map<String, String> loadIcons(String path, {String suffix = ".png"}) {
+  Map<String, String> loadIcons({String suffix = ".png"}) {
     if (iconPath.isEmpty) return {};
-    path = "$path/${type.name}/${ProjectFilePath.androidRes}";
+    var path = "$platformPath/${ProjectFilePath.androidRes}";
     var dir = iconPath.split("/").first;
     var name = iconPath.split("/").last + suffix;
     return {
@@ -223,11 +223,11 @@ class AndroidPlatform extends BasePlatform {
   final _iconPathRegRe = RegExp(r'android:icon=|"|@');
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     try {
       // 处理androidManifest.xml文件
       await InfoHandle.fileRead(
-        "$path/${ProjectFilePath.androidManifest}",
+        "$platformPath/${ProjectFilePath.androidManifest}",
         (source) {
           label = InfoHandle.stringMatch(source, _labelReg, _labelRegRe);
           package = InfoHandle.stringMatch(source, _packageReg, _packageRegRe);
@@ -242,11 +242,11 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
       if (!await InfoHandle.fileWrite(
-        "$path/${ProjectFilePath.androidManifest}",
+        "$platformPath/${ProjectFilePath.androidManifest}",
         (source) {
           source = InfoHandle.sourceReplace(
               source, _labelReg, 'android:label="$label"');
@@ -257,7 +257,7 @@ class AndroidPlatform extends BasePlatform {
       )) return false;
       // 处理app/build.gradle文件
       if (!await InfoHandle.fileWrite(
-        "$path/${ProjectFilePath.androidAppBuildGradle}",
+        "$platformPath/${ProjectFilePath.androidAppBuildGradle}",
         (source) {
           source = InfoHandle.sourceReplace(
               source, _packageReg, 'applicationId "$package"');
@@ -271,10 +271,10 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  String? getProjectIcon(String projectPath) {
+  String? getProjectIcon() {
     try {
-      var icons = loadIcons(projectPath);
-      return icons.values
+      return loadIcons()
+          .values
           .toList()
           .reversed
           .firstWhere((e) => File(e).existsSync());
@@ -291,20 +291,24 @@ class AndroidPlatform extends BasePlatform {
 * @Time 5/20/2022 11:27 AM
 */
 class IOSPlatform extends BasePlatform {
-  IOSPlatform() : super(type: PlatformType.ios);
+  IOSPlatform({
+    required String platformPath,
+  }) : super(type: PlatformType.linux, platformPath: platformPath);
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     return true;
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     return true;
   }
 
   @override
-  String? getProjectIcon(String projectPath) {}
+  String? getProjectIcon() {
+    return null;
+  }
 }
 
 /*
@@ -313,20 +317,24 @@ class IOSPlatform extends BasePlatform {
 * @Time 5/20/2022 11:28 AM
 */
 class WebPlatform extends BasePlatform {
-  WebPlatform() : super(type: PlatformType.web);
+  WebPlatform({
+    required String platformPath,
+  }) : super(type: PlatformType.linux, platformPath: platformPath);
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     return true;
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     return true;
   }
 
   @override
-  String? getProjectIcon(String projectPath) {}
+  String? getProjectIcon() {
+    return null;
+  }
 }
 
 /*
@@ -335,20 +343,24 @@ class WebPlatform extends BasePlatform {
 * @Time 5/20/2022 11:28 AM
 */
 class WindowsPlatform extends BasePlatform {
-  WindowsPlatform() : super(type: PlatformType.windows);
+  WindowsPlatform({
+    required String platformPath,
+  }) : super(type: PlatformType.linux, platformPath: platformPath);
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     return true;
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     return true;
   }
 
   @override
-  String? getProjectIcon(String projectPath) {}
+  String? getProjectIcon() {
+    return null;
+  }
 }
 
 /*
@@ -357,20 +369,24 @@ class WindowsPlatform extends BasePlatform {
 * @Time 5/20/2022 11:28 AM
 */
 class MacOSPlatform extends BasePlatform {
-  MacOSPlatform() : super(type: PlatformType.macos);
+  MacOSPlatform({
+    required String platformPath,
+  }) : super(type: PlatformType.linux, platformPath: platformPath);
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     return true;
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     return true;
   }
 
   @override
-  String? getProjectIcon(String projectPath) {}
+  String? getProjectIcon() {
+    return null;
+  }
 }
 
 /*
@@ -379,20 +395,24 @@ class MacOSPlatform extends BasePlatform {
 * @Time 5/20/2022 11:29 AM
 */
 class LinuxPlatform extends BasePlatform {
-  LinuxPlatform() : super(type: PlatformType.linux);
+  LinuxPlatform({
+    required String platformPath,
+  }) : super(type: PlatformType.linux, platformPath: platformPath);
 
   @override
-  Future<bool> update(String path) async {
+  Future<bool> update() async {
     return true;
   }
 
   @override
-  Future<bool> commit(String path) async {
+  Future<bool> commit() async {
     return true;
   }
 
   @override
-  String? getProjectIcon(String projectPath) {}
+  String? getProjectIcon() {
+    return null;
+  }
 }
 
 /*
@@ -404,16 +424,22 @@ abstract class BasePlatform {
   // 平台类型
   final PlatformType type;
 
-  BasePlatform({required this.type});
+  // 平台根路径
+  final String platformPath;
+
+  BasePlatform({
+    required this.type,
+    required this.platformPath,
+  });
 
   // 更新信息
-  Future<bool> update(String path);
+  Future<bool> update();
 
   // 提交信息变动
-  Future<bool> commit(String path);
+  Future<bool> commit();
 
   // 获取应用图标
-  String? getProjectIcon(String projectPath);
+  String? getProjectIcon();
 }
 
 /*
@@ -437,20 +463,20 @@ enum PlatformType {
 */
 extension PlatformTypeExtension on PlatformType {
   // 创建平台信息对象
-  BasePlatform create() {
+  BasePlatform create(String platformPath) {
     switch (this) {
       case PlatformType.android:
-        return AndroidPlatform();
+        return AndroidPlatform(platformPath: platformPath);
       case PlatformType.ios:
-        return IOSPlatform();
+        return IOSPlatform(platformPath: platformPath);
       case PlatformType.web:
-        return WebPlatform();
+        return WebPlatform(platformPath: platformPath);
       case PlatformType.windows:
-        return WindowsPlatform();
+        return WindowsPlatform(platformPath: platformPath);
       case PlatformType.macos:
-        return MacOSPlatform();
+        return MacOSPlatform(platformPath: platformPath);
       case PlatformType.linux:
-        return LinuxPlatform();
+        return LinuxPlatform(platformPath: platformPath);
     }
   }
 

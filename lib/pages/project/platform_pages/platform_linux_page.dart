@@ -1,19 +1,17 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
 /*
 * linux平台分页
 * @author JTech JH
 * @Time 2022-07-22 17:48:47
 */
-class PlatformLinuxPage extends StatefulWidget {
-  // 平台信息
-  final LinuxPlatform platformInfo;
-
+class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
   const PlatformLinuxPage({
     Key? key,
-    required this.platformInfo,
-  }) : super(key: key);
+    required LinuxPlatform platformInfo,
+  }) : super(key: key, platformInfo: platformInfo);
 
   @override
   State<StatefulWidget> createState() => _PlatformLinuxPageState();
@@ -24,11 +22,7 @@ class PlatformLinuxPage extends StatefulWidget {
 * @author JTech JH
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformLinuxPageState extends State<PlatformLinuxPage> {
+class _PlatformLinuxPageState extends BasePlatformPageState<PlatformLinuxPage> {
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("开发中"),
-    );
-  }
+  List<Widget> get loadSettingList => [];
 }

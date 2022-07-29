@@ -23,7 +23,6 @@ void main() async {
     await windowManager.setMinimumSize(Common.windowMinimumSize);
     await windowManager.setPreventClose(true);
     await windowManager.setSkipTaskbar(false);
-    await windowManager.center();
     await windowManager.show();
   });
   // 初始化业务
