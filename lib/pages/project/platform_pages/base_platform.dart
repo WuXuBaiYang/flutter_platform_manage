@@ -88,7 +88,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   }
 
   // 设置项宽度
-  final double _itemSize = Common.windowMinimumSize.width / 2 - 40;
+  final _itemSize = Common.windowMinimumSize.width / 2 - 40;
 
   // 构建平台参数设置项基础结构
   Widget buildItem(Widget child) {

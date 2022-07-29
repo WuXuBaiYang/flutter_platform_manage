@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 
 /*
 * android平台分页
@@ -29,6 +33,7 @@ class _PlatformAndroidPageState
   List<Widget> get loadSettingList => [
         buildAppNameItem(),
         buildPackageNameItem(),
+        buildAppLogoItem(),
       ];
 
   // 构建应用名称编辑项
@@ -80,6 +85,71 @@ class _PlatformAndroidPageState
           ],
         ),
       ),
+    );
+  }
+
+  // 构建应用图标编辑项目
+  Widget buildAppLogoItem() {
+    var info = widget.platformInfo;
+    var iconsMap = info.loadIcons();
+    return buildItem(
+      Column(
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Text("应用图标"),
+            trailing: Button(
+              child: const Text("批量替换"),
+              onPressed: () => _pickIconImageReplace(AndroidIconSize.values),
+            ),
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: iconsMap.length,
+            separatorBuilder: (_, i) => const SizedBox(height: 8),
+            itemBuilder: (_, i) {
+              var type = iconsMap.keys.elementAt(i),
+                  path = iconsMap.values.elementAt(i),
+                  size = type.showSize;
+              return Row(
+                children: [
+                  Text("${type.name}:"),
+                  const SizedBox(width: 14),
+                  Image.file(
+                    File(path),
+                    width: size,
+                    height: size,
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(FluentIcons.edit),
+                          onPressed: () => _pickIconImageReplace([type]),
+                        ),
+                        IconButton(
+                          icon: const Icon(FluentIcons.info),
+                          onPressed: () =>
+                              Utils.showSnackWithFilePath(context, path),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 选择附件
+  Future<String?> _pickIconImageReplace(List<AndroidIconSize> iconSizes) {
+    return FilePicker.platform.getDirectoryPath(
+      dialogTitle: "图片尺寸 192px 至 1024px 正方形最佳",
+      lockParentWindow: true,
     );
   }
 }

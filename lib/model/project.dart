@@ -196,17 +196,17 @@ class AndroidPlatform extends BasePlatform {
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
-  Map<String, String> loadIcons({String suffix = ".png"}) {
+  Map<AndroidIconSize, String> loadIcons({String suffix = ".png"}) {
     if (iconPath.isEmpty) return {};
     var path = "$platformPath/${ProjectFilePath.androidRes}";
     var dir = iconPath.split("/").first;
     var name = iconPath.split("/").last + suffix;
     return {
-      "mdpi": "$path/$dir-mdpi/$name",
-      "hdpi": "$path/$dir-hdpi/$name",
-      "xhdpi": "$path/$dir-xhdpi/$name",
-      "xxhdpi": "$path/$dir-xxhdpi/$name",
-      "xxxhdpi": "$path/$dir-xxxhdpi/$name",
+      AndroidIconSize.mdpi: "$path/$dir-mdpi/$name",
+      AndroidIconSize.hdpi: "$path/$dir-hdpi/$name",
+      AndroidIconSize.xhdpi: "$path/$dir-xhdpi/$name",
+      AndroidIconSize.xxhdpi: "$path/$dir-xxhdpi/$name",
+      AndroidIconSize.xxxhdpi: "$path/$dir-xxxhdpi/$name",
     };
   }
 
@@ -282,6 +282,37 @@ class AndroidPlatform extends BasePlatform {
       // 未找到
     }
     return null;
+  }
+}
+
+/*
+* android图标尺寸枚举
+* @author JTech JH
+* @Time 2022-07-29 17:59:54
+*/
+enum AndroidIconSize { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
+
+/*
+* android图标尺寸枚举扩展
+* @author JTech JH
+* @Time 2022-07-29 18:00:20
+*/
+extension AndroidIconSizeExtension on AndroidIconSize {
+  // 图标展示尺寸
+  double get showSize {
+    switch (this) {
+      case AndroidIconSize.mdpi:
+        return 30.0;
+      case AndroidIconSize.hdpi:
+        return 40.0;
+      case AndroidIconSize.xhdpi:
+        return 50.0;
+      case AndroidIconSize.xxhdpi:
+        return 60.0;
+      case AndroidIconSize.xxxhdpi:
+      default:
+        return 70.0;
+    }
   }
 }
 
