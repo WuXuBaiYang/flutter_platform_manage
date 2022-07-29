@@ -142,7 +142,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       key: Key(item.project.primaryKey),
       menuItems: [
         TappableListTile(
-          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
+          leading: const Icon(FluentIcons.rename, size: 14),
           title: const Text("修改名称"),
           onTap: () {
             Navigator.pop(context);
@@ -155,8 +155,8 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           },
         ),
         TappableListTile(
-          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
-          title: const Text("版本号管理"),
+          leading: const Icon(FluentIcons.version_control_push, size: 14),
+          title: const Text("版本号"),
           onTap: () {
             Navigator.pop(context);
             ProjectVersionDialog.show(
