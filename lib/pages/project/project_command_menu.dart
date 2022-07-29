@@ -34,8 +34,8 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("修改名称"),
-              onPressed: () => ProjectReNameDialog.show(
+              label: const Text("版本号"),
+              onPressed: () => ProjectVersionDialog.show(
                 context,
                 projectModel: projectModel,
               ).then((v) {
@@ -44,8 +44,8 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("版本号"),
-              onPressed: () =>ProjectVersionDialog.show(
+              label: const Text("修改名称"),
+              onPressed: () => ProjectReNameDialog.show(
                 context,
                 projectModel: projectModel,
               ).then((v) {

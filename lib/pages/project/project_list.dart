@@ -12,6 +12,8 @@ import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -139,6 +141,32 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     return MouseRightClickMenu(
       key: Key(item.project.primaryKey),
       menuItems: [
+        TappableListTile(
+          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
+          title: const Text("修改名称"),
+          onTap: () {
+            Navigator.pop(context);
+            ProjectReNameDialog.show(
+              context,
+              projectModel: item,
+            ).then((v) {
+              if (null != v) controller.refreshValue();
+            });
+          },
+        ),
+        TappableListTile(
+          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
+          title: const Text("版本号管理"),
+          onTap: () {
+            Navigator.pop(context);
+            ProjectVersionDialog.show(
+              context,
+              projectModel: item,
+            ).then((v) {
+              if (null != v) controller.refreshValue();
+            });
+          },
+        ),
         TappableListTile(
           leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
           title: const Text("编辑"),
