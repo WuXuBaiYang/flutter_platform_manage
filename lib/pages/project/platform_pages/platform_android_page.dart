@@ -38,7 +38,6 @@ class _PlatformAndroidPageState
       InfoLabel(
         label: "应用名称（安装之后的名称）",
         child: TextFormBox(
-          autofocus: true,
           initialValue: info.label,
           validator: (v) {
             if (null == v || v.isEmpty) {
@@ -65,7 +64,6 @@ class _PlatformAndroidPageState
       InfoLabel(
         label: "应用包名",
         child: TextFormBox(
-          autofocus: true,
           initialValue: info.package,
           validator: (v) {
             if (null == v || v.isEmpty) {
