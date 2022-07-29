@@ -21,6 +21,7 @@ void main() async {
     );
     await windowManager.setSize(Common.windowSize);
     await windowManager.setMinimumSize(Common.windowMinimumSize);
+    await windowManager.setMaximumSize(Common.windowMaximumSize);
     await windowManager.setPreventClose(true);
     await windowManager.setSkipTaskbar(false);
     await windowManager.show();

@@ -4,11 +4,14 @@ class Common {
   // 应用名
   static const String appName = "Flutter平台管理工具";
 
-  // 屏幕默认尺寸
+  // 窗口默认尺寸
   static const Size windowSize = Size(720, 540);
 
-  // 屏幕最小尺寸
+  // 窗口最小尺寸
   static const Size windowMinimumSize = Size(720, 540);
+
+  // 窗口最大尺寸
+  static const Size windowMaximumSize = Size(1080, 810);
 
   // 平台图标-android
   static const String platformAndroid = "assets/images/platform_android.svg";
@@ -33,6 +36,8 @@ class Common {
 
   // 异常盒子提示图
   static const String warningBoxImage = "assets/images/notice_warning.svg";
+
   // 项目源码地址
-  static const String appSourceUrl = "https://github.com/WuXuBaiYang/flutter_platform_manage";
+  static const String appSourceUrl =
+      "https://github.com/WuXuBaiYang/flutter_platform_manage";
 }

@@ -1,5 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 
@@ -60,6 +62,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
           key: _formKey,
           child: Wrap(
             spacing: 14,
+            runSpacing: 14,
             children: settingList,
           ),
         ),
@@ -84,8 +87,14 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
     });
   }
 
+  // 设置项宽度
+  final double _itemSize = Common.windowMinimumSize.width / 2 - 40;
+
   // 构建平台参数设置项基础结构
   Widget buildItem(Widget child) {
-    return child;
+    return SizedBox(
+      width: _itemSize,
+      child: child,
+    );
   }
 }
