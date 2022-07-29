@@ -6,6 +6,7 @@ import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 
 /*
 * 项目功能菜单
@@ -44,9 +45,12 @@ class ProjectCommandMenu {
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text("版本号"),
-              onPressed: () {
-                Utils.showSnack(context, "开发中");
-              },
+              onPressed: () =>ProjectVersionDialog.show(
+                context,
+                projectModel: projectModel,
+              ).then((v) {
+                if (null != v) controller.refreshValue();
+              }),
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),

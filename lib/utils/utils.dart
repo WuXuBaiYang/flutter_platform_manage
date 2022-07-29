@@ -2,6 +2,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/services.dart';
 
 /*
 * 通用工具方法
@@ -33,6 +34,32 @@ class Utils {
         extended: true,
       ),
       duration: const Duration(milliseconds: 2500),
+    );
+  }
+
+  // 展示文件路径以及复制按钮
+  static OverlayEntry showSnackWithFilePath(
+    BuildContext context,
+    String filePath,
+  ) {
+    filePath = filePath.replaceAll('/', "\\");
+    var hasClip = false;
+    return Utils.showSnack(
+      context,
+      "文件路径：\n$filePath",
+      action: StatefulBuilder(
+        builder: (_, setState) {
+          return TextButton(
+            onPressed: hasClip
+                ? null
+                : () => setState(() {
+                      Clipboard.setData(ClipboardData(text: filePath));
+                      hasClip = true;
+                    }),
+            child: Text(hasClip ? "已复制到剪切板" : "复制"),
+          );
+        },
+      ),
     );
   }
 

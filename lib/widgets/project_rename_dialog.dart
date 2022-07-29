@@ -57,7 +57,11 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           const Text("修改 pubspec.yaml 文件中的项目名称"),
           IconButton(
             icon: const Icon(FluentIcons.info),
-            onPressed: () => showFilePathSnack(),
+            onPressed: () {
+              var filePath =
+                  "${widget.projectModel.project.path}/${ProjectFilePath.pubspec}";
+              Utils.showSnackWithFilePath(context, filePath);
+            },
           ),
         ],
       ),
@@ -80,7 +84,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
               ),
               onChanged: (v) => setState(() {}),
               validator: (v) {
-                if (null == v || v.isEmpty) return "项目名称不能为空";
+                if (null == v || v.isEmpty) return "不能为空";
                 return null;
               },
               onSaved: (v) {
@@ -111,29 +115,6 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           },
         ),
       ],
-    );
-  }
-
-  // 展示文件路径提示
-  void showFilePathSnack() {
-    var filePath = widget.projectModel.project.path + ProjectFilePath.pubspec;
-    var hasClip = false;
-    Utils.showSnack(
-      context,
-      "文件路径：\n$filePath",
-      action: StatefulBuilder(
-        builder: (_, setState) {
-          return TextButton(
-            onPressed: hasClip
-                ? null
-                : () => setState(() {
-                      Clipboard.setData(ClipboardData(text: filePath));
-                      hasClip = true;
-                    }),
-            child: Text(hasClip ? "已复制到剪切板" : "复制"),
-          );
-        },
-      ),
     );
   }
 }
