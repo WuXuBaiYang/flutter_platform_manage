@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
+import 'package:flutter_platform_manage/widgets/notice_box.dart';
 
 /*
 * 项目图标组件
@@ -34,10 +36,9 @@ class ProjectLogo extends StatelessWidget {
     var iconMap = projectInfo.getProjectIcon();
     if (iconMap.isEmpty) return FlutterLogo(size: iconSize);
     var icon = iconMap.entries.first;
-    return Image.file(
+    return LogoFileImage(
       File(icon.value),
-      width: iconSize,
-      height: iconSize,
+      size: iconSize,
     );
   }
 }

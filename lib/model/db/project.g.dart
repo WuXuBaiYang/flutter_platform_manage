@@ -59,7 +59,7 @@ class Project extends _Project with RealmEntity, RealmObject {
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(Project._);
-    return const SchemaObject(Project, [
+    return const SchemaObject(Project, 'Project', [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),

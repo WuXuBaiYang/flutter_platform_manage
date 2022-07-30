@@ -57,7 +57,7 @@ class Environment extends _Environment with RealmEntity, RealmObject {
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(Environment._);
-    return const SchemaObject(Environment, [
+    return const SchemaObject(Environment, 'Environment', [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('flutter', RealmPropertyType.string),

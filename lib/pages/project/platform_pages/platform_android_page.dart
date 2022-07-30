@@ -1,11 +1,15 @@
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_platform_manage/manager/event_manage.dart';
+import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
 
 /*
 * android平台分页
@@ -97,10 +101,10 @@ class _PlatformAndroidPageState
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Text("应用图标"),
+            leading: const Text("应用图标（立即生效）"),
             trailing: Button(
               child: const Text("批量替换"),
-              onPressed: () => _pickIconImageReplace(AndroidIconSize.values),
+              onPressed: () => _pickLogoAndReplace(AndroidIconSize.values),
             ),
           ),
           ListView.separated(
@@ -109,24 +113,32 @@ class _PlatformAndroidPageState
             separatorBuilder: (_, i) => const SizedBox(height: 8),
             itemBuilder: (_, i) {
               var type = iconsMap.keys.elementAt(i),
-                  path = iconsMap.values.elementAt(i),
-                  size = type.showSize;
+                  path = iconsMap[type] ?? "",
+                  sizePx = type.sizePx.toInt();
               return Row(
                 children: [
-                  Text("${type.name}:"),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: LogoFileImage(
+                        File(path),
+                        size: type.showSize,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 14),
-                  Image.file(
-                    File(path),
-                    width: size,
-                    height: size,
+                  Expanded(
+                    flex: 2,
+                    child: Text("${type.name}(${sizePx}x$sizePx)"),
                   ),
                   Expanded(
+                    flex: 2,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
                           icon: const Icon(FluentIcons.edit),
-                          onPressed: () => _pickIconImageReplace([type]),
+                          onPressed: () => _pickLogoAndReplace([type]),
                         ),
                         IconButton(
                           icon: const Icon(FluentIcons.info),
@@ -146,10 +158,42 @@ class _PlatformAndroidPageState
   }
 
   // 选择附件
-  Future<String?> _pickIconImageReplace(List<AndroidIconSize> iconSizes) {
-    return FilePicker.platform.getDirectoryPath(
-      dialogTitle: "图片尺寸 192px 至 1024px 正方形最佳",
+  Future<void> _pickLogoAndReplace(
+    List<AndroidIconSize> iconSizes, {
+    String suffix = ".png",
+  }) async {
+    var result = await FilePicker.platform.pickFiles(
+      dialogTitle: "选择 .png 图片，尺寸 192px 至 1024px 正方形最佳",
+      allowCompression: false,
       lockParentWindow: true,
+      type: FileType.image,
     );
+    if (null == result || result.count <= 0) return;
+    var path = widget.platformInfo.platformPath;
+    final rawImage = await File(result.paths.first ?? "").readAsBytes();
+    for (var it in iconSizes) {
+      var f = File("$path/${it.getAbsolutePath(
+        widget.platformInfo.iconPath,
+        suffix: suffix,
+      )}");
+      var imageSize = it.sizePx.toInt();
+      var bytes = await _resizeImage(
+        rawImage,
+        height: imageSize,
+        width: imageSize,
+      );
+      if (null == bytes) continue;
+      f = await f.writeAsBytes(bytes.buffer.asInt8List());
+      eventManage.fire(ProjectLogoChangeEvent(f.path));
+    }
   }
+}
+
+// 修改图片尺寸并返回
+Future<ByteData?> _resizeImage(Uint8List rawImage,
+    {int? width, int? height}) async {
+  final codec = await ui.instantiateImageCodec(rawImage,
+      targetWidth: width, targetHeight: height);
+  final resizedImage = (await codec.getNextFrame()).image;
+  return resizedImage.toByteData(format: ui.ImageByteFormat.png);
 }

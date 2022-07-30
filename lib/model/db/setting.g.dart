@@ -29,7 +29,7 @@ class Setting extends _Setting with RealmEntity, RealmObject {
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(Setting._);
-    return const SchemaObject(Setting, [
+    return const SchemaObject(Setting, 'Setting', [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
     ]);
   }

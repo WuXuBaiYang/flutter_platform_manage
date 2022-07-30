@@ -198,16 +198,10 @@ class AndroidPlatform extends BasePlatform {
   // 获取图标文件路径集合
   Map<AndroidIconSize, String> loadIcons({String suffix = ".png"}) {
     if (iconPath.isEmpty) return {};
-    var path = "$platformPath/${ProjectFilePath.androidRes}";
-    var dir = iconPath.split("/").first;
-    var name = iconPath.split("/").last + suffix;
-    return {
-      AndroidIconSize.mdpi: "$path/$dir-mdpi/$name",
-      AndroidIconSize.hdpi: "$path/$dir-hdpi/$name",
-      AndroidIconSize.xhdpi: "$path/$dir-xhdpi/$name",
-      AndroidIconSize.xxhdpi: "$path/$dir-xxhdpi/$name",
-      AndroidIconSize.xxxhdpi: "$path/$dir-xxxhdpi/$name",
-    };
+    return Map.fromEntries(AndroidIconSize.values.map((e) {
+      var path = e.getAbsolutePath(iconPath, suffix: suffix);
+      return MapEntry(e, "$platformPath/$path");
+    }));
   }
 
   // 应用名正则
@@ -313,6 +307,29 @@ extension AndroidIconSizeExtension on AndroidIconSize {
       default:
         return 70.0;
     }
+  }
+
+  // 获取真实图片尺寸
+  double get sizePx {
+    switch (this) {
+      case AndroidIconSize.mdpi:
+        return 48;
+      case AndroidIconSize.hdpi:
+        return 72;
+      case AndroidIconSize.xhdpi:
+        return 96;
+      case AndroidIconSize.xxhdpi:
+        return 144;
+      case AndroidIconSize.xxxhdpi:
+      default:
+        return 192;
+    }
+  }
+
+  // 拼装附件相对路径
+  String getAbsolutePath(String iconPath, {String suffix = ".png"}) {
+    var t = iconPath.split("/"), dir = t.first, fileName = t.last + suffix;
+    return "${ProjectFilePath.androidRes}/$dir-$name/$fileName";
   }
 }
 

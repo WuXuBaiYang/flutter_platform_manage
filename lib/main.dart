@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/cache_manage.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/manager/event_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/pages/home/home_page.dart';
 import 'package:window_manager/window_manager.dart';
@@ -29,6 +30,7 @@ void main() async {
   // 初始化业务
   await dbManage.init();
   await jCache.init();
+  await eventManage.init();
   // 启动应用
   runApp(const MyApp());
 }

@@ -26,13 +26,15 @@ class DBManage extends BaseManage {
 
   @override
   Future<void> init() async {
-    var config = Configuration([
-      Project.schema,
-      Environment.schema,
-      Setting.schema,
-    ]);
-    config.path = "jtech.db";
-    config.schemaVersion = 0;
+    var config = Configuration.local(
+      [
+        Project.schema,
+        Environment.schema,
+        Setting.schema,
+      ],
+      schemaVersion: 0,
+      path: "jtech.db",
+    );
     realm = Realm(config);
   }
 
