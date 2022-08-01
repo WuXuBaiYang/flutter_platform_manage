@@ -17,6 +17,7 @@ import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -117,13 +118,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
               ],
             ),
           ),
-          const Divider(
+          const ThicknessDivider(
             size: 70,
             direction: Axis.vertical,
-            style: DividerThemeData(
-              thickness: 0.5,
-              verticalMargin: EdgeInsets.all(8),
-            ),
           ),
           Expanded(
             child: ProjectCommandMenu.getProjectCommands(

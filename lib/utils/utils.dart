@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart' as crypto;
 import 'dart:convert';
 import 'dart:math';
@@ -106,5 +108,14 @@ class Utils {
       }
     }
     return input.toUpperCase();
+  }
+
+  // 修改图片尺寸并返回
+  static Future<ByteData?> resizeImage(Uint8List rawImage,
+      {int? width, int? height}) async {
+    final codec = await ui.instantiateImageCodec(rawImage,
+        targetWidth: width, targetHeight: height);
+    final resizedImage = (await codec.getNextFrame()).image;
+    return resizedImage.toByteData(format: ui.ImageByteFormat.png);
   }
 }

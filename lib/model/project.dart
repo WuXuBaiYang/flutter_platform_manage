@@ -321,7 +321,7 @@ class AndroidPlatform extends BasePlatform {
         label,
         package,
         iconPath,
-        permissions,
+        Object.hashAll(permissions),
       );
 }
 
