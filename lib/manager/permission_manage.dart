@@ -39,6 +39,7 @@ class PermissionManage extends BaseManage {
   Future<List<PermissionItemModel>> findAllAndroidPermissions(
     List<String> values,
   ) async {
+    if (values.isEmpty) return [];
     List<PermissionItemModel> t = [];
     for (var v in values) {
       var it = _androidPermissionModel.itemsMap[v];

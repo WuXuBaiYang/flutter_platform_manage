@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/manager/permission_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/utils/info_handle.dart';
 
 import 'db/environment.dart';
@@ -78,7 +80,7 @@ class ProjectModel {
       // 处理pubspec.yaml文件
       await InfoHandle.fileRead(
         "${project.path}/${ProjectFilePath.pubspec}",
-        (source) {
+        (source) async {
           name = InfoHandle.stringMatch(source, _nameReg, _nameRegRe);
           version = InfoHandle.stringMatch(source, _versionReg, _versionRegRe);
         },
@@ -105,7 +107,7 @@ class ProjectModel {
       // 处理pubspec.yaml文件
       await InfoHandle.fileRead(
         "${project.path}/${ProjectFilePath.pubspec}",
-        (source) {
+        (source) async {
           name = InfoHandle.stringMatch(source, _nameReg, _nameRegRe);
           version = InfoHandle.stringMatch(source, _versionReg, _versionRegRe);
         },
@@ -188,11 +190,15 @@ class AndroidPlatform extends BasePlatform {
   // 图标对象
   String iconPath;
 
+  // 权限集合
+  List<PermissionItemModel> permissions;
+
   AndroidPlatform({
     required String platformPath,
     this.label = "",
     this.package = "",
     this.iconPath = "",
+    this.permissions = const [],
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
@@ -209,12 +215,16 @@ class AndroidPlatform extends BasePlatform {
   final _labelRegRe = RegExp(r'android:label=|"');
 
   // 包名正则
-  final _packageReg = RegExp(r'(package=|applicationId )".+"');
-  final _packageRegRe = RegExp(r'package=|applicationId |"');
+  final _packageReg = RegExp(r'(package=|applicationId\s*)".+"');
+  final _packageRegRe = RegExp(r'package=|applicationId\s*|"');
 
   // 图标路径正则
   final _iconPathReg = RegExp(r'android:icon="@.+"');
   final _iconPathRegRe = RegExp(r'android:icon=|"|@');
+
+  // 权限集合正则
+  final _permissionReg = RegExp(r'<uses-permission.*/>');
+  final _permissionRegRe = RegExp(r'<uses-permission|android:name=|"|/>|\s*');
 
   @override
   Future<bool> update() async {
@@ -222,11 +232,18 @@ class AndroidPlatform extends BasePlatform {
       // 处理androidManifest.xml文件
       await InfoHandle.fileRead(
         "$platformPath/${ProjectFilePath.androidManifest}",
-        (source) {
+        (source) async {
           label = InfoHandle.stringMatch(source, _labelReg, _labelRegRe);
           package = InfoHandle.stringMatch(source, _packageReg, _packageRegRe);
           iconPath =
               InfoHandle.stringMatch(source, _iconPathReg, _iconPathRegRe);
+          permissions = await permissionManage.findAllAndroidPermissions(
+            InfoHandle.stringListMatch(
+              source,
+              _permissionReg,
+              _permissionRegRe,
+            ),
+          );
         },
       );
     } catch (e) {
@@ -246,6 +263,16 @@ class AndroidPlatform extends BasePlatform {
               source, _labelReg, 'android:label="$label"');
           source = InfoHandle.sourceReplace(
               source, _packageReg, 'package="$package"');
+          // 权限字段替换，
+          // (1 删除全部已有权限
+          source = InfoHandle.sourceReplace(source, _permissionReg, '');
+          // (2 将当前用户修改过的权限集合重新写入到指定位置
+          var v = permissions
+              .map((e) => '<uses-permission android:name="${e.value}" />')
+              .join('\n');
+          const anchor = "<application";
+          source =
+              InfoHandle.sourceReplace(source, RegExp(anchor), "$v\n$anchor");
           return source;
         },
       )) return false;

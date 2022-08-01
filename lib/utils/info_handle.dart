@@ -15,7 +15,7 @@ class InfoHandle {
   // 文件读取方法
   static Future<void> fileRead(
     String path,
-    void Function(String source) onFileRead,
+    Future<void> Function(String source) onFileRead,
   ) async {
     var f = File(path);
     if (!f.existsSync()) return;
@@ -24,8 +24,10 @@ class InfoHandle {
   }
 
   // 文件读取方法
-  static Future<bool> fileWrite(String path,
-      String Function(String source) onFileWrite,) async {
+  static Future<bool> fileWrite(
+    String path,
+    String Function(String source) onFileWrite,
+  ) async {
     var f = File(path);
     if (!f.existsSync()) return false;
     var source = f.readAsStringSync();
@@ -38,6 +40,15 @@ class InfoHandle {
   static String stringMatch(String source, RegExp reg, RegExp replace) {
     var value = reg.stringMatch(source);
     return value?.replaceAll(replace, "") ?? "";
+  }
+
+  // 字符串集合参数匹配
+  static List<String> stringListMatch(
+      String source, RegExp reg, RegExp replace) {
+    return reg
+        .allMatches(source)
+        .map((e) => e.group(0)?.replaceAll(replace, "") ?? "")
+        .toList();
   }
 
   // 源文件替换

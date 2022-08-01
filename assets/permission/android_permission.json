@@ -572,6 +572,11 @@
       "describe": "允许程序写入外部存储，如SD卡上写文件"
     },
     {
+      "name": "读取外部存储",
+      "value": "android.permission.READ_EXTERNAL_STORAGE",
+      "describe": "允许程序读取外部存储，如SD卡上读取文件"
+    },
+    {
       "name": "写入Google地图数据",
       "value": "android.permission.WRITE_GSERVICES",
       "describe": "允许程序写入Google Map服务数据"
