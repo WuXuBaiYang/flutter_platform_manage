@@ -72,14 +72,14 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
       actions: [
         Button(
           child: const Text("取消"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
           onPressed: null != _env
               ? () {
                   try {
                     dbManage.addEnvironment(_env!);
-                    Navigator.pop(context, _env);
+                    Navigator.maybePop(context, _env);
                   } catch (e) {
                     setState(() => _errText = "环境添加失败");
                   }

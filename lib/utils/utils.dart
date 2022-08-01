@@ -73,7 +73,7 @@ class Utils {
   }) async {
     var navigator = Navigator.of(context);
     try {
-      if (null != _loadingDialog) navigator.pop();
+      if (null != _loadingDialog) navigator.maybePop();
       _loadingDialog = showDialog<void>(
         context: context,
         builder: (_) => const Center(
@@ -83,10 +83,10 @@ class Utils {
         ),
       )..whenComplete(() => _loadingDialog = null);
       var result = await loadFuture;
-      if (null != _loadingDialog) navigator.pop();
+      if (null != _loadingDialog) navigator.maybePop();
       return result;
     } catch (e) {
-      if (null != _loadingDialog) navigator.pop();
+      if (null != _loadingDialog) navigator.maybePop();
       rethrow;
     }
   }

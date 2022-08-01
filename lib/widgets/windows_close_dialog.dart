@@ -37,12 +37,12 @@ class _WindowsCloseDialogState extends State<WindowsCloseDialog> {
       actions: [
         Button(
           child: const Text("取消"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
           child: const Text("关闭"),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
             windowManager.destroy();
           },
         ),

@@ -58,4 +58,16 @@ class PermissionItemModel {
       obj["value"],
     );
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final PermissionItemModel typedOther = other;
+    return name == typedOther.name &&
+        describe == typedOther.describe &&
+        value == typedOther.value;
+  }
+
+  @override
+  int get hashCode => Object.hash(name, describe, value);
 }

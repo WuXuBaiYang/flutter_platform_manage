@@ -47,7 +47,7 @@ class AppPage extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8),
                   child: IconButton(
                     icon: const Icon(FluentIcons.back),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.maybePop(context),
                   ),
                 ),
               ),

@@ -54,6 +54,7 @@ class _PlatformAndroidPageState
             }
             return null;
           },
+          onChanged: (v) => info.label = v,
           onSaved: (v) {
             if (null == v || v.isEmpty) return;
             info.label = v;
@@ -80,6 +81,7 @@ class _PlatformAndroidPageState
             }
             return null;
           },
+          onChanged: (v) => info.package = v,
           onSaved: (v) {
             if (null == v || v.isEmpty) return;
             info.package = v;

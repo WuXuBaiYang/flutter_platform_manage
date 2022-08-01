@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 
 /*
 * 平台页面基类
@@ -28,11 +29,20 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   // 表单key
   final _formKey = GlobalKey<FormState>();
 
+  // 记录最初的hashCode
+  late int _hashCode;
+
+  @override
+  void initState() {
+    super.initState();
+    // 基础默认hashCode
+    _hashCode = widget.platformInfo.hashCode;
+  }
+
   @override
   Widget build(BuildContext context) {
     var settingList = loadSettingList;
     if (settingList.isEmpty) return const Center(child: Text("平台开发中"));
-
     return ScaffoldPage(
       padding: EdgeInsets.zero,
       header: PageHeader(
@@ -62,6 +72,17 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
           child: Form(
             autovalidateMode: AutovalidateMode.always,
             key: _formKey,
+            onWillPop: () async {
+              if (_hashCode != widget.platformInfo.hashCode) {
+                ImportantOptionDialog.show(
+                  context,
+                  message: "当前页面有未保存的内容，继续退出将丢失已编辑的信息",
+                  onConfirmTap: () => Navigator.pop(context),
+                );
+                return false;
+              }
+              return true;
+            },
             child: Wrap(
               spacing: 14,
               runSpacing: 14,

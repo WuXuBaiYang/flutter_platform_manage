@@ -145,7 +145,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           leading: const Icon(FluentIcons.rename, size: 14),
           title: const Text("项目名称"),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
             ProjectReNameDialog.show(
               context,
               projectModel: item,
@@ -158,7 +158,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           leading: const Icon(FluentIcons.version_control_push, size: 14),
           title: const Text("版本号"),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
             ProjectVersionDialog.show(
               context,
               projectModel: item,
@@ -171,7 +171,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
           title: const Text("编辑"),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
             modifyProjectInfo(item);
           },
         ),
@@ -182,7 +182,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             style: TextStyle(color: Colors.red),
           ),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
             deleteProjectInfo(item);
           },
         ),

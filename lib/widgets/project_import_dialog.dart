@@ -108,7 +108,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         ),
         Button(
           child: const Text("取消"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
           child: Text(_currentStep < stepsMap.length - 1 ? "下一步" : "导入"),
@@ -326,7 +326,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   void submit() {
     try {
       projectManage.add(project);
-      Navigator.pop(context, _projectInfo);
+      Navigator.maybePop(context, _projectInfo);
     } catch (e) {
       setState(() => _errText = "项目导入失败");
     }

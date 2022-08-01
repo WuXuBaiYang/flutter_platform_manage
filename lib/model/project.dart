@@ -304,6 +304,25 @@ class AndroidPlatform extends BasePlatform {
     }
     return null;
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final AndroidPlatform typedOther = other;
+    return label == typedOther.label &&
+        package == typedOther.package &&
+        iconPath == typedOther.iconPath &&
+        (permissions.length == typedOther.permissions.length &&
+            !permissions.any((e) => !typedOther.permissions.contains(e)));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        label,
+        package,
+        iconPath,
+        permissions,
+      );
 }
 
 /*
@@ -368,7 +387,7 @@ extension AndroidIconSizeExtension on AndroidIconSize {
 class IOSPlatform extends BasePlatform {
   IOSPlatform({
     required String platformPath,
-  }) : super(type: PlatformType.linux, platformPath: platformPath);
+  }) : super(type: PlatformType.ios, platformPath: platformPath);
 
   @override
   Future<bool> update() async {
@@ -394,7 +413,7 @@ class IOSPlatform extends BasePlatform {
 class WebPlatform extends BasePlatform {
   WebPlatform({
     required String platformPath,
-  }) : super(type: PlatformType.linux, platformPath: platformPath);
+  }) : super(type: PlatformType.web, platformPath: platformPath);
 
   @override
   Future<bool> update() async {
@@ -420,7 +439,7 @@ class WebPlatform extends BasePlatform {
 class WindowsPlatform extends BasePlatform {
   WindowsPlatform({
     required String platformPath,
-  }) : super(type: PlatformType.linux, platformPath: platformPath);
+  }) : super(type: PlatformType.windows, platformPath: platformPath);
 
   @override
   Future<bool> update() async {
@@ -446,7 +465,7 @@ class WindowsPlatform extends BasePlatform {
 class MacOSPlatform extends BasePlatform {
   MacOSPlatform({
     required String platformPath,
-  }) : super(type: PlatformType.linux, platformPath: platformPath);
+  }) : super(type: PlatformType.macos, platformPath: platformPath);
 
   @override
   Future<bool> update() async {

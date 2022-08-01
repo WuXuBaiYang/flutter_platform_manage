@@ -74,7 +74,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                               actions: [
                                 TextButton(
                                   child: const Text("确定"),
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () => Navigator.maybePop(context),
                                 ),
                               ],
                             );

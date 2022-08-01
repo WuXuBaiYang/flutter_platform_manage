@@ -102,7 +102,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
       actions: [
         Button(
           child: const Text("取消"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
           child: const Text("修改"),
@@ -110,7 +110,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
             var state = formKey.currentState;
             if (null != state && state.validate()) {
               state.save();
-              Navigator.pop(context, widget.projectModel);
+              Navigator.maybePop(context, widget.projectModel);
             }
           },
         ),

@@ -78,7 +78,7 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
       actions: [
         Button(
           child: const Text("取消"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
           style: ButtonStyle(

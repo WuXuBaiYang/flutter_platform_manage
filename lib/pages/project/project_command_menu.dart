@@ -105,7 +105,7 @@ class ProjectCommandMenu {
                 confirm: "删除",
                 onConfirmTap: () {
                   dbManage.delete(projectModel.project);
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                 },
               ),
             ),
