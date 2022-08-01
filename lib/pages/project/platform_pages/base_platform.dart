@@ -1,8 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 
 /*
@@ -40,7 +38,9 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
       header: PageHeader(
         padding: 0,
         title: Text(
-          toBeginningOfSentenceCase("${widget.platformInfo.type.name}平台") ?? "",
+          Utils.toBeginningOfSentenceCase(
+            "${widget.platformInfo.type.name}平台",
+          ),
         ),
         commandBar: CommandBarCard(
           elevation: 0,
@@ -57,13 +57,16 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
         ),
       ),
       content: SingleChildScrollView(
-        child: Form(
-          autovalidateMode: AutovalidateMode.always,
-          key: _formKey,
-          child: Wrap(
-            spacing: 14,
-            runSpacing: 14,
-            children: settingList,
+        child: SizedBox(
+          width: double.infinity,
+          child: Form(
+            autovalidateMode: AutovalidateMode.always,
+            key: _formKey,
+            child: Wrap(
+              spacing: 14,
+              runSpacing: 14,
+              children: settingList,
+            ),
           ),
         ),
       ),

@@ -37,6 +37,10 @@ class Common {
   // 异常盒子提示图
   static const String warningBoxImage = "assets/images/notice_warning.svg";
 
+  // android权限json
+  static const String androidPermissionAssets =
+      "assets/permission/android_permission.json";
+
   // 项目源码地址
   static const String appSourceUrl =
       "https://github.com/WuXuBaiYang/flutter_platform_manage";

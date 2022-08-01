@@ -90,4 +90,21 @@ class Utils {
       rethrow;
     }
   }
+
+  // 英文首字母大写
+  static String toBeginningOfSentenceCase(String input, [String? locale]) {
+    if (input.isEmpty) return input;
+    return '${_upperCaseLetter(input[0], locale)}${input.substring(1)}';
+  }
+
+  // 大写
+  static String _upperCaseLetter(String input, String? locale) {
+    // Hard-code the important edge case of i->İ
+    if (locale != null) {
+      if (input == 'i' && locale.startsWith('tr') || locale.startsWith('az')) {
+        return '\u0130';
+      }
+    }
+    return input.toUpperCase();
+  }
 }
