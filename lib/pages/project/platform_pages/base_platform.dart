@@ -103,6 +103,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
     if (null != state && state.validate()) {
       state.save();
       return widget.platformInfo.commit().whenComplete(() {
+        _hashCode = widget.platformInfo.hashCode;
         Utils.showSnack(context, "保存成功");
       });
     }
