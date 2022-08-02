@@ -12,10 +12,18 @@ class ThicknessDivider extends StatelessWidget {
   // 分割线方向
   final Axis direction;
 
+  // 垂直外间距
+  final EdgeInsetsGeometry? verticalMargin;
+
+  // 水平外间距
+  final EdgeInsetsGeometry? horizontalMargin;
+
   const ThicknessDivider({
     Key? key,
     this.size,
     this.direction = Axis.horizontal,
+    this.verticalMargin = const EdgeInsets.all(8),
+    this.horizontalMargin,
   }) : super(key: key);
 
   @override
@@ -23,9 +31,10 @@ class ThicknessDivider extends StatelessWidget {
     return Divider(
       size: size,
       direction: direction,
-      style: const DividerThemeData(
+      style: DividerThemeData(
         thickness: 0.3,
-        verticalMargin: EdgeInsets.all(8),
+        verticalMargin: verticalMargin,
+        horizontalMargin: horizontalMargin,
       ),
     );
   }

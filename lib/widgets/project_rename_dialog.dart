@@ -72,29 +72,33 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: InfoLabel(
             label: "项目名称 '${reNameRegExp.pattern}'",
-            child: TextFormBox(
-              controller: controller,
-              autofocus: true,
-              suffix: Visibility(
-                visible: controller.text.isNotEmpty,
-                child: IconButton(
-                  icon: const Icon(FluentIcons.cancel),
-                  onPressed: () => setState(() => controller.clear()),
-                ),
-              ),
-              onChanged: (v) => setState(() {}),
-              validator: (v) {
-                if (null == v || v.isEmpty) return "不能为空";
-                return null;
+            child: StatefulBuilder(
+              builder: (_, state) {
+                return TextFormBox(
+                  controller: controller,
+                  autofocus: true,
+                  suffix: Visibility(
+                    visible: controller.text.isNotEmpty,
+                    child: IconButton(
+                      icon: const Icon(FluentIcons.cancel),
+                      onPressed: () => state(() => controller.clear()),
+                    ),
+                  ),
+                  onChanged: (v) => state(() {}),
+                  validator: (v) {
+                    if (null == v || v.isEmpty) return "不能为空";
+                    return null;
+                  },
+                  onSaved: (v) {
+                    if (null != v && widget.projectModel.name != v) {
+                      widget.projectModel.modifyProjectName(v);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(reNameRegExp),
+                  ],
+                );
               },
-              onSaved: (v) {
-                if (null != v && widget.projectModel.name != v) {
-                  widget.projectModel.modifyProjectName(v);
-                }
-              },
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(reNameRegExp),
-              ],
             ),
           ),
         ),

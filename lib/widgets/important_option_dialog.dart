@@ -21,6 +21,9 @@ class ImportantOptionDialog<T> extends StatefulWidget {
   // 确认按钮
   final String? confirm;
 
+  // 中间按钮
+  final Widget? middle;
+
   // 确认按钮点击事件
   final ConfirmCallback<T?> onConfirmTap;
 
@@ -30,6 +33,7 @@ class ImportantOptionDialog<T> extends StatefulWidget {
     required this.onConfirmTap,
     this.icon,
     this.title,
+    this.middle,
     this.confirm,
   }) : super(key: key);
 
@@ -41,6 +45,7 @@ class ImportantOptionDialog<T> extends StatefulWidget {
     IconData? icon,
     String? title,
     String? confirm,
+    Widget? middle,
   }) {
     return showDialog<T>(
       context: context,
@@ -50,6 +55,7 @@ class ImportantOptionDialog<T> extends StatefulWidget {
         icon: icon,
         title: title,
         confirm: confirm,
+        middle: middle,
       ),
     );
   }
@@ -75,22 +81,31 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
         ],
       ),
       content: Text(widget.message),
-      actions: [
-        Button(
-          child: const Text("取消"),
-          onPressed: () => Navigator.maybePop(context),
-        ),
-        FilledButton(
-          style: ButtonStyle(
-            backgroundColor: ButtonState.all(Colors.red),
-          ),
-          child: Text(widget.confirm ?? "确认"),
-          onPressed: () {
-            var result = widget.onConfirmTap();
-            Navigator.pop<T>(context, result);
-          },
-        ),
-      ],
+      actions: actions,
     );
+  }
+
+  // 动态加载操作按钮集合
+  List<Widget> get actions {
+    var actions = <Widget>[
+      Button(
+        child: const Text("取消"),
+        onPressed: () => Navigator.maybePop(context),
+      ),
+      FilledButton(
+        style: ButtonStyle(
+          backgroundColor: ButtonState.all(Colors.red),
+        ),
+        child: Text(widget.confirm ?? "确认"),
+        onPressed: () {
+          var result = widget.onConfirmTap();
+          Navigator.pop<T>(context, result);
+        },
+      ),
+    ];
+    if (null != widget.middle) {
+      actions.insert(1, widget.middle!);
+    }
+    return actions;
   }
 }

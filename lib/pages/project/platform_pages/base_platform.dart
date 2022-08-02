@@ -77,6 +77,13 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
                 ImportantOptionDialog.show(
                   context,
                   message: "当前页面有未保存的内容，继续退出将丢失已编辑的信息",
+                  middle: Button(
+                    child: const Text("保存"),
+                    onPressed: () => submit().then((v) {
+                      Navigator.pop(context);
+                      if (v) Navigator.pop(context);
+                    }),
+                  ),
                   onConfirmTap: () => Navigator.pop(context),
                 );
                 return false;

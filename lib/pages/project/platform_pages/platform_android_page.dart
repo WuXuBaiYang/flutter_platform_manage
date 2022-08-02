@@ -115,7 +115,7 @@ class _PlatformAndroidPageState
                   permissions: info.permissions,
                 ).then((v) {
                   if (null != v) {
-                    setState(() => info.permissions = v);
+                    setState(() => widget.platformInfo.permissions = v);
                   }
                 });
               },
@@ -142,45 +142,39 @@ class _PlatformAndroidPageState
   // 构建权限管理列表子项
   Widget _buildPermissionManageItem(AndroidPlatform info, int i) {
     var item = info.permissions[i];
-    return Flyout(
-      openMode: FlyoutOpenMode.press,
-      child: ListTile(
-        isThreeLine: true,
-        title: Text(
-          item.name,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          item.describe,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: IconButton(
-          icon: const Icon(FluentIcons.delete),
-          onPressed: () => ImportantOptionDialog.show(
-            context,
-            message: "是否删除 ‘${item.name}’ 权限",
-            onConfirmTap: () => setState(() {
-              info.permissions.remove(item);
-            }),
-          ),
-        ),
-      ),
-      content: (_) {
-        return FlyoutContent(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("${item.name}\n${item.value}\n${item.describe}"),
-              const SizedBox(height: 8),
-              Button(
-                child: const Text("确定"),
-                onPressed: () => Navigator.pop(context),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Expanded(
+            child: DefaultTextStyle(
+              style: const TextStyle(fontSize: 12, color: Color(0xff333333)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(item.describe),
+                  Text(item.value),
+                ],
               ),
-            ],
+            ),
           ),
-        );
-      },
+          IconButton(
+            icon: const Icon(FluentIcons.delete),
+            onPressed: () => ImportantOptionDialog.show(
+              context,
+              message: "是否删除 ‘${item.name}’ 权限",
+              onConfirmTap: () => setState(() {
+                info.permissions.remove(item);
+              }),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

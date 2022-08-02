@@ -5,10 +5,10 @@ class Common {
   static const String appName = "Flutter平台管理工具";
 
   // 窗口默认尺寸
-  static const Size windowSize = Size(720, 540);
+  static const Size windowSize = Size(1080, 810);
 
   // 窗口最小尺寸
-  static const Size windowMinimumSize = Size(720, 540);
+  static const Size windowMinimumSize = Size(1080, 810);
 
   // 窗口最大尺寸
   static const Size windowMaximumSize = Size(1080, 810);

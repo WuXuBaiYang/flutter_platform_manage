@@ -59,6 +59,10 @@ class PermissionItemModel {
     );
   }
 
+  // 搜索所有字段(包含匹配)
+  bool searchContains(String v) =>
+      name.contains(v) || describe.contains(v) || value.contains(v);
+
   @override
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;

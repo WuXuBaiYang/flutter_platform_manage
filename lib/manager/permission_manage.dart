@@ -31,6 +31,21 @@ class PermissionManage extends BaseManage {
     );
   }
 
+  // 根据平台标记获取对应平台的权限集合
+  List<PermissionItemModel> getPermissionsByPlatform(PlatformType type) {
+    switch (type) {
+      case PlatformType.android:
+        return androidPermissions;
+      case PlatformType.ios:
+      case PlatformType.windows:
+      case PlatformType.macos:
+      case PlatformType.linux:
+      case PlatformType.web:
+      default:
+        return [];
+    }
+  }
+
   // 获取所有android权限对象
   List<PermissionItemModel> get androidPermissions =>
       _androidPermissionModel.items;

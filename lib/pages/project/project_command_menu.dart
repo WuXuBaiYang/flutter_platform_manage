@@ -7,6 +7,7 @@ import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /*
 * 项目功能菜单
@@ -27,14 +28,17 @@ class ProjectCommandMenu {
           primaryItems: [
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("打包"),
-              onPressed: () {
-                Utils.showSnack(context, "开发中");
+              label: const Text("打开根目录"),
+              onPressed: () async {
+                var uri = Uri.parse("file:${projectModel.project.path}");
+                if (!await launchUrl(uri)) {
+                  Utils.showSnack(context, "目录启动失败");
+                }
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("版本号"),
+              label: const Text("修改版本号"),
               onPressed: () => ProjectVersionDialog.show(
                 context,
                 projectModel: projectModel,
@@ -44,7 +48,7 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("项目名称"),
+              label: const Text("修改项目名称"),
               onPressed: () => ProjectReNameDialog.show(
                 context,
                 projectModel: projectModel,
@@ -54,7 +58,14 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("应用名称"),
+              label: const Text("修改应用名称"),
+              onPressed: () {
+                Utils.showSnack(context, "开发中");
+              },
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text("应用打包"),
               onPressed: () {
                 Utils.showSnack(context, "开发中");
               },
