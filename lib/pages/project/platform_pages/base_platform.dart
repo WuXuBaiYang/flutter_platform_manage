@@ -42,7 +42,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   @override
   Widget build(BuildContext context) {
     var settingList = loadSettingList;
-    if (settingList.isEmpty) return const Center(child: Text("平台开发中"));
+    if (settingList.isEmpty) return const Center(child: Text("功能开发中"));
     return ScaffoldPage(
       padding: EdgeInsets.zero,
       header: PageHeader(
