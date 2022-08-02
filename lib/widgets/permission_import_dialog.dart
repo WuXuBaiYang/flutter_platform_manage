@@ -5,7 +5,6 @@ import 'package:flutter_platform_manage/manager/permission_manage.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/debouncer.dart';
-import 'package:flutter_platform_manage/widgets/flyout_message.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
