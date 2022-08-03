@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
+import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/platform_android_page.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/platform_ios_page.dart';
@@ -46,7 +47,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   final controller = CacheFutureBuilderController<ProjectModel>();
 
   // 底部导航条当前下标
-  final bottomBarIndex = ValueNotifier<int>(1);
+  final bottomBarIndex = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -103,14 +104,14 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                   contentPadding: EdgeInsets.zero,
                   leading: ProjectLogo(projectInfo: item),
                   title: Text(
-                    !item.exist ? "项目信息丢失" : item.getShowTitle(),
+                    !item.exist ? "项目信息丢失" : item.showTitle,
                     style: TextStyle(
                       color: !item.exist ? Colors.red : null,
                     ),
                   ),
                   subtitle:
                       Text("${!item.exist ? item.project.alias : item.version}"
-                          "\nFlutter · ${item.getEnvironment()?.flutter}"),
+                          "\nFlutter · ${item.environment?.flutter}"),
                 ),
                 const SizedBox(height: 4),
                 PlatformTagGroup(

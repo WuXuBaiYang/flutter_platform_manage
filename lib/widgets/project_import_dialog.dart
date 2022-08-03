@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/utils/info_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
@@ -121,7 +123,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                 }
                 projectSelectKey.currentState?.save();
                 _projectInfo = ProjectModel(project: project);
-                await _projectInfo?.updateSimple();
+                await _projectInfo?.update(true);
                 // 增加步长
                 setState(() => _currentStep += 1);
                 break;
@@ -171,7 +173,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
             },
             validator: (v) {
               if (null == v || v.isEmpty) return "项目路径不能为空";
-              if (!InfoHandle.projectExistSync(v)) {
+              var path = "$v/${ProjectFilePath.pubspec}";
+              if (!File(path).existsSync()) {
                 return "项目不存在（缺少pubspec.yaml文件）";
               }
               if (!project.isManaged && projectManage.has(v)) {
@@ -262,7 +265,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       _errText = null;
       return const SizedBox.shrink();
     }
-    var env = _projectInfo?.getEnvironment();
+    var env = _projectInfo?.environment;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -271,7 +274,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           header: "项目名称",
           readOnly: true,
           controller: TextEditingController(
-            text: _projectInfo?.getShowTitle() ?? "",
+            text: _projectInfo?.showTitle ?? "",
           ),
         ),
         const SizedBox(height: 14),

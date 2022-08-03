@@ -112,7 +112,7 @@ class ProjectCommandMenu {
               label: Text("删除", style: TextStyle(color: Colors.red)),
               onPressed: () => ImportantOptionDialog.show(
                 context,
-                message: "是否删除该项目 ${projectModel.getShowTitle()}",
+                message: "是否删除该项目 ${projectModel.showTitle}",
                 confirm: "删除",
                 onConfirmTap: () {
                   dbManage.delete(projectModel.project);

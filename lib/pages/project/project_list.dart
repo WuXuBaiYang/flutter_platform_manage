@@ -53,7 +53,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       ),
       content: CacheFutureBuilder<List<ProjectModel>>(
         controller: controller,
-        future: () => projectManage.loadAll(),
+        future: () => projectManage.loadAll(simple: true),
         builder: (_, snap) {
           var value = snap.data;
           if (null != value && value.isNotEmpty) {
@@ -138,8 +138,9 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
 
   // 构建项目表格子项
   Widget buildProjectGridItem(ProjectModel item) {
+    if (!item.project.isValid) return const SizedBox();
     return MouseRightClickMenu(
-      key: Key(item.project.primaryKey),
+      key: ObjectKey(item.project.primaryKey),
       menuItems: [
         TappableListTile(
           leading: const Icon(FluentIcons.rename, size: 14),
@@ -197,25 +198,31 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           },
           child: Card(
             elevation: 0,
-            child: ListTile(
-              isThreeLine: true,
-              contentPadding: EdgeInsets.zero,
-              leading: ProjectLogo(projectInfo: item),
-              title: Text(
-                !item.exist ? "项目信息丢失" : item.getShowTitle(),
-                style: TextStyle(
-                  color: !item.exist ? Colors.red : null,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              subtitle: Text(
-                "${!item.exist ? item.project.alias : item.version}"
-                "\nFlutter · ${item.getEnvironment()?.flutter}",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-            ),
+            child: !item.exist
+                ? Center(
+                    child: Text(
+                    "项目信息丢失,点击重新编辑",
+                    style: TextStyle(color: Colors.red),
+                  ))
+                : ListTile(
+                    isThreeLine: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: ProjectLogo(projectInfo: item),
+                    title: Text(
+                      item.showTitle,
+                      style: TextStyle(
+                        color: !item.exist ? Colors.red : null,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    subtitle: Text(
+                      "${!item.exist ? item.project.alias : item.version}"
+                      "\nFlutter · ${item.environment?.flutter}",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
           ),
         ),
       ),
@@ -236,7 +243,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   void deleteProjectInfo(ProjectModel item) {
     ImportantOptionDialog.show(
       context,
-      message: "是否删除该项目 ${item.getShowTitle()}",
+      message: "是否删除该项目 ${item.showTitle}",
       confirm: "删除",
       onConfirmTap: () {
         dbManage.delete(item.project);

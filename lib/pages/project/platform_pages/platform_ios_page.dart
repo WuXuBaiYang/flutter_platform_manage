@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
 /*
@@ -24,5 +24,56 @@ class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
 */
 class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> get loadSettingList => [
+        buildBundleName(),
+        buildBundleDisplayName(),
+      ];
+
+  // 构建应用名编辑项
+  Widget buildBundleName() {
+    var info = widget.platformInfo;
+    return buildItem(
+      InfoLabel(
+        label: "应用名称(BundleName)",
+        child: TextFormBox(
+          initialValue: info.bundleName,
+          validator: (v) {
+            if (null == v || v.isEmpty) {
+              return "不能为空";
+            }
+            return null;
+          },
+          onChanged: (v) => info.bundleName = v,
+          onSaved: (v) {
+            if (null == v || v.isEmpty) return;
+            info.bundleName = v;
+          },
+        ),
+      ),
+    );
+  }
+
+  // 构建展示应用名编辑项
+  Widget buildBundleDisplayName() {
+    var info = widget.platformInfo;
+    return buildItem(
+      InfoLabel(
+        label: "展示应用名称（BundleDisplayName）",
+        child: TextFormBox(
+          initialValue: info.bundleDisplayName,
+          validator: (v) {
+            if (null == v || v.isEmpty) {
+              return "不能为空";
+            }
+            return null;
+          },
+          onChanged: (v) => info.bundleDisplayName = v,
+          onSaved: (v) {
+            if (null == v || v.isEmpty) return;
+            info.bundleDisplayName = v;
+          },
+        ),
+      ),
+    );
+  }
 }

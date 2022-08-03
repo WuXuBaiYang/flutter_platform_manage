@@ -21,4 +21,7 @@ class ProjectFilePath {
 
   // android/app/src/main/res/
   static const String androidRes = "app/src/main/res";
+
+  // ios/Runner/info.plist
+  static const String iosInfoPlist = "Runner/info.plist";
 }

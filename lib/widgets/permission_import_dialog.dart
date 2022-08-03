@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/permission_manage.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
-import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/debouncer.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 

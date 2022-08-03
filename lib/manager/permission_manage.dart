@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
-import 'package:flutter_platform_manage/model/project.dart';
-
+import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'base_manage.dart';
 
 /*

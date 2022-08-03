@@ -33,12 +33,12 @@ class ProjectManage extends BaseManage {
   }
 
   // 加载所有项目信息
-  Future<List<ProjectModel>> loadAll() async {
+  Future<List<ProjectModel>> loadAll({bool simple = false}) async {
     var temp = <ProjectModel>[];
     for (var it in dbManage.all<Project>().toList()
       ..sort((l, r) => l.order.compareTo(r.order))) {
       var p = ProjectModel(project: it);
-      await p.update();
+      await p.update(simple);
       // await p.updateSimple();
       temp.add(p);
     }
@@ -46,11 +46,12 @@ class ProjectManage extends BaseManage {
   }
 
   // 根据项目key获取项目完整信息
-  Future<ProjectModel?> getProjectInfo(String key) async {
+  Future<ProjectModel?> getProjectInfo(String key,
+      {bool simple = false}) async {
     var t = dbManage.find<Project>(key);
     if (null == t) return null;
     var p = ProjectModel(project: t);
-    await p.update();
+    await p.update(simple);
     return p;
   }
 

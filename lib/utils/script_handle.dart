@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
+import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/utils/info_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:process_run/shell.dart';
 
@@ -19,28 +19,24 @@ class ScriptHandle {
     var outText = await runShell(
       "$path/${ProjectFilePath.flutter} --version",
     );
-    var version = InfoHandle.stringMatch(
-      outText,
-      RegExp(r'Flutter .+? •'),
-      RegExp(r'Flutter | •'),
-    );
-    var channel = InfoHandle.stringMatch(
-      outText,
-      RegExp(r'channel .+? •'),
-      RegExp(r'channel | •'),
-    );
-    var dart = InfoHandle.stringMatch(
-      outText,
-      RegExp(r'Dart (.+? •|.+)'),
-      RegExp(r'Dart | •'),
-    );
+    var version = "Flutter", channel = "channel", dart = "Dart";
+    for (var it in outText.split(r'•')) {
+      it = it.trim();
+      if (it.startsWith(version)) {
+        version = it.replaceAll(version, '').trim();
+      } else if (it.startsWith(channel)) {
+        channel = it.replaceAll(channel, '').trim();
+      } else if (it.startsWith(dart)) {
+        dart = it.replaceAll(dart, '').trim();
+      }
+    }
     return Environment(Utils.genID(), path, version, channel, dart);
   }
 
   // 创建平台信息
   static Future<bool> createPlatforms(
       ProjectModel projectInfo, List<PlatformType> platforms) async {
-    var env = projectInfo.getEnvironment();
+    var env = projectInfo.environment;
     if (null == env) return false;
     var outText = await runShell(
       "${env.path}/${ProjectFilePath.flutter} create --platforms=${platforms.map((e) => e.name).join(',')} .",
