@@ -266,6 +266,7 @@ class AndroidPlatform extends BasePlatform {
           // 权限字段替换，
           // (1 删除全部已有权限
           source = InfoHandle.sourceReplace(source, _permissionReg, '');
+          source = InfoHandle.sourceReplace(source, RegExp(r'\t*\n'), '');
           // (2 将当前用户修改过的权限集合重新写入到指定位置
           var v = permissions
               .map((e) => '<uses-permission android:name="${e.value}" />')

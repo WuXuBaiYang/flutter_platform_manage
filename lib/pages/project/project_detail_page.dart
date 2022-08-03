@@ -1,5 +1,4 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
@@ -45,6 +44,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
     with WindowListener {
   // 异步缓存加载控制器
   final controller = CacheFutureBuilderController<ProjectModel>();
+
+  // 底部导航条当前下标
+  final bottomBarIndex = ValueNotifier<int>(1);
 
   @override
   void initState() {
@@ -188,9 +190,6 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       },
     );
   }
-
-  // 底部导航条当前下标
-  final bottomBarIndex = ValueNotifier<int>(0);
 
   // 构建底部导航
   Widget buildBottomBar() {

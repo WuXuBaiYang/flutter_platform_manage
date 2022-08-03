@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/manager/event_manage.dart';
 import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
+import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
@@ -101,47 +102,58 @@ class _PlatformAndroidPageState
   Widget buildPermissionManage() {
     var info = widget.platformInfo;
     return buildItem(
-      Column(
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Text("权限管理"),
-            trailing: Button(
-              child: const Text("添加权限"),
-              onPressed: () {
-                PermissionImportDialog.show(
-                  context,
-                  platformType: PlatformType.android,
-                  permissions: info.permissions,
-                ).then((v) {
-                  if (null != v) {
-                    setState(() => widget.platformInfo.permissions = v);
-                  }
-                });
-              },
-            ),
-          ),
-          CardItem(
-            child: Container(
-              constraints: const BoxConstraints(
-                maxHeight: 260,
-              ),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: info.permissions.length,
-                separatorBuilder: (_, i) => const ThicknessDivider(),
-                itemBuilder: (_, i) => _buildPermissionManageItem(info, i),
+      FormField<List<PermissionItemModel>>(
+        initialValue: info.permissions,
+        onSaved: (v) => info.permissions = v ?? [],
+        builder: (f) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Text("权限管理"),
+              trailing: Button(
+                child: const Text("添加权限"),
+                onPressed: () {
+                  PermissionImportDialog.show(
+                    context,
+                    platformType: PlatformType.android,
+                    permissions: f.value,
+                  ).then((v) {
+                    if (null != v) {
+                      setState(() => widget.platformInfo.permissions = v);
+                    }
+                  });
+                },
               ),
             ),
-          ),
-        ],
+            CardItem(
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxHeight: 275,
+                ),
+                child: f.value?.isEmpty ?? true
+                    ? const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text("还未添加任何权限哦~", textAlign: TextAlign.center),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: f.value?.length ?? 0,
+                        separatorBuilder: (_, i) => const ThicknessDivider(),
+                        itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // 构建权限管理列表子项
-  Widget _buildPermissionManageItem(AndroidPlatform info, int i) {
-    var item = info.permissions[i];
+  Widget _buildPermissionManageItem(
+      FormFieldState<List<PermissionItemModel>> f, int i) {
+    var item = f.value?[i];
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -153,12 +165,12 @@ class _PlatformAndroidPageState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.name,
+                    item?.name ?? "",
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 4),
-                  Text(item.describe),
-                  Text(item.value),
+                  Text(item?.describe ?? ""),
+                  Text(item?.value ?? ""),
                 ],
               ),
             ),
@@ -167,10 +179,8 @@ class _PlatformAndroidPageState
             icon: const Icon(FluentIcons.delete),
             onPressed: () => ImportantOptionDialog.show(
               context,
-              message: "是否删除 ‘${item.name}’ 权限",
-              onConfirmTap: () => setState(() {
-                info.permissions.remove(item);
-              }),
+              message: "是否删除 ‘${item?.name ?? ""}’ 权限",
+              onConfirmTap: () => f.didChange(f.value?..remove(item)),
             ),
           ),
         ],
