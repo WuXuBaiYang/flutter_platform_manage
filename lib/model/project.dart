@@ -54,7 +54,7 @@ class ProjectModel {
   // 获取应用图标
   Map<PlatformType, String> get projectIconsMap {
     for (var it in platformMap.values) {
-      var path = it.getProjectIcon();
+      var path = it.projectIcon;
       if (null != path) return {it.type: path};
     }
     return {};

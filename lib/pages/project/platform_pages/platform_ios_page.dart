@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 
@@ -24,19 +25,22 @@ class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
 */
 class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   @override
-  List<Widget> get loadSettingList => [
-        buildBundleName(),
-        buildBundleDisplayName(),
-      ];
+  List<Widget> loadItemList(BuildContext context) {
+    return [];
+  }
 
   // 构建应用名编辑项
   Widget buildBundleName() {
     var info = widget.platformInfo;
     return buildItem(
-      InfoLabel(
-        label: "应用名称(BundleName)",
+      child: InfoLabel(
+        label: "应用名称（BundleName）",
         child: TextFormBox(
           initialValue: info.bundleName,
+          inputFormatters: [
+            FilteringTextInputFormatter(RegExp(r'[A-Z,a-z,0-9,_]'),
+                allow: true),
+          ],
           validator: (v) {
             if (null == v || v.isEmpty) {
               return "不能为空";
@@ -57,7 +61,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   Widget buildBundleDisplayName() {
     var info = widget.platformInfo;
     return buildItem(
-      InfoLabel(
+      child: InfoLabel(
         label: "展示应用名称（BundleDisplayName）",
         child: TextFormBox(
           initialValue: info.bundleDisplayName,

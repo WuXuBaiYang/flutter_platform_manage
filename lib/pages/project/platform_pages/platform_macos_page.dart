@@ -24,5 +24,7 @@ class PlatformMacOSPage extends BasePlatformPage<MacOSPlatform> {
 */
 class _PlatformMacOSPageState extends BasePlatformPageState<PlatformMacOSPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> loadItemList(BuildContext context) {
+    return [];
+  }
 }

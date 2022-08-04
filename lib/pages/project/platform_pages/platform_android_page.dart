@@ -38,18 +38,20 @@ class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
 class _PlatformAndroidPageState
     extends BasePlatformPageState<PlatformAndroidPage> {
   @override
-  List<Widget> get loadSettingList => [
-        buildAppName(),
-        buildPackageName(),
-        buildPermissionManage(),
-        buildAppLogo(),
-      ];
+  List<Widget> loadItemList(BuildContext context) {
+    return [
+      buildAppName(),
+      buildPermissionManage(),
+      buildPackageName(),
+      buildAppLogo(),
+    ];
+  }
 
   // 构建应用名称编辑项
   Widget buildAppName() {
     var info = widget.platformInfo;
     return buildItem(
-      InfoLabel(
+      child: InfoLabel(
         label: "应用名称（安装之后的名称）",
         child: TextFormBox(
           initialValue: info.label,
@@ -76,7 +78,7 @@ class _PlatformAndroidPageState
   Widget buildPackageName() {
     var info = widget.platformInfo;
     return buildItem(
-      InfoLabel(
+      child: InfoLabel(
         label: "应用包名",
         child: TextFormBox(
           initialValue: info.package,
@@ -103,7 +105,8 @@ class _PlatformAndroidPageState
   Widget buildPermissionManage() {
     var info = widget.platformInfo;
     return buildItem(
-      FormField<List<PermissionItemModel>>(
+      times: 4,
+      child: FormField<List<PermissionItemModel>>(
         initialValue: info.permissions,
         onSaved: (v) => info.permissions = v ?? [],
         builder: (f) => Column(
@@ -127,16 +130,10 @@ class _PlatformAndroidPageState
                 },
               ),
             ),
-            CardItem(
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 275,
-                ),
+            Expanded(
+              child: CardItem(
                 child: f.value?.isEmpty ?? true
-                    ? const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text("还未添加任何权限哦~", textAlign: TextAlign.center),
-                      )
+                    ? const Center(child: Text("还未添加任何权限哦~"))
                     : ListView.separated(
                         shrinkWrap: true,
                         itemCount: f.value?.length ?? 0,
@@ -192,67 +189,61 @@ class _PlatformAndroidPageState
   // 构建应用图标编辑项
   Widget buildAppLogo() {
     var info = widget.platformInfo;
-    var iconsMap = info.loadIcons();
     return buildItem(
-      Column(
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Text("应用图标（立即生效）"),
-            trailing: Button(
-              child: const Text("批量替换"),
-              onPressed: () => _pickLogoAndReplace(AndroidIcons.values),
-            ),
+      child: CardItem(
+        child: TappableListTile(
+          leading: LogoFileImage(
+            File(info.projectIcon ?? ""),
+            size: 30,
           ),
-          ListView.separated(
-            shrinkWrap: true,
-            itemCount: iconsMap.length,
-            separatorBuilder: (_, i) => const SizedBox(height: 8),
-            itemBuilder: (_, i) => _buildAppLogoItem(iconsMap, i),
+          title: const Text("应用图标（立即生效）"),
+          trailing: Button(
+            child: const Text("批量替换"),
+            onPressed: () => _pickLogoAndReplace(AndroidIcons.values),
           ),
-        ],
+          onTap: () => _showLogoList(info.loadIcons(reversed: true)),
+        ),
       ),
     );
   }
 
-  // 构建应用图标列表子项
-  Widget _buildAppLogoItem(Map<AndroidIcons, String> iconsMap, int i) {
-    var type = iconsMap.keys.elementAt(i),
-        path = iconsMap[type] ?? "",
-        sizePx = type.sizePx.toInt();
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            alignment: Alignment.center,
-            child: LogoFileImage(
-              File(path),
-              size: type.showSize,
-            ),
+  // 展示图标弹窗
+  void _showLogoList(Map<AndroidIcons, String> iconsMap) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) {
+        return ContentDialog(
+          content: ListView.separated(
+            shrinkWrap: true,
+            itemCount: iconsMap.length,
+            separatorBuilder: (_, i) => const SizedBox(height: 24),
+            itemBuilder: (_, i) {
+              var type = iconsMap.keys.elementAt(i),
+                  path = iconsMap[type] ?? "",
+                  sizePx = type.sizePx;
+              return Row(
+                children: [
+                  Expanded(
+                    child: LogoFileImage(
+                      File(path),
+                      size: type.showSize,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text("${type.name}(${sizePx}x$sizePx)"),
+                  ),
+                  IconButton(
+                    icon: const Icon(FluentIcons.info),
+                    onPressed: () => Utils.showSnackWithFilePath(context, path),
+                  )
+                ],
+              );
+            },
           ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          flex: 2,
-          child: Text("${type.name}(${sizePx}x$sizePx)"),
-        ),
-        Expanded(
-          flex: 2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(FluentIcons.edit),
-                onPressed: () => _pickLogoAndReplace([type]),
-              ),
-              IconButton(
-                icon: const Icon(FluentIcons.info),
-                onPressed: () => Utils.showSnackWithFilePath(context, path),
-              ),
-            ],
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 

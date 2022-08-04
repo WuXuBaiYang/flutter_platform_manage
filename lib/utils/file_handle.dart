@@ -106,14 +106,26 @@ class FileHandle {
   }
 
   // 获取xml文件标签文本匹配的标签对象的同级下一个
-  Future<XmlElement?> matchTextElNext(String elName,
+  Future<String> matchElNext(String elName,
       {required String target, String? namespace}) async {
-    return (await matchTextEl(
+    var el = await matchTextEl(
       elName,
       target: target,
       namespace: namespace,
-    ))
-        ?.nextElementSibling;
+    );
+    return el?.nextElementSibling?.text ?? "";
+  }
+
+  Future<void> setMatchElNext(String elName,
+      {required String target,
+      required String value,
+      String? namespace}) async {
+    var el = await matchTextEl(
+      elName,
+      target: target,
+      namespace: namespace,
+    );
+    el?.nextElementSibling?.innerText = value;
   }
 
   // 获取xml文件标签的文本值

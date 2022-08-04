@@ -34,7 +34,5 @@ class LinuxPlatform extends BasePlatform {
   }
 
   @override
-  String? getProjectIcon() {
-    return null;
-  }
+  String? get projectIcon {}
 }

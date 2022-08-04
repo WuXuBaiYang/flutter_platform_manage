@@ -24,5 +24,7 @@ class PlatformWinPage extends BasePlatformPage<WindowsPlatform> {
 */
 class _PlatformWinPageState extends BasePlatformPageState<PlatformWinPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> loadItemList(BuildContext context) {
+    return [];
+  }
 }

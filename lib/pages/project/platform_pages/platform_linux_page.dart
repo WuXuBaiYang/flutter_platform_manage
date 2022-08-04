@@ -24,5 +24,7 @@ class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
 */
 class _PlatformLinuxPageState extends BasePlatformPageState<PlatformLinuxPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> loadItemList(BuildContext context) {
+    return [];
+  }
 }

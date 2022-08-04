@@ -30,7 +30,7 @@ abstract class BasePlatform {
   Future<bool> commit();
 
   // 获取应用图标
-  String? getProjectIcon();
+  String? get projectIcon;
 }
 
 /*

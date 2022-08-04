@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
 * 平台页面基类
@@ -41,8 +42,8 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
 
   @override
   Widget build(BuildContext context) {
-    var settingList = loadSettingList;
-    if (settingList.isEmpty) return const Center(child: Text("功能开发中"));
+    var itemList = loadItemList(context);
+    if (itemList.isEmpty) return const Center(child: Text("功能开发中"));
     return PrimaryScrollController(
       controller: ScrollController(),
       child: ScaffoldPage(
@@ -86,16 +87,18 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
                         if (v) Navigator.pop(context);
                       }),
                     ),
+                    confirm: "不保存",
                     onConfirmTap: () => Navigator.pop(context),
                   );
                   return false;
                 }
                 return true;
               },
-              child: Wrap(
-                spacing: 14,
-                runSpacing: 14,
-                children: settingList,
+              child: StaggeredGrid.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 14,
+                children: itemList,
               ),
             ),
           ),
@@ -104,8 +107,8 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
     );
   }
 
-  // 加载设置项集合
-  List<Widget> get loadSettingList;
+  // 构建平台子项菜单
+  List<Widget> loadItemList(BuildContext context);
 
   // 执行提交操作
   Future<bool> submit() {
@@ -122,14 +125,17 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
     });
   }
 
-  // 设置项宽度
-  final _itemSize = Common.windowMinimumSize.width / 2 - 40;
+  // 元素高度的基本高度
+  final _itemSize = 70.0;
 
   // 构建平台参数设置项基础结构
-  Widget buildItem(Widget child) {
-    return SizedBox(
-      width: _itemSize,
-      child: child,
+  Widget buildItem({required Widget child, int times = 1}) {
+    return StaggeredGridTile.extent(
+      crossAxisCellCount: 1,
+      mainAxisExtent: _itemSize * times,
+      child: Container(
+        child: child,
+      ),
     );
   }
 }

@@ -26,9 +26,13 @@ class IOSPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
+    if (simple) return true;
     var handle = FileHandle.from(infoPlistFilePath);
     try {
       // 处理info.plist文件
+      bundleName = await handle.matchElNext("key", target: "CFBundleName");
+      bundleDisplayName =
+          await handle.matchElNext("key", target: "CFBundleDisplayName");
     } catch (e) {
       return false;
     }
@@ -40,6 +44,10 @@ class IOSPlatform extends BasePlatform {
     var handle = FileHandle.from(infoPlistFilePath);
     try {
       // 处理info.plist文件
+      await handle.setMatchElNext("key",
+          target: 'CFBundleName', value: bundleName);
+      await handle.setMatchElNext("key",
+          target: 'CFBundleDisplayName', value: bundleDisplayName);
     } catch (e) {
       return false;
     }
@@ -47,9 +55,7 @@ class IOSPlatform extends BasePlatform {
   }
 
   @override
-  String? getProjectIcon() {
-    return null;
-  }
+  String? get projectIcon {}
 
   @override
   bool operator ==(dynamic other) {

@@ -24,5 +24,7 @@ class PlatformWebPage extends BasePlatformPage<WebPlatform> {
 */
 class _PlatformWebPageState extends BasePlatformPageState<PlatformWebPage> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> loadItemList(BuildContext context) {
+    return [];
+  }
 }

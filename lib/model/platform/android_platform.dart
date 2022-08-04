@@ -33,9 +33,11 @@ class AndroidPlatform extends BasePlatform {
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
-  Map<AndroidIcons, String> loadIcons({String suffix = ".png"}) {
+  Map<AndroidIcons, String> loadIcons(
+      {String suffix = ".png", bool reversed = false}) {
     if (iconPath.isEmpty) return {};
-    return Map.fromEntries(AndroidIcons.values.map((e) {
+    var values = AndroidIcons.values;
+    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
       var path = e.getAbsolutePath(iconPath, suffix: suffix);
       return MapEntry(e, "$platformPath/$path");
     }));
@@ -99,12 +101,11 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  String? getProjectIcon() {
+  String? get projectIcon {
     try {
-      return AndroidIcons.values.reversed.firstWhere((v) {
-        var path = v.getAbsolutePath(iconPath);
-        return File(path).existsSync();
-      }).getAbsolutePath(iconPath);
+      return loadIcons().values.lastWhere((e) {
+        return File(e).existsSync();
+      });
     } catch (e) {
       // 未找到
     }
