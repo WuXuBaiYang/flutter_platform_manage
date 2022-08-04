@@ -43,7 +43,7 @@ class IOSPlatform extends BasePlatform {
     } catch (e) {
       return false;
     }
-    return true;
+    return handle.commit();
   }
 
   @override

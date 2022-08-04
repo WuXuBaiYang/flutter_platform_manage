@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/manager/permission_manage.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:xml/xml.dart';
 
 /*
 * android平台信息
@@ -32,34 +33,34 @@ class AndroidPlatform extends BasePlatform {
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
-  Map<AndroidIconSize, String> loadIcons({String suffix = ".png"}) {
+  Map<AndroidIcons, String> loadIcons({String suffix = ".png"}) {
     if (iconPath.isEmpty) return {};
-    return Map.fromEntries(AndroidIconSize.values.map((e) {
+    return Map.fromEntries(AndroidIcons.values.map((e) {
       var path = e.getAbsolutePath(iconPath, suffix: suffix);
       return MapEntry(e, "$platformPath/$path");
     }));
   }
 
   // androidManifest.xml文件绝对路径
-  String get androidManifestFilePath =>
+  String get manifestFilePath =>
       "$platformPath/${ProjectFilePath.androidManifest}";
+
+  String get appBuildGradle =>
+      "$platformPath/${ProjectFilePath.androidAppBuildGradle}";
 
   @override
   Future<bool> update(bool simple) async {
-    var handle = FileHandle.from(androidManifestFilePath);
+    var handle = FileHandle.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
-      iconPath = (await handle.xmlSingleTagAttribute("application",
-              attName: "android:icon"))
-          .replaceAll(r'@', '');
+      iconPath =
+          (await handle.singleAtt("application", attName: "android:icon"))
+              .replaceAll(r'@', "");
       if (!simple) {
-        label = await handle.xmlSingleTagAttribute("application",
-            attName: "android:label");
-        package =
-            await handle.xmlSingleTagAttribute("manifest", attName: "package");
+        label = await handle.singleAtt("application", attName: "android:label");
+        package = await handle.singleAtt("manifest", attName: "package");
         permissions = await permissionManage.findAllAndroidPermissions(
-          await handle.xmlTagAttributes('uses-permission',
-              attName: 'android:name'),
+          await handle.attList('uses-permission', attName: 'android:name'),
         );
       }
     } catch (e) {
@@ -70,52 +71,40 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    // try {
-    //   // 处理androidManifest.xml文件
-    //   if (!await InfoHandle.fileWrite(
-    //     "$platformPath/${ProjectFilePath.androidManifest}",
-    //     (source) {
-    //       source = InfoHandle.sourceReplace(
-    //           source, _labelReg, 'android:label="$label"');
-    //       source = InfoHandle.sourceReplace(
-    //           source, _packageReg, 'package="$package"');
-    //       // 权限字段替换，
-    //       // (1 删除全部已有权限
-    //       source = InfoHandle.sourceReplace(source, _permissionReg, '');
-    //       source = InfoHandle.sourceReplace(source, RegExp(r'\t*\n'), '');
-    //       // (2 将当前用户修改过的权限集合重新写入到指定位置
-    //       var v = permissions
-    //           .map((e) => '<uses-permission android:name="${e.value}" />')
-    //           .join('\n');
-    //       const anchor = "<application";
-    //       source =
-    //           InfoHandle.sourceReplace(source, RegExp(anchor), "$v\n$anchor");
-    //       return source;
-    //     },
-    //   )) return false;
-    //   // 处理app/build.gradle文件
-    //   if (!await InfoHandle.fileWrite(
-    //     "$platformPath/${ProjectFilePath.androidAppBuildGradle}",
-    //     (source) {
-    //       source = InfoHandle.sourceReplace(
-    //           source, _packageReg, 'applicationId "$package"');
-    //       return source;
-    //     },
-    //   )) return false;
-    // } catch (e) {
-    //   return false;
-    // }
-    return true;
+    var handle = FileHandle.from(manifestFilePath);
+    try {
+      // 处理androidManifest.xml文件
+      await handle.setElAtt("application",
+          attName: "android:label", value: label);
+      await handle.setElAtt("manifest", attName: "package", value: package);
+      // 先移除所有权限标签
+      await handle.removeEl("uses-permission", target: "manifest");
+      // 写入新的权限标签集合
+      var nodes = permissions.map((e) {
+        return XmlElement(XmlName("uses-permission"), [
+          XmlAttribute(XmlName("android:name"), e.value),
+        ]);
+      }).toList();
+      await handle.insertEl("manifest", nodes: nodes);
+      // 中场休息，提交一次
+      if (!await handle.commit(indentAtt: true)) return false;
+      // 处理app/build.gradle文件
+      handle = FileHandle.from(appBuildGradle);
+      await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
+          'applicationId "$package"');
+    } catch (e) {
+      return false;
+    }
+    return handle.commit();
   }
 
   @override
   String? getProjectIcon() {
     try {
-      return loadIcons()
-          .values
-          .toList()
-          .reversed
-          .firstWhere((e) => File(e).existsSync());
+      return AndroidIcons.values.reversed.firstWhere((v) {
+        var path = v.getAbsolutePath(iconPath);
+        return File(path).existsSync();
+      }).getAbsolutePath(iconPath);
     } catch (e) {
       // 未找到
     }
@@ -147,26 +136,26 @@ class AndroidPlatform extends BasePlatform {
 * @author JTech JH
 * @Time 2022-07-29 17:59:54
 */
-enum AndroidIconSize { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
+enum AndroidIcons { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
 
 /*
 * android图标尺寸枚举扩展
 * @author JTech JH
 * @Time 2022-07-29 18:00:20
 */
-extension AndroidIconSizeExtension on AndroidIconSize {
+extension AndroidIconsExtension on AndroidIcons {
   // 图标展示尺寸
   double get showSize {
     switch (this) {
-      case AndroidIconSize.mdpi:
+      case AndroidIcons.mdpi:
         return 30.0;
-      case AndroidIconSize.hdpi:
+      case AndroidIcons.hdpi:
         return 40.0;
-      case AndroidIconSize.xhdpi:
+      case AndroidIcons.xhdpi:
         return 50.0;
-      case AndroidIconSize.xxhdpi:
+      case AndroidIcons.xxhdpi:
         return 60.0;
-      case AndroidIconSize.xxxhdpi:
+      case AndroidIcons.xxxhdpi:
       default:
         return 70.0;
     }
@@ -175,15 +164,15 @@ extension AndroidIconSizeExtension on AndroidIconSize {
   // 获取真实图片尺寸
   double get sizePx {
     switch (this) {
-      case AndroidIconSize.mdpi:
+      case AndroidIcons.mdpi:
         return 48;
-      case AndroidIconSize.hdpi:
+      case AndroidIcons.hdpi:
         return 72;
-      case AndroidIconSize.xhdpi:
+      case AndroidIcons.xhdpi:
         return 96;
-      case AndroidIconSize.xxhdpi:
+      case AndroidIcons.xxhdpi:
         return 144;
-      case AndroidIconSize.xxxhdpi:
+      case AndroidIcons.xxxhdpi:
       default:
         return 192;
     }

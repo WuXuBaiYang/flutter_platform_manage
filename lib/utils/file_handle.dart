@@ -38,13 +38,13 @@ class FileHandle {
       _xmlDocument ??= XmlDocument.parse(await fileContent);
 
   // 使用正则匹配字符串
-  Future<String> regStringMatch(RegExp reg, {RegExp? re}) async {
+  Future<String> stringMatch(RegExp reg, {RegExp? re}) async {
     var v = reg.stringMatch(await fileContent) ?? "";
     return null != re ? v.replaceAll(re, "") : v;
   }
 
   // 使用正则匹配字符串集合
-  Future<List<String>> regStringListMatch(RegExp reg,
+  Future<List<String>> stringListMatch(RegExp reg,
       {int group = 0, RegExp? re}) async {
     return reg.allMatches(await fileContent).map((e) {
       var v = e.group(group) ?? "";
@@ -53,7 +53,7 @@ class FileHandle {
   }
 
   // 使用正则替换目标参数并返回文件内容
-  Future<String> regReplace(RegExp reg, String value) async {
+  Future<String> replace(RegExp reg, String value) async {
     var content = await fileContent;
     if (reg.hasMatch(content)) {
       content = content.replaceAll(reg, value);
@@ -70,12 +70,15 @@ class FileHandle {
   }
 
   // 获取xml文件首个目标标签的属性值
-  Future<String> xmlSingleTagAttribute(String elName,
+  Future<String> singleAtt(String elName,
       {required String attName, String? namespace}) async {
     try {
-      return (await xmlTagAttributes(elName,
-              attName: attName, namespace: namespace))
-          .single;
+      return (await attList(
+        elName,
+        attName: attName,
+        namespace: namespace,
+      ))
+          .first;
     } catch (e) {
       // 文件选择异常
     }
@@ -83,7 +86,7 @@ class FileHandle {
   }
 
   // 获取xml文件所有目标标签的属性值集合
-  Future<List<String>> xmlTagAttributes(String elName,
+  Future<List<String>> attList(String elName,
       {required String attName, String? namespace}) async {
     return (await _xmlFindAll(elName, namespace: namespace))
         .map((e) => e.getAttribute(attName) ?? "")
@@ -91,7 +94,7 @@ class FileHandle {
   }
 
   // 获取xml文件标签文本匹配的标签对象
-  Future<XmlElement?> xmlTagMatchTextElement(String elName,
+  Future<XmlElement?> matchTextEl(String elName,
       {required String target, String? namespace}) async {
     try {
       return (await _xmlFindAll(elName, namespace: namespace))
@@ -103,22 +106,25 @@ class FileHandle {
   }
 
   // 获取xml文件标签文本匹配的标签对象的同级下一个
-  Future<XmlElement?> xmlTagMatchTextElementNext(String elName,
+  Future<XmlElement?> matchTextElNext(String elName,
       {required String target, String? namespace}) async {
-    return (await xmlTagMatchTextElement(elName,
-            target: target, namespace: namespace))
+    return (await matchTextEl(
+      elName,
+      target: target,
+      namespace: namespace,
+    ))
         ?.nextElementSibling;
   }
 
   // 获取xml文件标签的文本值
-  Future<List<String>> xmlTagTexts(String elName, {String? namespace}) async {
+  Future<List<String>> elTextList(String elName, {String? namespace}) async {
     return (await _xmlFindAll(elName, namespace: namespace))
         .map((e) => e.text)
         .toList();
   }
 
   // 修改xml文件标签属性值
-  Future<void> xmlTagAttributesModify(String elName,
+  Future<void> setElAtt(String elName,
       {required String attName,
       required String value,
       String? namespace}) async {
@@ -128,7 +134,7 @@ class FileHandle {
   }
 
   // 修改xml文件标签的文本值
-  Future<void> xmlTagTextsModify(String elName,
+  Future<void> setElText(String elName,
       {required String value, String? namespace}) async {
     for (var it in await _xmlFindAll(elName, namespace: namespace)) {
       it.innerText = value;
@@ -136,36 +142,43 @@ class FileHandle {
   }
 
   // 插入xml文件目标标签下元素
-  Future<void> xmlTagElementInsert(String elName,
-      {required List<XmlNode> nodes, int index = 0, String? namespace}) async {
+  Future<void> insertEl(
+    String elName, {
+    required List<XmlNode> nodes,
+    int index = 0,
+    String? namespace,
+  }) async {
     try {
-      var el = (await _xmlFindAll(elName, namespace: namespace)).single;
-      el.children.insertAll(index, nodes);
+      var el = (await xmlDocument).getElement(elName);
+      el?.children.insertAll(index, nodes);
     } catch (e) {
       // 插入失败
     }
   }
 
   // 删除xml文件指定标签
-  Future<void> xmlTagElementsRemove(String elName, {String? namespace}) async {
-    for (var it in await _xmlFindAll(elName, namespace: namespace)) {
-      var p = it.parentElement;
-      if (null == p) {
-        _xmlDocument = null;
-        _fileContent = "";
-        return;
-      }
-      p.childElements.toList().remove(it);
+  Future<void> removeEl(String elName,
+      {required String target, String? namespace}) async {
+    for (var it in await _xmlFindAll(target, namespace: namespace)) {
+      it.children.removeWhere((e) {
+        if (e.nodeType == XmlNodeType.ELEMENT) {
+          var el = e as XmlElement;
+          return el.name.toString() == elName;
+        }
+        return false;
+      });
     }
   }
 
   // 文件提交操作
-  Future<bool> commit() async {
+  Future<bool> commit({bool indentAtt = false}) async {
     try {
       if (null != _xmlDocument) {
         _fileContent = _xmlDocument?.toXmlString(
           pretty: true,
           indent: '\t',
+          newLine: '\n',
+          indentAttribute: (v) => indentAtt,
         );
       }
       _file.writeAsStringSync(

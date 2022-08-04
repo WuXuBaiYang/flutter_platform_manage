@@ -1,4 +1,5 @@
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/utils/file_handle.dart';
 
 /*
 * linux平台信息
@@ -12,12 +13,24 @@ class LinuxPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
+    var handle = FileHandle.from("");
+    try {
+      /// 实现代码
+    } catch (e) {
+      return false;
+    }
     return true;
   }
 
   @override
   Future<bool> commit() async {
-    return true;
+    var handle = FileHandle.from("");
+    try {
+      /// 实现代码
+    } catch (e) {
+      return false;
+    }
+    return handle.commit();
   }
 
   @override

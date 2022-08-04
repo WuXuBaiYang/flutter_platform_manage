@@ -77,8 +77,8 @@ class ProjectModel {
     try {
       exist = handle.existAsync;
       // 处理pubspec.yaml文件
-      name = await handle.regStringMatch(_nameReg, re: _nameRegRe);
-      version = await handle.regStringMatch(_versionReg, re: _versionRegRe);
+      name = await handle.stringMatch(_nameReg, re: _nameRegRe);
+      version = await handle.stringMatch(_versionReg, re: _versionRegRe);
       // 处理平台信息
       platformMap = {};
       for (var t in PlatformType.values) {
@@ -118,7 +118,7 @@ class ProjectModel {
   // 修改pubspec中的项目名称
   Future<bool> modifyProjectName(String name, {FileHandle? handle}) async {
     handle ??= FileHandle.from(pubspecFilePath);
-    await handle.regReplace(_nameReg, "name: $name");
+    await handle.replace(_nameReg, "name: $name");
     return handle.commit();
   }
 
@@ -126,7 +126,7 @@ class ProjectModel {
   Future<bool> modifyProjectVersion(String version,
       {FileHandle? handle}) async {
     handle ??= FileHandle.from(pubspecFilePath);
-    await handle.regReplace(_versionReg, "version: $version");
+    await handle.replace(_versionReg, "version: $version");
     return handle.commit();
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/model/platform/linux_platform.dart';
 import 'package:flutter_platform_manage/model/platform/macos_platform.dart';
 import 'package:flutter_platform_manage/model/platform/web_platform.dart';
 import 'package:flutter_platform_manage/model/platform/windows_platform.dart';
+import 'package:flutter_platform_manage/utils/file_handle.dart';
 
 /*
 * 平台基类

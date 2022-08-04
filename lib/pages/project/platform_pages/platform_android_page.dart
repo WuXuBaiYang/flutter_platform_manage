@@ -201,7 +201,7 @@ class _PlatformAndroidPageState
             leading: const Text("应用图标（立即生效）"),
             trailing: Button(
               child: const Text("批量替换"),
-              onPressed: () => _pickLogoAndReplace(AndroidIconSize.values),
+              onPressed: () => _pickLogoAndReplace(AndroidIcons.values),
             ),
           ),
           ListView.separated(
@@ -216,7 +216,7 @@ class _PlatformAndroidPageState
   }
 
   // 构建应用图标列表子项
-  Widget _buildAppLogoItem(Map<AndroidIconSize, String> iconsMap, int i) {
+  Widget _buildAppLogoItem(Map<AndroidIcons, String> iconsMap, int i) {
     var type = iconsMap.keys.elementAt(i),
         path = iconsMap[type] ?? "",
         sizePx = type.sizePx.toInt();
@@ -258,7 +258,7 @@ class _PlatformAndroidPageState
 
   // 选择附件
   Future<void> _pickLogoAndReplace(
-    List<AndroidIconSize> iconSizes, {
+    List<AndroidIcons> iconSizes, {
     String suffix = ".png",
   }) async {
     var result = await FilePicker.platform.pickFiles(
