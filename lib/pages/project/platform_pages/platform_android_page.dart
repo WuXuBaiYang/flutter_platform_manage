@@ -253,14 +253,22 @@ class _PlatformAndroidPageState
     String suffix = ".png",
   }) async {
     var result = await FilePicker.platform.pickFiles(
-      dialogTitle: "选择 .png 图片，尺寸 192px 至 1024px 正方形最佳",
+      dialogTitle: "请选择png图片，仅支持192px以上的正方形图片",
       allowCompression: false,
       lockParentWindow: true,
       type: FileType.image,
     );
     if (null == result || result.count <= 0) return;
+    // 判断图片是否符合标准：192px，正方形
+    var f = File(result.paths.first ?? "");
+    var imgSize = await Utils.loadImageSize(f);
+    if (imgSize.aspectRatio != 1.0 || imgSize < const Size(192, 192)) {
+      // ignore: use_build_context_synchronously
+      Utils.showSnack(context, "图片尺寸必须大于等于 *192x192像素* 并为 *正方形* ");
+      return;
+    }
     var path = widget.platformInfo.platformPath;
-    final rawImage = await File(result.paths.first ?? "").readAsBytes();
+    final rawImage = await f.readAsBytes();
     for (var it in iconSizes) {
       var f = File("$path/${it.getAbsolutePath(
         widget.platformInfo.iconPath,

@@ -26,7 +26,10 @@ class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
 class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   @override
   List<Widget> loadItemList(BuildContext context) {
-    return [];
+    return [
+      buildBundleName(),
+      buildBundleDisplayName(),
+    ];
   }
 
   // 构建应用名编辑项

@@ -47,7 +47,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   final controller = CacheFutureBuilderController<ProjectModel>();
 
   // 底部导航条当前下标
-  final bottomBarIndex = ValueNotifier<int>(0);
+  final bottomBarIndex = ValueNotifier<int>(1);
 
   @override
   void initState() {

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart' as crypto;
@@ -117,5 +119,25 @@ class Utils {
         targetWidth: width, targetHeight: height);
     final resizedImage = (await codec.getNextFrame()).image;
     return resizedImage.toByteData(format: ui.ImageByteFormat.png);
+  }
+
+  // 获取图片参数信息
+  static Future<ImageInfo> loadImageInfo(File file) {
+    var c = Completer<ImageInfo>();
+    Image.file(file)
+        .image
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener(
+          (info, _) => c.complete(info),
+          onError: (exception, stackTrace) =>
+              c.completeError(exception, stackTrace),
+        ));
+    return c.future;
+  }
+
+  // 获取图片尺寸
+  static Future<Size> loadImageSize(File file) async {
+    var img = (await loadImageInfo(file)).image;
+    return Size(img.width.toDouble(), img.height.toDouble());
   }
 }
