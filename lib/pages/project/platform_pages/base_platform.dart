@@ -43,57 +43,60 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   Widget build(BuildContext context) {
     var settingList = loadSettingList;
     if (settingList.isEmpty) return const Center(child: Text("功能开发中"));
-    return ScaffoldPage(
-      padding: EdgeInsets.zero,
-      header: PageHeader(
-        padding: 0,
-        title: Text(
-          Utils.toBeginningOfSentenceCase(
-            "${widget.platformInfo.type.name}平台",
+    return PrimaryScrollController(
+      controller: ScrollController(),
+      child: ScaffoldPage(
+        padding: EdgeInsets.zero,
+        header: PageHeader(
+          padding: 0,
+          title: Text(
+            Utils.toBeginningOfSentenceCase(
+              "${widget.platformInfo.type.name}平台",
+            ),
+          ),
+          commandBar: CommandBarCard(
+            elevation: 0,
+            child: CommandBar(
+              overflowBehavior: CommandBarOverflowBehavior.noWrap,
+              primaryItems: [
+                CommandBarButton(
+                  icon: const Icon(FluentIcons.save),
+                  label: const Text("保存"),
+                  onPressed: () => submit(),
+                )
+              ],
+            ),
           ),
         ),
-        commandBar: CommandBarCard(
-          elevation: 0,
-          child: CommandBar(
-            overflowBehavior: CommandBarOverflowBehavior.noWrap,
-            primaryItems: [
-              CommandBarButton(
-                icon: const Icon(FluentIcons.save),
-                label: const Text("保存"),
-                onPressed: () => submit(),
-              )
-            ],
-          ),
-        ),
-      ),
-      content: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          child: Form(
-            autovalidateMode: AutovalidateMode.always,
-            key: _formKey,
-            onWillPop: () async {
-              if (_hashCode != widget.platformInfo.hashCode) {
-                ImportantOptionDialog.show(
-                  context,
-                  message: "当前页面有未保存的内容，继续退出将丢失已编辑的信息",
-                  middle: Button(
-                    child: const Text("保存"),
-                    onPressed: () => submit().then((v) {
-                      Navigator.pop(context);
-                      if (v) Navigator.pop(context);
-                    }),
-                  ),
-                  onConfirmTap: () => Navigator.pop(context),
-                );
-                return false;
-              }
-              return true;
-            },
-            child: Wrap(
-              spacing: 14,
-              runSpacing: 14,
-              children: settingList,
+        content: SingleChildScrollView(
+          child: SizedBox(
+            width: double.infinity,
+            child: Form(
+              autovalidateMode: AutovalidateMode.always,
+              key: _formKey,
+              onWillPop: () async {
+                if (_hashCode != widget.platformInfo.hashCode) {
+                  ImportantOptionDialog.show(
+                    context,
+                    message: "当前页面有未保存的内容，继续退出将丢失已编辑的信息",
+                    middle: Button(
+                      child: const Text("保存"),
+                      onPressed: () => submit().then((v) {
+                        Navigator.pop(context);
+                        if (v) Navigator.pop(context);
+                      }),
+                    ),
+                    onConfirmTap: () => Navigator.pop(context),
+                  );
+                  return false;
+                }
+                return true;
+              },
+              child: Wrap(
+                spacing: 14,
+                runSpacing: 14,
+                children: settingList,
+              ),
             ),
           ),
         ),
