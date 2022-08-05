@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
@@ -56,6 +58,18 @@ class IOSPlatform extends BasePlatform {
 
   @override
   String? get projectIcon {}
+
+  @override
+  Future<bool> modifyDisplayName(String name,
+      {FileHandle? handle, bool autoCommit = false}) async {
+    return true;
+  }
+
+  @override
+  Future<void> modifyProjectIcon(File file) async {}
+
+  @override
+  Future<void> projectPackaging(File output) async {}
 
   @override
   bool operator ==(dynamic other) {
@@ -159,9 +173,9 @@ extension IOSIconsExtension on IOSIcons {
       }[this]!;
 
   // 拼装附件相对路径
-  String getAbsolutePath({String suffix = ".png"}) {
+  String get absolutePath {
     var m = multiple, s = sizePx / m;
-    var fileName = "Icon-App-${s}x$s@${m}x$suffix";
+    var fileName = "Icon-App-${s}x$s@${m}x.png";
     return "${ProjectFilePath.iosAssetsAppIcon}/$fileName";
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 
@@ -35,4 +37,16 @@ class WindowsPlatform extends BasePlatform {
 
   @override
   String? get projectIcon {}
+
+  @override
+  Future<bool> modifyDisplayName(String name,
+      {FileHandle? handle, bool autoCommit = false}) async {
+    return true;
+  }
+
+  @override
+  Future<void> modifyProjectIcon(File file) async {}
+
+  @override
+  Future<void> projectPackaging(File output) async {}
 }

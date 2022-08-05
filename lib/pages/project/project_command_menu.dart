@@ -72,13 +72,6 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("添加权限"),
-              onPressed: () {
-                Utils.showSnack(context, "开发中");
-              },
-            ),
-            CommandBarButton(
-              icon: const Icon(FluentIcons.access_logo),
               label: const Text("替换图标"),
               onPressed: () {
                 Utils.showSnack(context, "开发中");

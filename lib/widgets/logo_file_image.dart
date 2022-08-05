@@ -44,7 +44,7 @@ class _LogoFileImageState extends State<LogoFileImage> {
     super.initState();
     // 监听项目图标变化消息
     subscription = eventManage.on<ProjectLogoChangeEvent>().listen((event) {
-      if (event.filePath == widget.file.path) {
+      if (event.filePaths.contains(widget.file.path)) {
         setState(() {});
       }
     });

@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
+import 'package:flutter_platform_manage/manager/event_manage.dart';
 import 'package:flutter_platform_manage/manager/permission_manage.dart';
+import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:xml/xml.dart';
 
 /*
@@ -33,12 +37,11 @@ class AndroidPlatform extends BasePlatform {
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // 获取图标文件路径集合
-  Map<AndroidIcons, String> loadIcons(
-      {String suffix = ".png", bool reversed = false}) {
+  Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
     if (iconPath.isEmpty) return {};
     var values = AndroidIcons.values;
     return Map.fromEntries((reversed ? values.reversed : values).map((e) {
-      var path = e.getAbsolutePath(iconPath, suffix: suffix);
+      var path = e.getAbsolutePath(iconPath);
       return MapEntry(e, "$platformPath/$path");
     }));
   }
@@ -55,12 +58,16 @@ class AndroidPlatform extends BasePlatform {
     var handle = FileHandle.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
+      // 获取图标路径信息
       iconPath =
           (await handle.singleAtt("application", attName: "android:icon"))
               .replaceAll(r'@', "");
       if (!simple) {
+        // 获取label
         label = await handle.singleAtt("application", attName: "android:label");
+        // 获取包名
         package = await handle.singleAtt("manifest", attName: "package");
+        // 获取权限集合
         permissions = await permissionManage.findAllAndroidPermissions(
           await handle.attList('uses-permission', attName: 'android:name'),
         );
@@ -76,12 +83,13 @@ class AndroidPlatform extends BasePlatform {
     var handle = FileHandle.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
-      await handle.setElAtt("application",
-          attName: "android:label", value: label);
+      // 修改label
+      await modifyDisplayName(label, handle: handle);
+      // 修改包名
       await handle.setElAtt("manifest", attName: "package", value: package);
-      // 先移除所有权限标签
+      // 移除所有权限
       await handle.removeEl("uses-permission", target: "manifest");
-      // 写入新的权限标签集合
+      // 封装权限并插入
       var nodes = permissions.map((e) {
         return XmlElement(XmlName("uses-permission"), [
           XmlAttribute(XmlName("android:name"), e.value),
@@ -92,6 +100,7 @@ class AndroidPlatform extends BasePlatform {
       if (!await handle.commit(indentAtt: true)) return false;
       // 处理app/build.gradle文件
       handle = FileHandle.from(appBuildGradle);
+      // 修改包名
       await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
           'applicationId "$package"');
     } catch (e) {
@@ -111,6 +120,44 @@ class AndroidPlatform extends BasePlatform {
     }
     return null;
   }
+
+  @override
+  Future<bool> modifyDisplayName(String name,
+      {FileHandle? handle, bool autoCommit = false}) async {
+    handle ??= FileHandle.from(manifestFilePath);
+    // 修改label
+    await handle.setElAtt("application", attName: "android:label", value: name);
+    return autoCommit ? await handle.commit(indentAtt: true) : true;
+  }
+
+  @override
+  Future<void> modifyProjectIcon(File file) async {
+    // 判断图片是否为正方形，并尺寸是否>=192像素
+    var imgSize = await Utils.loadImageSize(file);
+    if (imgSize.aspectRatio != 1.0 || imgSize < const Size(192, 192)) {
+      throw Exception("Android平台图标必须大于等于 *192x192像素* 并为 *正方形* ");
+    }
+    // 对图片尺寸进行遍历和压缩
+    var paths = <String>[];
+    final rawImage = await file.readAsBytes();
+    for (var it in AndroidIcons.values) {
+      var f = File("$platformPath/${it.getAbsolutePath(iconPath)}");
+      var imageSize = it.sizePx.toInt();
+      var bytes = await Utils.resizeImage(
+        rawImage,
+        height: imageSize,
+        width: imageSize,
+      );
+      if (null == bytes) continue;
+      f = await f.writeAsBytes(bytes.buffer.asInt8List());
+      paths.add(f.path);
+    }
+    // 发送图片源变动的地址集合
+    eventManage.fire(ProjectLogoChangeEvent(paths));
+  }
+
+  @override
+  Future<void> projectPackaging(File output) async {}
 
   @override
   bool operator ==(dynamic other) {
@@ -164,8 +211,8 @@ extension AndroidIconsExtension on AndroidIcons {
       }[this]!;
 
   // 拼装附件相对路径
-  String getAbsolutePath(String iconPath, {String suffix = ".png"}) {
-    var t = iconPath.split("/"), dir = t.first, fileName = t.last + suffix;
+  String getAbsolutePath(String iconPath) {
+    var t = iconPath.split("/"), dir = t.first, fileName = "${t.last}.png";
     return "${ProjectFilePath.androidRes}/$dir-$name/$fileName";
   }
 }

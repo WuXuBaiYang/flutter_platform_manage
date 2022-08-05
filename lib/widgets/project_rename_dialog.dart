@@ -91,7 +91,8 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
                   },
                   onSaved: (v) {
                     if (null != v && widget.projectModel.name != v) {
-                      widget.projectModel.modifyProjectName(v);
+                      widget.projectModel
+                          .modifyProjectName(v, autoCommit: true);
                     }
                   },
                   inputFormatters: [

@@ -100,7 +100,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
               },
               onSaved: (v) {
                 if (null != v && widget.projectModel.version != v) {
-                  widget.projectModel.modifyProjectVersion(v);
+                  widget.projectModel.modifyProjectVersion(v, autoCommit: true);
                 }
               },
               inputFormatters: [

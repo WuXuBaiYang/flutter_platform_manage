@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/platform/android_platform.dart';
 import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_platform_manage/model/platform/linux_platform.dart';
 import 'package:flutter_platform_manage/model/platform/macos_platform.dart';
 import 'package:flutter_platform_manage/model/platform/web_platform.dart';
 import 'package:flutter_platform_manage/model/platform/windows_platform.dart';
+import 'package:flutter_platform_manage/utils/file_handle.dart';
 
 /*
 * 平台基类
@@ -31,6 +34,16 @@ abstract class BasePlatform {
 
   // 获取应用图标
   String? get projectIcon;
+
+  // 修改平台应用名（展示名称）
+  Future<bool> modifyDisplayName(String name,
+      {FileHandle? handle, bool autoCommit = false});
+
+  // 修改平台图标
+  Future<void> modifyProjectIcon(File file);
+
+  // 项目打包
+  Future<void> projectPackaging(File output);
 }
 
 /*

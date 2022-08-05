@@ -199,7 +199,7 @@ class _PlatformAndroidPageState
           title: const Text("应用图标（立即生效）"),
           trailing: Button(
             child: const Text("批量替换"),
-            onPressed: () => _pickLogoAndReplace(AndroidIcons.values),
+            onPressed: () => _pickLogoAndReplace(),
           ),
           onTap: () => _showLogoList(info.loadIcons(reversed: true)),
         ),
@@ -248,41 +248,21 @@ class _PlatformAndroidPageState
   }
 
   // 选择附件
-  Future<void> _pickLogoAndReplace(
-    List<AndroidIcons> iconSizes, {
-    String suffix = ".png",
-  }) async {
-    var result = await FilePicker.platform.pickFiles(
-      dialogTitle: "请选择png图片，仅支持192px以上的正方形图片",
-      allowCompression: false,
-      lockParentWindow: true,
-      type: FileType.image,
-    );
-    if (null == result || result.count <= 0) return;
-    // 判断图片是否符合标准：192px，正方形
-    var f = File(result.paths.first ?? "");
-    var imgSize = await Utils.loadImageSize(f);
-    if (imgSize.aspectRatio != 1.0 || imgSize < const Size(192, 192)) {
-      // ignore: use_build_context_synchronously
-      Utils.showSnack(context, "图片尺寸必须大于等于 *192x192像素* 并为 *正方形* ");
-      return;
-    }
-    var path = widget.platformInfo.platformPath;
-    final rawImage = await f.readAsBytes();
-    for (var it in iconSizes) {
-      var f = File("$path/${it.getAbsolutePath(
-        widget.platformInfo.iconPath,
-        suffix: suffix,
-      )}");
-      var imageSize = it.sizePx.toInt();
-      var bytes = await Utils.resizeImage(
-        rawImage,
-        height: imageSize,
-        width: imageSize,
+  Future<void> _pickLogoAndReplace() async {
+    try {
+      // 选择图标文件
+      var result = await FilePicker.platform.pickFiles(
+        dialogTitle: "请选择png图片，仅支持192px以上的正方形图片",
+        allowCompression: false,
+        lockParentWindow: true,
+        type: FileType.image,
       );
-      if (null == bytes) continue;
-      f = await f.writeAsBytes(bytes.buffer.asInt8List());
-      eventManage.fire(ProjectLogoChangeEvent(f.path));
+      if (null == result || result.count <= 0) return;
+      // 替换项目中的图标
+      var f = File(result.paths.first ?? "");
+      await widget.platformInfo.modifyProjectIcon(f);
+    } catch (e) {
+      Utils.showSnack(context, e.toString());
     }
   }
 }

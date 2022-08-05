@@ -79,7 +79,9 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
                 if (_hashCode != widget.platformInfo.hashCode) {
                   ImportantOptionDialog.show(
                     context,
-                    message: "当前页面有未保存的内容，继续退出将丢失已编辑的信息",
+                    title:
+                        "${widget.platformInfo.type.name.toUpperCase()}平台未保存",
+                    message: "继续退出将丢失已编辑的信息",
                     middle: Button(
                       child: const Text("保存"),
                       onPressed: () => submit().then((v) {

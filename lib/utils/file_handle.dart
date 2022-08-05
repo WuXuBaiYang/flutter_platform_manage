@@ -53,12 +53,11 @@ class FileHandle {
   }
 
   // 使用正则替换目标参数并返回文件内容
-  Future<String> replace(RegExp reg, String value) async {
+  Future<void> replace(RegExp reg, String value) async {
     var content = await fileContent;
     if (reg.hasMatch(content)) {
-      content = content.replaceAll(reg, value);
+      _fileContent = content.replaceAll(reg, value);
     }
-    return content;
   }
 
   // 根据标签名获取对应标签集合

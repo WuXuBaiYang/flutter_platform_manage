@@ -44,13 +44,6 @@ class ProjectModel {
     return t.isEmpty ? name : "$t($name)";
   }
 
-  // 缓存环境信息
-  Environment? _environment;
-
-  // 获取当前项目对应的环境对象
-  Environment? get environment =>
-      _environment ??= dbManage.find<Environment>(project.environmentKey);
-
   // 获取应用图标
   Map<PlatformType, String> get projectIconsMap {
     for (var it in platformMap.values) {
@@ -59,6 +52,13 @@ class ProjectModel {
     }
     return {};
   }
+
+  // 缓存环境信息
+  Environment? _environment;
+
+  // 获取当前项目对应的环境对象
+  Environment? get environment =>
+      _environment ??= dbManage.find<Environment>(project.environmentKey);
 
   // 项目名称正则
   final _nameReg = RegExp(r'name: .+');
@@ -75,16 +75,21 @@ class ProjectModel {
   Future<bool> update(bool simple) async {
     var handle = FileHandle.from(pubspecFilePath);
     try {
-      exist = handle.existAsync;
       // 处理pubspec.yaml文件
+      // 判断项目是否存在
+      exist = handle.existAsync;
+      // 获取项目名称
       name = await handle.stringMatch(_nameReg, re: _nameRegRe);
+      // 获取项目版本号
       version = await handle.stringMatch(_versionReg, re: _versionRegRe);
       // 处理平台信息
+      // 遍历并创建平台对象
       platformMap = {};
       for (var t in PlatformType.values) {
         var d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
         var p = t.create(d.path);
+        // 更新平台信息
         if (!await p.update(simple)) return false;
         platformMap[t] = p;
       }
@@ -101,9 +106,12 @@ class ProjectModel {
     var handle = FileHandle.from(pubspecFilePath);
     try {
       // 处理pubspec.yaml文件
-      modifyProjectName(name, handle: handle);
-      modifyProjectVersion(version, handle: handle);
+      // 修改项目名称
+      await modifyProjectName(name, handle: handle);
+      // 修改项目版本号
+      await modifyProjectVersion(version, handle: handle);
       // 处理平台信息
+      // 遍历平台并执行提交
       for (var p in platformMap.values) {
         if (!await p.commit()) return false;
       }
@@ -116,17 +124,37 @@ class ProjectModel {
   }
 
   // 修改pubspec中的项目名称
-  Future<bool> modifyProjectName(String name, {FileHandle? handle}) async {
+  Future<bool> modifyProjectName(String name,
+      {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(pubspecFilePath);
+    // 修改项目名称
     await handle.replace(_nameReg, "name: $name");
-    return handle.commit();
+    return autoCommit ? await handle.commit() : true;
   }
 
   // 修改pubspec中的应用版本号
   Future<bool> modifyProjectVersion(String version,
-      {FileHandle? handle}) async {
+      {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(pubspecFilePath);
+    // 修改项目版本号
     await handle.replace(_versionReg, "version: $version");
-    return handle.commit();
+    return autoCommit ? await handle.commit() : true;
+  }
+
+  // 修改展示名称
+  Future<bool> modifyDisplayName(String name) async {
+    return true;
+
+    ///待实现
+  }
+
+  // 修改平台图标
+  Future<void> modifyProjectIcon(File file) async {
+    ///待实现
+  }
+
+  // 项目平台打包
+  Future<void> projectPackaging(File output) async {
+    ///待实现
   }
 }
