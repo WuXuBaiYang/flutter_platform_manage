@@ -102,100 +102,61 @@ enum IOSIcons {
 */
 extension IOSIconsExtension on IOSIcons {
   // 图标展示尺寸
-  double get showSize {
-    switch (this) {
-      case IOSIcons.x1_20:
-        return 15;
-      case IOSIcons.x2_20:
-        return 25;
-      case IOSIcons.x3_20:
-        return 35;
-      case IOSIcons.x1_29:
-        return 25;
-      case IOSIcons.x2_29:
-        return 35;
-      case IOSIcons.x3_29:
-        return 45;
-      case IOSIcons.x1_40:
-        return 35;
-      case IOSIcons.x2_40:
-        return 45;
-      case IOSIcons.x3_40:
-        return 55;
-      case IOSIcons.x2_60:
-        return 45;
-      case IOSIcons.x3_60:
-        return 55;
-      case IOSIcons.x1_76:
-        return 55;
-      case IOSIcons.x2_76:
-        return 65;
-      case IOSIcons.x2_83_5:
-        return 65;
-      case IOSIcons.x1_1024:
-        return 75;
-    }
-  }
+  double get showSize => const {
+        IOSIcons.x1_20: 15.0,
+        IOSIcons.x2_20: 25.0,
+        IOSIcons.x3_20: 35.0,
+        IOSIcons.x1_29: 25.0,
+        IOSIcons.x2_29: 35.0,
+        IOSIcons.x3_29: 45.0,
+        IOSIcons.x1_40: 35.0,
+        IOSIcons.x2_40: 45.0,
+        IOSIcons.x3_40: 55.0,
+        IOSIcons.x2_60: 45.0,
+        IOSIcons.x3_60: 55.0,
+        IOSIcons.x1_76: 55.0,
+        IOSIcons.x2_76: 65.0,
+        IOSIcons.x2_83_5: 65.0,
+        IOSIcons.x1_1024: 75.0,
+      }[this]!;
 
   // 获取真实图片尺寸
-  double get sizePx {
-    switch (this) {
-      case IOSIcons.x1_20:
-        return 20;
-      case IOSIcons.x2_20:
-        return 40;
-      case IOSIcons.x3_20:
-        return 60;
-      case IOSIcons.x1_29:
-        return 29;
-      case IOSIcons.x2_29:
-        return 58;
-      case IOSIcons.x3_29:
-        return 87;
-      case IOSIcons.x1_40:
-        return 40;
-      case IOSIcons.x2_40:
-        return 80;
-      case IOSIcons.x3_40:
-        return 120;
-      case IOSIcons.x2_60:
-        return 120;
-      case IOSIcons.x3_60:
-        return 180;
-      case IOSIcons.x1_76:
-        return 76;
-      case IOSIcons.x2_76:
-        return 152;
-      case IOSIcons.x2_83_5:
-        return 167;
-      case IOSIcons.x1_1024:
-        return 1024;
-    }
-  }
+  double get sizePx => const {
+        IOSIcons.x1_20: 20.0,
+        IOSIcons.x2_20: 40.0,
+        IOSIcons.x3_20: 60.0,
+        IOSIcons.x1_29: 29.0,
+        IOSIcons.x2_29: 58.0,
+        IOSIcons.x3_29: 87.0,
+        IOSIcons.x1_40: 40.0,
+        IOSIcons.x2_40: 80.0,
+        IOSIcons.x3_40: 120.0,
+        IOSIcons.x2_60: 120.0,
+        IOSIcons.x3_60: 180.0,
+        IOSIcons.x1_76: 76.0,
+        IOSIcons.x2_76: 152.0,
+        IOSIcons.x2_83_5: 167.0,
+        IOSIcons.x1_1024: 1024.0,
+      }[this]!;
 
   // 倍数关系
-  int get multiple {
-    switch (this) {
-      case IOSIcons.x1_20:
-      case IOSIcons.x1_29:
-      case IOSIcons.x1_40:
-      case IOSIcons.x1_76:
-      case IOSIcons.x1_1024:
-        return 1;
-      case IOSIcons.x2_20:
-      case IOSIcons.x2_29:
-      case IOSIcons.x2_40:
-      case IOSIcons.x2_60:
-      case IOSIcons.x2_76:
-      case IOSIcons.x2_83_5:
-        return 2;
-      case IOSIcons.x3_20:
-      case IOSIcons.x3_29:
-      case IOSIcons.x3_40:
-      case IOSIcons.x3_60:
-        return 3;
-    }
-  }
+  int get multiple => const {
+        IOSIcons.x1_20: 1,
+        IOSIcons.x1_29: 1,
+        IOSIcons.x1_40: 1,
+        IOSIcons.x1_76: 1,
+        IOSIcons.x1_1024: 1,
+        IOSIcons.x2_20: 2,
+        IOSIcons.x2_29: 2,
+        IOSIcons.x2_40: 2,
+        IOSIcons.x2_60: 2,
+        IOSIcons.x2_76: 2,
+        IOSIcons.x2_83_5: 2,
+        IOSIcons.x3_20: 3,
+        IOSIcons.x3_29: 3,
+        IOSIcons.x3_40: 3,
+        IOSIcons.x3_60: 3,
+      }[this]!;
 
   // 拼装附件相对路径
   String getAbsolutePath({String suffix = ".png"}) {

@@ -54,38 +54,22 @@ enum PlatformType {
 */
 extension PlatformTypeExtension on PlatformType {
   // 创建平台信息对象
-  BasePlatform create(String platformPath) {
-    switch (this) {
-      case PlatformType.android:
-        return AndroidPlatform(platformPath: platformPath);
-      case PlatformType.ios:
-        return IOSPlatform(platformPath: platformPath);
-      case PlatformType.web:
-        return WebPlatform(platformPath: platformPath);
-      case PlatformType.windows:
-        return WindowsPlatform(platformPath: platformPath);
-      case PlatformType.macos:
-        return MacOSPlatform(platformPath: platformPath);
-      case PlatformType.linux:
-        return LinuxPlatform(platformPath: platformPath);
-    }
-  }
+  BasePlatform create(String platformPath) => {
+        PlatformType.android: (_) => AndroidPlatform(platformPath: _),
+        PlatformType.ios: (_) => IOSPlatform(platformPath: _),
+        PlatformType.web: (_) => WebPlatform(platformPath: _),
+        PlatformType.windows: (_) => WindowsPlatform(platformPath: _),
+        PlatformType.macos: (_) => MacOSPlatform(platformPath: _),
+        PlatformType.linux: (_) => LinuxPlatform(platformPath: _),
+      }[this]!(platformPath);
 
   // 获取平台图标
-  String get platformImage {
-    switch (this) {
-      case PlatformType.android:
-        return Common.platformAndroid;
-      case PlatformType.ios:
-        return Common.platformIOS;
-      case PlatformType.web:
-        return Common.platformWeb;
-      case PlatformType.windows:
-        return Common.platformWindows;
-      case PlatformType.macos:
-        return Common.platformMacos;
-      case PlatformType.linux:
-        return Common.platformLinux;
-    }
-  }
+  String get platformImage => const {
+        PlatformType.android: Common.platformAndroid,
+        PlatformType.ios: Common.platformIOS,
+        PlatformType.web: Common.platformWeb,
+        PlatformType.windows: Common.platformWindows,
+        PlatformType.macos: Common.platformMacos,
+        PlatformType.linux: Common.platformLinux,
+      }[this]!;
 }

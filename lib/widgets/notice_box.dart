@@ -85,15 +85,9 @@ enum NoticeBoxSize { small, middle, large }
 */
 extension WarningBoxSizeExtension on NoticeBoxSize {
   // 根据枚举获取具体尺寸
-  double get size {
-    switch (this) {
-      case NoticeBoxSize.small:
-        return 45;
-      case NoticeBoxSize.large:
-        return 85;
-      case NoticeBoxSize.middle:
-      default:
-        return 65;
-    }
-  }
+  double get size => const {
+        NoticeBoxSize.small: 45.0,
+        NoticeBoxSize.large: 85.0,
+        NoticeBoxSize.middle: 65.0,
+      }[this]!;
 }

@@ -71,24 +71,14 @@ enum PlatformTagSize { small, middle }
 */
 extension PlatformTagSizeExtension on PlatformTagSize {
   // 获取实际尺寸
-  double get size {
-    switch (this) {
-      case PlatformTagSize.small:
-        return 10;
-      case PlatformTagSize.middle:
-      default:
-        return 14;
-    }
-  }
+  double get size => const {
+        PlatformTagSize.small: 10.0,
+        PlatformTagSize.middle: 14.0,
+      }[this]!;
 
   // 获取间隔尺寸
-  double get gapSize {
-    switch (this) {
-      case PlatformTagSize.small:
-        return 4;
-      case PlatformTagSize.middle:
-      default:
-        return 8;
-    }
-  }
+  double get gapSize => const {
+        PlatformTagSize.small: 4.0,
+        PlatformTagSize.middle: 8.0,
+      }[this]!;
 }

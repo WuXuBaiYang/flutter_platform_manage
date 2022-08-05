@@ -146,38 +146,22 @@ enum AndroidIcons { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
 */
 extension AndroidIconsExtension on AndroidIcons {
   // 图标展示尺寸
-  double get showSize {
-    switch (this) {
-      case AndroidIcons.mdpi:
-        return 30.0;
-      case AndroidIcons.hdpi:
-        return 40.0;
-      case AndroidIcons.xhdpi:
-        return 50.0;
-      case AndroidIcons.xxhdpi:
-        return 60.0;
-      case AndroidIcons.xxxhdpi:
-      default:
-        return 70.0;
-    }
-  }
+  double get showSize => const {
+        AndroidIcons.mdpi: 30.0,
+        AndroidIcons.hdpi: 40.0,
+        AndroidIcons.xhdpi: 50.0,
+        AndroidIcons.xxhdpi: 60.0,
+        AndroidIcons.xxxhdpi: 70.0,
+      }[this]!;
 
   // 获取真实图片尺寸
-  double get sizePx {
-    switch (this) {
-      case AndroidIcons.mdpi:
-        return 48;
-      case AndroidIcons.hdpi:
-        return 72;
-      case AndroidIcons.xhdpi:
-        return 96;
-      case AndroidIcons.xxhdpi:
-        return 144;
-      case AndroidIcons.xxxhdpi:
-      default:
-        return 192;
-    }
-  }
+  double get sizePx => {
+        AndroidIcons.mdpi: 48.0,
+        AndroidIcons.hdpi: 72.0,
+        AndroidIcons.xhdpi: 96.0,
+        AndroidIcons.xxhdpi: 144.0,
+        AndroidIcons.xxxhdpi: 192.0,
+      }[this]!;
 
   // 拼装附件相对路径
   String getAbsolutePath(String iconPath, {String suffix = ".png"}) {

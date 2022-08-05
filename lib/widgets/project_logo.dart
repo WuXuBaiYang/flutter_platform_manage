@@ -56,15 +56,9 @@ enum ProjectLogoSize { small, middle, large }
 */
 extension ProjectlogoSizeExtension on ProjectLogoSize {
   // 获取图标尺寸
-  double get size {
-    switch (this) {
-      case ProjectLogoSize.small:
-        return 35;
-      case ProjectLogoSize.large:
-        return 65;
-      case ProjectLogoSize.middle:
-      default:
-        return 50;
-    }
-  }
+  double get size => const {
+        ProjectLogoSize.small: 35.0,
+        ProjectLogoSize.large: 65.0,
+        ProjectLogoSize.middle: 50.0,
+      }[this]!;
 }
