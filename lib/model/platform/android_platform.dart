@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/event_manage.dart';
 import 'package:flutter_platform_manage/manager/permission_manage.dart';
@@ -130,14 +129,11 @@ class AndroidPlatform extends BasePlatform {
     var paths = <String>[];
     final rawImage = await file.readAsBytes();
     for (var it in AndroidIcons.values) {
-      var f = File("$platformPath/${it.getAbsolutePath(iconPath)}");
       var imageSize = it.sizePx.toInt();
-      var bytes = await Utils.resizeImage(
-        rawImage,
-        height: imageSize,
-        width: imageSize,
-      );
+      var bytes = await Utils.resizeImage(rawImage,
+          height: imageSize, width: imageSize);
       if (null == bytes) continue;
+      var f = File("$platformPath/${it.getAbsolutePath(iconPath)}");
       f = await f.writeAsBytes(bytes.buffer.asInt8List());
       paths.add(f.path);
     }

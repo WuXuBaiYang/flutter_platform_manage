@@ -97,14 +97,11 @@ class IOSPlatform extends BasePlatform {
     var paths = <String>[];
     final rawImage = await file.readAsBytes();
     for (var it in IOSIcons.values) {
-      var f = File("$platformPath/${it.absolutePath}");
       var imageSize = it.sizePx.toInt();
-      var bytes = await Utils.resizeImage(
-        rawImage,
-        height: imageSize,
-        width: imageSize,
-      );
+      var bytes = await Utils.resizeImage(rawImage,
+          height: imageSize, width: imageSize);
       if (null == bytes) continue;
+      var f = File("$platformPath/${it.absolutePath}");
       f = await f.writeAsBytes(bytes.buffer.asInt8List());
       paths.add(f.path);
     }
