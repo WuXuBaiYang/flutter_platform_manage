@@ -126,11 +126,6 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<void> modifyProjectIcon(File file) async {
-    // 判断图片是否为正方形，并尺寸是否>=192像素
-    var imgSize = await Utils.loadImageSize(file);
-    if (imgSize.aspectRatio != 1.0 || imgSize < const Size(192, 192)) {
-      throw Exception("Android平台图标必须大于等于 *192x192像素* 并为 *正方形* ");
-    }
     // 对图片尺寸进行遍历和压缩
     var paths = <String>[];
     final rawImage = await file.readAsBytes();
@@ -189,21 +184,21 @@ enum AndroidIcons { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
 */
 extension AndroidIconsExtension on AndroidIcons {
   // 图标展示尺寸
-  double get showSize => const {
-        AndroidIcons.mdpi: 30.0,
-        AndroidIcons.hdpi: 40.0,
-        AndroidIcons.xhdpi: 50.0,
-        AndroidIcons.xxhdpi: 60.0,
-        AndroidIcons.xxxhdpi: 70.0,
+  num get showSize => const {
+        AndroidIcons.mdpi: 30,
+        AndroidIcons.hdpi: 40,
+        AndroidIcons.xhdpi: 50,
+        AndroidIcons.xxhdpi: 60,
+        AndroidIcons.xxxhdpi: 70,
       }[this]!;
 
   // 获取真实图片尺寸
-  double get sizePx => {
-        AndroidIcons.mdpi: 48.0,
-        AndroidIcons.hdpi: 72.0,
-        AndroidIcons.xhdpi: 96.0,
-        AndroidIcons.xxhdpi: 144.0,
-        AndroidIcons.xxxhdpi: 192.0,
+  num get sizePx => {
+        AndroidIcons.mdpi: 48,
+        AndroidIcons.hdpi: 72,
+        AndroidIcons.xhdpi: 96,
+        AndroidIcons.xxhdpi: 144,
+        AndroidIcons.xxxhdpi: 192,
       }[this]!;
 
   // 拼装附件相对路径

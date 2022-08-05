@@ -193,13 +193,19 @@ class _PlatformAndroidPageState
       child: CardItem(
         child: TappableListTile(
           leading: LogoFileImage(
-            File(info.projectIcon ?? ""),
+            File(info.projectIcon),
             size: 30,
           ),
           title: const Text("应用图标（立即生效）"),
           trailing: Button(
             child: const Text("批量替换"),
-            onPressed: () => _pickLogoAndReplace(),
+            onPressed: () {
+              Utils.pickProjectLogo(minSize: const Size.square(192)).then((v) {
+                if (null != v) widget.platformInfo.modifyProjectIcon(v);
+              }).catchError((e) {
+                Utils.showSnack(context, e.toString());
+              });
+            },
           ),
           onTap: () => _showLogoList(info.loadIcons(reversed: true)),
         ),
@@ -227,7 +233,7 @@ class _PlatformAndroidPageState
                   Expanded(
                     child: LogoFileImage(
                       File(path),
-                      size: type.showSize,
+                      size: type.showSize.toDouble(),
                     ),
                   ),
                   Expanded(
@@ -245,24 +251,5 @@ class _PlatformAndroidPageState
         );
       },
     );
-  }
-
-  // 选择附件
-  Future<void> _pickLogoAndReplace() async {
-    try {
-      // 选择图标文件
-      var result = await FilePicker.platform.pickFiles(
-        dialogTitle: "请选择png图片，仅支持192px以上的正方形图片",
-        allowCompression: false,
-        lockParentWindow: true,
-        type: FileType.image,
-      );
-      if (null == result || result.count <= 0) return;
-      // 替换项目中的图标
-      var f = File(result.paths.first ?? "");
-      await widget.platformInfo.modifyProjectIcon(f);
-    } catch (e) {
-      Utils.showSnack(context, e.toString());
-    }
   }
 }

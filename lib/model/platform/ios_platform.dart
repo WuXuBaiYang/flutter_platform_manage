@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
+import 'package:flutter_platform_manage/manager/event_manage.dart';
+import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 
 /*
 * ios平台信息
@@ -58,12 +61,19 @@ class IOSPlatform extends BasePlatform {
   }
 
   // 获取图标文件路径集合
-  Map<IOSIcons, String> loadIcons({bool reversed = false}) {
-    var values = IOSIcons.values;
-    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
-      var path = e.absolutePath;
-      return MapEntry(e, "$platformPath/$path");
-    }));
+  Map<IOSIcons, String> loadIcons() => Map.fromEntries(
+        IOSIcons.values.map(
+          (e) => MapEntry(e, "$platformPath/${e.absolutePath}"),
+        ),
+      );
+
+  // 获取图标文件分组
+  List<Map<IOSIcons, String>> loadGroupIcons() {
+    return IOSIconsExtension.groups.map<Map<IOSIcons, String>>((e) {
+      return Map.fromEntries(e.map(
+        (i) => MapEntry(i, "$platformPath/${i.absolutePath}"),
+      ));
+    }).toList();
   }
 
   @override
@@ -83,7 +93,23 @@ class IOSPlatform extends BasePlatform {
 
   @override
   Future<void> modifyProjectIcon(File file) async {
-    ///待实现
+    // 对图片尺寸进行遍历和压缩
+    var paths = <String>[];
+    final rawImage = await file.readAsBytes();
+    for (var it in IOSIcons.values) {
+      var f = File("$platformPath/${it.absolutePath}");
+      var imageSize = it.sizePx.toInt();
+      var bytes = await Utils.resizeImage(
+        rawImage,
+        height: imageSize,
+        width: imageSize,
+      );
+      if (null == bytes) continue;
+      f = await f.writeAsBytes(bytes.buffer.asInt8List());
+      paths.add(f.path);
+    }
+    // 发送图片源变动的地址集合
+    eventManage.fire(ProjectLogoChangeEvent(paths));
   }
 
   @override
@@ -136,41 +162,41 @@ enum IOSIcons {
 */
 extension IOSIconsExtension on IOSIcons {
   // 图标展示尺寸
-  double get showSize => const {
-        IOSIcons.x1_20: 15.0,
-        IOSIcons.x2_20: 25.0,
-        IOSIcons.x3_20: 35.0,
-        IOSIcons.x1_29: 25.0,
-        IOSIcons.x2_29: 35.0,
-        IOSIcons.x3_29: 45.0,
-        IOSIcons.x1_40: 35.0,
-        IOSIcons.x2_40: 45.0,
-        IOSIcons.x3_40: 55.0,
-        IOSIcons.x2_60: 45.0,
-        IOSIcons.x3_60: 55.0,
-        IOSIcons.x1_76: 55.0,
-        IOSIcons.x2_76: 65.0,
-        IOSIcons.x2_83_5: 65.0,
-        IOSIcons.x1_1024: 75.0,
+  num get showSize => const {
+        IOSIcons.x1_20: 15,
+        IOSIcons.x2_20: 25,
+        IOSIcons.x3_20: 35,
+        IOSIcons.x1_29: 25,
+        IOSIcons.x2_29: 35,
+        IOSIcons.x3_29: 45,
+        IOSIcons.x1_40: 35,
+        IOSIcons.x2_40: 45,
+        IOSIcons.x3_40: 55,
+        IOSIcons.x2_60: 45,
+        IOSIcons.x3_60: 55,
+        IOSIcons.x1_76: 55,
+        IOSIcons.x2_76: 65,
+        IOSIcons.x2_83_5: 65,
+        IOSIcons.x1_1024: 95,
       }[this]!;
 
   // 获取真实图片尺寸
-  double get sizePx => const {
-        IOSIcons.x1_20: 20.0,
-        IOSIcons.x2_20: 40.0,
-        IOSIcons.x3_20: 60.0,
-        IOSIcons.x1_29: 29.0,
-        IOSIcons.x2_29: 58.0,
-        IOSIcons.x3_29: 87.0,
-        IOSIcons.x1_40: 40.0,
-        IOSIcons.x2_40: 80.0,
-        IOSIcons.x3_40: 120.0,
-        IOSIcons.x2_60: 120.0,
-        IOSIcons.x3_60: 180.0,
-        IOSIcons.x1_76: 76.0,
-        IOSIcons.x2_76: 152.0,
-        IOSIcons.x2_83_5: 167.0,
-        IOSIcons.x1_1024: 1024.0,
+  num get sizePx => const {
+        IOSIcons.x1_20: 20,
+        IOSIcons.x2_20: 40,
+        IOSIcons.x3_20: 60,
+        IOSIcons.x1_29: 29,
+        IOSIcons.x2_29: 58,
+        IOSIcons.x3_29: 87,
+        IOSIcons.x1_40: 40,
+        IOSIcons.x2_40: 80,
+        IOSIcons.x3_40: 120,
+        IOSIcons.x2_60: 120,
+        IOSIcons.x3_60: 180,
+        IOSIcons.x1_76: 76,
+        IOSIcons.x2_76: 152,
+        IOSIcons.x2_83_5: 167,
+        IOSIcons.x1_1024: 1024,
       }[this]!;
 
   // 倍数关系
@@ -192,10 +218,21 @@ extension IOSIconsExtension on IOSIcons {
         IOSIcons.x3_60: 3,
       }[this]!;
 
+  // 将图标类型分组成二维数组
+  static List<List<IOSIcons>> get groups => const [
+        [IOSIcons.x1_20, IOSIcons.x2_20, IOSIcons.x3_20],
+        [IOSIcons.x1_29, IOSIcons.x2_29, IOSIcons.x3_29],
+        [IOSIcons.x1_40, IOSIcons.x2_40, IOSIcons.x3_40],
+        [IOSIcons.x2_60, IOSIcons.x3_60],
+        [IOSIcons.x1_76, IOSIcons.x2_76],
+        [IOSIcons.x2_83_5],
+        [IOSIcons.x1_1024]
+      ];
+
   // 拼装附件相对路径
   String get absolutePath {
     var m = multiple, s = sizePx / m;
-    var fileName = "Icon-App-${s}x$s@${m}x.png";
+    var fileName = "Icon-App-${s}x$s@${m}x.png".replaceAll(".0", '');
     return "${ProjectFilePath.iosAssetsAppIcon}/$fileName";
   }
 }

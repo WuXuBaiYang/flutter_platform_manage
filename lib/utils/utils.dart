@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -139,5 +140,26 @@ class Utils {
   static Future<Size> loadImageSize(File file) async {
     var img = (await loadImageInfo(file)).image;
     return Size(img.width.toDouble(), img.height.toDouble());
+  }
+
+  // 选择项目图标(正方形，并且有最小尺寸限制)
+  static Future<File?> pickProjectLogo(
+      {Size minSize = const Size.square(1024)}) async {
+    // 选择图标文件
+    var result = await FilePicker.platform.pickFiles(
+      dialogTitle: "请选择 ${minSize.width}*${minSize.height}px 以上的正方形png图片",
+      allowCompression: false,
+      lockParentWindow: true,
+      type: FileType.image,
+    );
+    if (null != result && result.count > 0) {
+      var f = File(result.paths.first ?? "");
+      var imgSize = await Utils.loadImageSize(f);
+      if (imgSize.aspectRatio != 1.0 || imgSize < minSize) {
+        throw Exception("图标必须是大于等于 ${minSize.width}*${minSize.height}px 的正方形");
+      }
+      return f;
+    }
+    return null;
   }
 }
