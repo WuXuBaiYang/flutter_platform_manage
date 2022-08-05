@@ -48,7 +48,7 @@ class ProjectModel {
   Map<PlatformType, String> get projectIconsMap {
     for (var it in platformMap.values) {
       var path = it.projectIcon;
-      if (null != path) return {it.type: path};
+      if (path.isNotEmpty) return {it.type: path};
     }
     return {};
   }
@@ -143,9 +143,8 @@ class ProjectModel {
 
   // 修改展示名称
   Future<bool> modifyDisplayName(String name) async {
-    return true;
-
     ///待实现
+    return true;
   }
 
   // 修改平台图标

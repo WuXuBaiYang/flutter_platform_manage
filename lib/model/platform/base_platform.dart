@@ -33,7 +33,7 @@ abstract class BasePlatform {
   Future<bool> commit();
 
   // 获取应用图标
-  String? get projectIcon;
+  String get projectIcon;
 
   // 修改平台应用名（展示名称）
   Future<bool> modifyDisplayName(String name,

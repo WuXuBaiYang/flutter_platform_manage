@@ -17,7 +17,7 @@ class LinuxPlatform extends BasePlatform {
   Future<bool> update(bool simple) async {
     var handle = FileHandle.from("");
     try {
-      /// 实现代码
+      ///待实现
     } catch (e) {
       return false;
     }
@@ -28,7 +28,7 @@ class LinuxPlatform extends BasePlatform {
   Future<bool> commit() async {
     var handle = FileHandle.from("");
     try {
-      /// 实现代码
+      ///待实现
     } catch (e) {
       return false;
     }
@@ -36,17 +36,25 @@ class LinuxPlatform extends BasePlatform {
   }
 
   @override
-  String? get projectIcon {}
+  String get projectIcon {
+    ///待实现
+    return "";
+  }
 
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
+    ///待实现
     return true;
   }
 
   @override
-  Future<void> modifyProjectIcon(File file) async {}
+  Future<void> modifyProjectIcon(File file) async {
+    ///待实现
+  }
 
   @override
-  Future<void> projectPackaging(File output) async {}
+  Future<void> projectPackaging(File output) async {
+    ///待实现
+  }
 }

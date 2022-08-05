@@ -36,16 +36,6 @@ class AndroidPlatform extends BasePlatform {
     this.permissions = const [],
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
-  // 获取图标文件路径集合
-  Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
-    if (iconPath.isEmpty) return {};
-    var values = AndroidIcons.values;
-    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
-      var path = e.getAbsolutePath(iconPath);
-      return MapEntry(e, "$platformPath/$path");
-    }));
-  }
-
   // androidManifest.xml文件绝对路径
   String get manifestFilePath =>
       "$platformPath/${ProjectFilePath.androidManifest}";
@@ -109,17 +99,21 @@ class AndroidPlatform extends BasePlatform {
     return handle.commit();
   }
 
-  @override
-  String? get projectIcon {
-    try {
-      return loadIcons().values.lastWhere((e) {
-        return File(e).existsSync();
-      });
-    } catch (e) {
-      // 未找到
-    }
-    return null;
+  // 获取图标文件路径集合
+  Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
+    if (iconPath.isEmpty) return {};
+    var values = AndroidIcons.values;
+    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
+      var path = e.getAbsolutePath(iconPath);
+      return MapEntry(e, "$platformPath/$path");
+    }));
   }
+
+  @override
+  String get projectIcon => loadIcons().values.lastWhere(
+        (e) => File(e).existsSync(),
+        orElse: () => "",
+      );
 
   @override
   Future<bool> modifyDisplayName(String name,
@@ -157,7 +151,9 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  Future<void> projectPackaging(File output) async {}
+  Future<void> projectPackaging(File output) async {
+    ///待实现
+  }
 
   @override
   bool operator ==(dynamic other) {

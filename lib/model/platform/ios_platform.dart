@@ -46,30 +46,50 @@ class IOSPlatform extends BasePlatform {
     var handle = FileHandle.from(infoPlistFilePath);
     try {
       // 处理info.plist文件
+      // 修改打包名称
       await handle.setMatchElNext("key",
           target: 'CFBundleName', value: bundleName);
-      await handle.setMatchElNext("key",
-          target: 'CFBundleDisplayName', value: bundleDisplayName);
+      // 修改显示名称
+      await modifyDisplayName(bundleDisplayName, handle: handle);
     } catch (e) {
       return false;
     }
     return handle.commit();
   }
 
+  // 获取图标文件路径集合
+  Map<IOSIcons, String> loadIcons({bool reversed = false}) {
+    var values = IOSIcons.values;
+    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
+      var path = e.absolutePath;
+      return MapEntry(e, "$platformPath/$path");
+    }));
+  }
+
   @override
-  String? get projectIcon {}
+  String get projectIcon => loadIcons().values.lastWhere(
+        (e) => File(e).existsSync(),
+        orElse: () => "",
+      );
 
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
-    return true;
+    handle ??= FileHandle.from(infoPlistFilePath);
+    await handle.setMatchElNext("key",
+        target: 'CFBundleDisplayName', value: bundleDisplayName);
+    return autoCommit ? await handle.commit() : true;
   }
 
   @override
-  Future<void> modifyProjectIcon(File file) async {}
+  Future<void> modifyProjectIcon(File file) async {
+    ///待实现
+  }
 
   @override
-  Future<void> projectPackaging(File output) async {}
+  Future<void> projectPackaging(File output) async {
+    ///待实现
+  }
 
   @override
   bool operator ==(dynamic other) {
