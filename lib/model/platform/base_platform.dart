@@ -40,7 +40,7 @@ abstract class BasePlatform {
       {FileHandle? handle, bool autoCommit = false});
 
   // 修改平台图标
-  Future<void> modifyProjectIcon(File file);
+  Future<List<String>> modifyProjectIcon(File file);
 
   // 项目打包
   Future<void> projectPackaging(File output);

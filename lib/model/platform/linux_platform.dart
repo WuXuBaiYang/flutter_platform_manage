@@ -49,8 +49,9 @@ class LinuxPlatform extends BasePlatform {
   }
 
   @override
-  Future<void> modifyProjectIcon(File file) async {
+  Future<List<String>> modifyProjectIcon(File file) async {
     ///待实现
+    return [];
   }
 
   @override

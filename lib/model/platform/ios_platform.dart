@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
-import 'package:flutter_platform_manage/manager/event_manage.dart';
-import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
@@ -92,21 +91,11 @@ class IOSPlatform extends BasePlatform {
   }
 
   @override
-  Future<void> modifyProjectIcon(File file) async {
-    // 对图片尺寸进行遍历和压缩
-    var paths = <String>[];
-    final rawImage = await file.readAsBytes();
-    for (var it in IOSIcons.values) {
-      var imageSize = it.sizePx.toInt();
-      var bytes = await Utils.resizeImage(rawImage,
-          height: imageSize, width: imageSize);
-      if (null == bytes) continue;
-      var f = File("$platformPath/${it.absolutePath}");
-      f = await f.writeAsBytes(bytes.buffer.asInt8List());
-      paths.add(f.path);
-    }
-    // 发送图片源变动的地址集合
-    eventManage.fire(ProjectLogoChangeEvent(paths));
+  Future<List<String>> modifyProjectIcon(File file) async {
+    return Utils.compressIcons(file, Map.fromEntries(IOSIcons.values.map((e) {
+      var size = Size.square(e.sizePx.toDouble());
+      return MapEntry(size, "$platformPath/${e.absolutePath}");
+    })));
   }
 
   @override

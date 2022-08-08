@@ -8,6 +8,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_platform_manage/manager/event_manage.dart';
+import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 
 /*
 * 通用工具方法
@@ -161,5 +163,34 @@ class Utils {
       return f;
     }
     return null;
+  }
+
+  // 将一张图片的尺寸压缩为不同尺寸并写入本地
+  static Future<List<String>> compressImageSize(
+      File sourceImage, Map<Size, String> targetMap) async {
+    var t = <String>[];
+    final rawImage = await sourceImage.readAsBytes();
+    for (var size in targetMap.keys) {
+      var bytes = await Utils.resizeImage(rawImage,
+          height: size.width.toInt(), width: size.height.toInt());
+      if (null == bytes) continue;
+      var path = targetMap[size] ?? "";
+      if (path.isEmpty) continue;
+      await File(path).writeAsBytes(bytes.buffer.asInt8List());
+      t.add(path);
+    }
+    return t;
+  }
+
+  // 修改平台图标
+  static Future<List<String>> compressIcons(
+      File sourceImage, Map<Size, String> targetMap) {
+    return compressImageSize(sourceImage, targetMap).then((v) {
+      if (v.isNotEmpty) {
+        // 发送图片源变动的地址集合
+        eventManage.fire(ProjectLogoChangeEvent(v));
+      }
+      return v;
+    });
   }
 }
