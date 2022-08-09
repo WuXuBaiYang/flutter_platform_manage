@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:xml/xml.dart';
 
@@ -218,7 +219,7 @@ class FileHandleXML extends FileHandle {
 * @author JTech JH
 * @Time 2022-08-08 14:44:11
 */
-class FileHandlePList extends FileHandle {
+class FileHandlePList extends FileHandleXML {
   FileHandlePList.from(super.filePath, {Encoding encoding = utf8})
       : super.from(encoding: encoding);
 
@@ -226,38 +227,12 @@ class FileHandlePList extends FileHandle {
   Map<String, dynamic>? _plistMap;
 
   // 获取plist map
-  Future<Map<String, dynamic>> get plistMap async {
-    if (null == _plistMap) {
-      var doc = XmlDocument.parse(await fileContent);
-      var el = doc.findAllElements("dict").first;
-      _plistMap = {};
-      for (var child in el.childElements) {
-        if (child.name != XmlName("key")) continue;
-        var next = child.nextElementSibling;
-        _plistMap![child.text] = _getDictValue(next);
-      }
-    }
-    return _plistMap!;
-  }
+  Future<Map<String, dynamic>> get plistMap async =>
+      _plistMap ??= _convertDictXml2Map(await _dictXml);
 
-  // 加载pList的dict下的值
-  dynamic _getDictValue(XmlElement? element) {
-    if (null == element) return null;
-    var name = element.name;
-    if (name == XmlName("string")) {
-      return element.text;
-    } else if (name == XmlName("array")) {
-      return element.childElements.map((e) {
-        if (e.name == XmlName("string")) {
-          return e.text;
-        }
-      });
-    } else if (name == XmlName("true")) {
-      return true;
-    } else if (name == XmlName("false")) {
-      return false;
-    }
-  }
+  // 获取xml结构中的dict节点
+  Future<XmlElement?> get _dictXml async =>
+      (await xmlDocument).getElement("plist")?.getElement("dict");
 
   // 获取值
   Future<dynamic> getValue(String key, {dynamic def}) async =>
@@ -274,6 +249,18 @@ class FileHandlePList extends FileHandle {
     return list;
   }
 
+  // 设置值
+  Future<void> setValue(String key, dynamic value) async =>
+      (await plistMap)[key] = value;
+
+  // 添加值集合
+  Future<void> insertValueMap({required Map<String, dynamic> valueMap}) async =>
+      (await plistMap).addAll(valueMap);
+
+  // 删除包含key的所有字段
+  Future<void> removeValueList({required String includeKey}) async =>
+      (await plistMap).removeWhere((key, value) => key.contains(includeKey));
+
   // 文件写入事件
   @override
   Future<bool> fileWrite(FileWriteCallback<FileHandlePList> callback) async {
@@ -283,8 +270,69 @@ class FileHandlePList extends FileHandle {
 
   // 文件提交操作
   @override
-  Future<bool> commit() async {
-    ///
-    return super.commit();
+  Future<bool> commit({bool indentAtt = false}) async {
+    (await _dictXml)?.replace(_convertMap2DictXml(await plistMap));
+    return super.commit(indentAtt: indentAtt);
+  }
+
+  // 从xml转换为
+  Map<String, dynamic> _convertDictXml2Map(XmlElement? element) {
+    if (null == element) return {};
+    var temp = <String, dynamic>{};
+    for (var child in element.findElements("key")) {
+      var next = child.nextElementSibling;
+      var key = child.text;
+      if (next?.name == XmlName("string")) {
+        // 解析字符串值
+        temp[key] = next?.text ?? "";
+      } else if (next?.name == XmlName("array")) {
+        // 解析集合值
+        temp[key] = next?.childElements.map((e) {
+          if (e.name == XmlName("string")) {
+            // 集合中的字符串值
+            return e.text;
+          }
+          return "";
+        }).toList();
+      } else if (next?.name == XmlName("true")) {
+        // 解析布尔值true
+        temp[key] = true;
+      } else if (next?.name == XmlName("false")) {
+        // 解析布尔值false
+        temp[key] = false;
+      }
+    }
+    return temp;
+  }
+
+  // 将pList的map结构转换为xml结构
+  XmlElement _convertMap2DictXml(Map<String, dynamic> map) {
+    var children = <XmlNode>[];
+    for (var k in map.keys) {
+      var v = map[k];
+      children.add(XmlElement(XmlName("key"), [], [XmlText(k)]));
+      if (v is String) {
+        // 封装字符串值
+        children.add(XmlElement(XmlName("string"), [], [XmlText(v)]));
+      } else if (v is bool) {
+        // 封装布尔值
+        children.add(XmlElement(XmlName("$v")));
+      } else if (v is List) {
+        // 封装集合值
+        children.add(XmlElement(
+          XmlName("array"),
+          [],
+          List.generate(v.length, (i) {
+            var it = v[i];
+            if (it is String) {
+              // 封装集合中的字符串值
+              return XmlElement(XmlName("string"), [], [XmlText(it)]);
+            }
+            return XmlElement(XmlName("unknown"));
+          }),
+        ));
+      }
+    }
+    return XmlElement(XmlName("dict"), [], children);
   }
 }

@@ -95,33 +95,47 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     );
   }
 
+  // 权限管理的展示倍数
+  bool _permissionExpand = false;
+
   // 构建权限管理项
   Widget buildPermissionManage() {
     var info = widget.platformInfo;
     return buildItem(
-      times: 4,
+      times: _permissionExpand ? 6 : 4,
       child: FormField<List<PermissionItemModel>>(
         initialValue: info.permissions,
         onSaved: (v) => info.permissions = v ?? [],
         builder: (f) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Text("权限管理"),
-              trailing: Button(
-                child: const Text("添加权限"),
-                onPressed: () {
-                  PermissionImportDialog.show(
-                    context,
-                    platformType: PlatformType.ios,
-                    permissions: f.value,
-                  ).then((v) {
-                    if (null != v) {
-                      setState(() => widget.platformInfo.permissions = v);
-                    }
-                  });
-                },
+              trailing: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(_permissionExpand
+                        ? FluentIcons.chevron_fold10
+                        : FluentIcons.chevron_unfold10),
+                    onPressed: () =>
+                        setState(() => _permissionExpand = !_permissionExpand),
+                  ),
+                  const SizedBox(width: 8),
+                  Button(
+                    child: const Text("添加权限"),
+                    onPressed: () {
+                      PermissionImportDialog.show(
+                        context,
+                        platformType: PlatformType.ios,
+                        permissions: f.value,
+                      ).then((v) {
+                        if (null != v) {
+                          setState(() => widget.platformInfo.permissions = v);
+                        }
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
             Expanded(

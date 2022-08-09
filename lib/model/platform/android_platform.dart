@@ -71,7 +71,7 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
-      await FileHandleXML.from(manifestFilePath).fileWrite((handle) async {
+      if (!await FileHandleXML.from(manifestFilePath).fileWrite((handle) async {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名
@@ -79,19 +79,19 @@ class AndroidPlatform extends BasePlatform {
         // 移除所有权限
         await handle.removeEl("uses-permission", target: "manifest");
         // 封装权限并插入
-        var nodes = permissions.map((e) {
-          return XmlElement(XmlName("uses-permission"), [
-            XmlAttribute(XmlName("android:name"), e.value),
-          ]);
-        }).toList();
-        await handle.insertEl("manifest", nodes: nodes);
-      });
+        await handle.insertEl("manifest",
+            nodes: permissions.map((e) {
+              return XmlElement(XmlName("uses-permission"), [
+                XmlAttribute(XmlName("android:name"), e.value),
+              ]);
+            }).toList());
+      })) return false;
       // 处理app/build.gradle文件
-      await FileHandleXML.from(appBuildGradle).fileWrite((handle) async {
+      if (!await FileHandleXML.from(appBuildGradle).fileWrite((handle) async {
         // 修改包名
         await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
             'applicationId "$package"');
-      });
+      })) return false;
     } catch (e) {
       return false;
     }

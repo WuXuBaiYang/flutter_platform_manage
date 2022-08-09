@@ -56,18 +56,27 @@ class IOSPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    var handle = FileHandle.from(infoPlistFilePath);
     try {
-      // // 处理info.plist文件
-      // // 修改打包名称
-      // await handle.setMatchElNext("key",
-      //     target: 'CFBundleName', value: bundleName);
-      // // 修改显示名称
-      // await modifyDisplayName(bundleDisplayName, handle: handle);
+      // 处理info.plist文件
+      if (!await FileHandlePList.from(infoPlistFilePath)
+          .fileWrite((handle) async {
+        // 修改打包名称
+        await handle.setValue("CFBundleName", bundleName);
+        // 修改显示名称
+        await modifyDisplayName(bundleDisplayName, handle: handle);
+        // 移除所有权限
+        await handle.removeValueList(includeKey: "NS");
+        // 插入编辑好的权限
+        await handle.insertValueMap(
+          valueMap: permissions.asMap().map((key, value) {
+            return MapEntry(value.value, value.describe ?? "");
+          }),
+        );
+      })) return false;
     } catch (e) {
       return false;
     }
-    return handle.commit();
+    return true;
   }
 
   // 获取图标文件路径集合
@@ -96,8 +105,8 @@ class IOSPlatform extends BasePlatform {
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(infoPlistFilePath);
-    // await handle.setMatchElNext("key",
-    //     target: 'CFBundleDisplayName', value: bundleDisplayName);
+    if (handle is! FileHandlePList) return false;
+    await handle.setValue("CFBundleDisplayName", name);
     return autoCommit ? await handle.commit() : true;
   }
 
