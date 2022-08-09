@@ -170,7 +170,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  item.describe,
+                  item.describe ?? item.hint ?? "",
                   overflow: TextOverflow.ellipsis,
                 ),
                 trailing: Checkbox(
@@ -201,7 +201,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
 
   // 加载权限子项集合
   Future<List<PermissionItemModel>> loadPermissionsItems() async {
-    permissionList ??= permissionManage.getPermissionsByPlatform(
+    permissionList ??= permissionManage.getPermissionListByPlatform(
       widget.platformType,
     );
     var searchValue = controller.text;

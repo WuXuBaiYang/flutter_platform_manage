@@ -21,6 +21,9 @@ class PermissionManage extends BaseManage {
   // 缓存android权限对象
   late PermissionModel _androidPermissionModel;
 
+  // 缓存ios权限对象
+  late PermissionModel _iosPermissionModel;
+
   @override
   Future<void> init() async {
     // 加载android权限对象
@@ -28,41 +31,47 @@ class PermissionManage extends BaseManage {
       Common.androidPermissionAssets,
       PlatformType.android,
     );
+    _iosPermissionModel = await _loadPermission(
+      Common.iosPermissionAssets,
+      PlatformType.ios,
+    );
   }
 
   // 根据平台标记获取对应平台的权限集合
-  List<PermissionItemModel> getPermissionsByPlatform(PlatformType type) {
+  List<PermissionItemModel> getPermissionListByPlatform(PlatformType type) =>
+      getPermissionByPlatform(type)?.items ?? [];
+
+  // 根据平台标记获取权限对象
+  PermissionModel? getPermissionByPlatform(PlatformType type) {
     switch (type) {
       case PlatformType.android:
-        return androidPermissions;
+        return _androidPermissionModel;
       case PlatformType.ios:
+        return _iosPermissionModel;
       case PlatformType.windows:
       case PlatformType.macos:
       case PlatformType.linux:
       case PlatformType.web:
       default:
-        return [];
+        return null;
     }
   }
 
-  // 获取所有android权限对象
-  List<PermissionItemModel> get androidPermissions =>
-      _androidPermissionModel.items;
-
-  // 根据权限的值匹配出对应的android权限对象
-  Future<List<PermissionItemModel>> findAllAndroidPermissions(
-    List<String> values,
-  ) async {
+  // 根据权限的值匹配出对应的权限对象
+  Future<List<PermissionItemModel>> findAllPermissions(
+    List<String> values, {
+    required PlatformType platform,
+  }) async {
     if (values.isEmpty) return [];
     List<PermissionItemModel> t = [];
     for (var v in values) {
-      var it = _androidPermissionModel.itemsMap[v];
+      var it = getPermissionByPlatform(platform)?.itemsMap[v];
       if (null != it) t.add(it);
     }
     return t;
   }
 
-  // 获取所有android权限
+  // 加载权限的json文件
   static Future<PermissionModel> _loadPermission(
     String assetsPath,
     PlatformType type,

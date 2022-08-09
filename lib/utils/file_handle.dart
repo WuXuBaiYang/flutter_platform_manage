@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:xml/xml.dart';
 
+// 文件写入事件回调
+typedef FileWriteCallback<T extends FileHandle> = Future<void> Function(
+    T handle);
+
 /*
 * 文件信息处理
 * @author wuxubaiyang
@@ -30,13 +34,6 @@ class FileHandle {
   Future<String> get fileContent async =>
       _fileContent ??= await _file.readAsString(encoding: encoding);
 
-  // 缓存文件的解析对象
-  XmlDocument? _xmlDocument;
-
-  // 获取xml文件的解析对象
-  Future<XmlDocument> get xmlDocument async =>
-      _xmlDocument ??= XmlDocument.parse(await fileContent);
-
   // 使用正则匹配字符串
   Future<String> stringMatch(RegExp reg, {RegExp? re}) async {
     var v = reg.stringMatch(await fileContent) ?? "";
@@ -59,6 +56,42 @@ class FileHandle {
       _fileContent = content.replaceAll(reg, value);
     }
   }
+
+  // 文件写入事件
+  Future<bool> fileWrite(FileWriteCallback callback) async {
+    await callback(this);
+    return commit();
+  }
+
+  // 提交附件
+  Future<bool> commit() async {
+    try {
+      _file.writeAsStringSync(
+        await fileContent,
+        encoding: encoding,
+      );
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+}
+
+/*
+* 作为xml文件处理
+* @author JTech JH
+* @Time 2022-08-08 14:44:11
+*/
+class FileHandleXML extends FileHandle {
+  FileHandleXML.from(super.filePath, {Encoding encoding = utf8})
+      : super.from(encoding: encoding);
+
+  // 缓存文件的解析对象
+  XmlDocument? _xmlDocument;
+
+  // 获取xml文件的解析对象
+  Future<XmlDocument> get xmlDocument async =>
+      _xmlDocument ??= XmlDocument.parse(await fileContent);
 
   // 根据标签名获取对应标签集合
   Future<List<XmlElement>> _xmlFindAll(String elName,
@@ -97,34 +130,11 @@ class FileHandle {
       {required String target, String? namespace}) async {
     try {
       return (await _xmlFindAll(elName, namespace: namespace))
-          .firstWhere((e) => e.text == target);
+          .firstWhere((e) => e.text.contains(target));
     } catch (e) {
       // 未找到标签
     }
     return null;
-  }
-
-  // 获取xml文件标签文本匹配的标签对象的同级下一个
-  Future<String> matchElNext(String elName,
-      {required String target, String? namespace}) async {
-    var el = await matchTextEl(
-      elName,
-      target: target,
-      namespace: namespace,
-    );
-    return el?.nextElementSibling?.text ?? "";
-  }
-
-  Future<void> setMatchElNext(String elName,
-      {required String target,
-      required String value,
-      String? namespace}) async {
-    var el = await matchTextEl(
-      elName,
-      target: target,
-      namespace: namespace,
-    );
-    el?.nextElementSibling?.innerText = value;
   }
 
   // 获取xml文件标签的文本值
@@ -181,25 +191,100 @@ class FileHandle {
     }
   }
 
+  // 文件写入事件
+  @override
+  Future<bool> fileWrite(FileWriteCallback<FileHandleXML> callback) async {
+    await callback(this);
+    return commit();
+  }
+
   // 文件提交操作
+  @override
   Future<bool> commit({bool indentAtt = false}) async {
-    try {
-      if (null != _xmlDocument) {
-        _fileContent = _xmlDocument?.toXmlString(
-          pretty: true,
-          indent: '\t',
-          newLine: '\n',
-          indentAttribute: (v) => indentAtt,
-        );
-      }
-      _file.writeAsStringSync(
-        await fileContent,
-        encoding: encoding,
+    if (null != _xmlDocument) {
+      _fileContent = _xmlDocument?.toXmlString(
+        pretty: true,
+        indent: '\t',
+        newLine: '\n',
+        indentAttribute: (v) => indentAtt,
       );
-    } catch (e) {
-      // 写入失败
+    }
+    return super.commit();
+  }
+}
+
+/*
+* 作为PList文件处理
+* @author JTech JH
+* @Time 2022-08-08 14:44:11
+*/
+class FileHandlePList extends FileHandle {
+  FileHandlePList.from(super.filePath, {Encoding encoding = utf8})
+      : super.from(encoding: encoding);
+
+  // 缓存pList转化后的map
+  Map<String, dynamic>? _plistMap;
+
+  // 获取plist map
+  Future<Map<String, dynamic>> get plistMap async {
+    if (null == _plistMap) {
+      var doc = XmlDocument.parse(await fileContent);
+      var el = doc.findAllElements("dict").first;
+      _plistMap = {};
+      for (var child in el.childElements) {
+        if (child.name != XmlName("key")) continue;
+        var next = child.nextElementSibling;
+        _plistMap![child.text] = _getDictValue(next);
+      }
+    }
+    return _plistMap!;
+  }
+
+  // 加载pList的dict下的值
+  dynamic _getDictValue(XmlElement? element) {
+    if (null == element) return null;
+    var name = element.name;
+    if (name == XmlName("string")) {
+      return element.text;
+    } else if (name == XmlName("array")) {
+      return element.childElements.map((e) {
+        if (e.name == XmlName("string")) {
+          return e.text;
+        }
+      });
+    } else if (name == XmlName("true")) {
+      return true;
+    } else if (name == XmlName("false")) {
       return false;
     }
-    return true;
+  }
+
+  // 获取值
+  Future<dynamic> getValue(String key, {dynamic def}) async =>
+      (await plistMap)[key] ?? def;
+
+  // 根据key模糊搜索值列表
+  Future<List<T>> getValueList<T>({required String includeKey}) async {
+    var map = await plistMap;
+    var list = <T>[];
+    for (var k in map.keys) {
+      if (!k.contains(includeKey)) continue;
+      list.add(map[k]);
+    }
+    return list;
+  }
+
+  // 文件写入事件
+  @override
+  Future<bool> fileWrite(FileWriteCallback<FileHandlePList> callback) async {
+    await callback(this);
+    return commit();
+  }
+
+  // 文件提交操作
+  @override
+  Future<bool> commit() async {
+    ///
+    return super.commit();
   }
 }

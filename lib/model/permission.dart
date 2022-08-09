@@ -43,25 +43,32 @@ class PermissionItemModel {
   final String name;
 
   // 描述
-  final String describe;
+  String? describe;
+
+  // 提示
+  final String? hint;
 
   // 值
   final String value;
 
-  PermissionItemModel(this.name, this.describe, this.value);
+  PermissionItemModel(this.name, this.describe, this.hint, this.value);
 
   // 从json中解析对象
   static PermissionItemModel fromJson(obj) {
     return PermissionItemModel(
       obj["name"],
       obj["describe"],
+      obj["hint"],
       obj["value"],
     );
   }
 
   // 搜索所有字段(包含匹配)
   bool searchContains(String v) =>
-      name.contains(v) || describe.contains(v) || value.contains(v);
+      name.contains(v) ||
+      (describe?.contains(v) ?? false) ||
+      (hint?.contains(v) ?? false) ||
+      value.contains(v);
 
   @override
   bool operator ==(dynamic other) {
@@ -69,9 +76,10 @@ class PermissionItemModel {
     final PermissionItemModel typedOther = other;
     return name == typedOther.name &&
         describe == typedOther.describe &&
+        hint == typedOther.hint &&
         value == typedOther.value;
   }
 
   @override
-  int get hashCode => Object.hash(name, describe, value);
+  int get hashCode => Object.hash(name, describe, hint, value);
 }

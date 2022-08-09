@@ -41,6 +41,10 @@ class Common {
   static const String androidPermissionAssets =
       "assets/permission/android_permission.json";
 
+  // ios权限json
+  static const String iosPermissionAssets =
+      "assets/permission/ios_permission.json";
+
   // 项目源码地址
   static const String appSourceUrl =
       "https://github.com/WuXuBaiYang/flutter_platform_manage";

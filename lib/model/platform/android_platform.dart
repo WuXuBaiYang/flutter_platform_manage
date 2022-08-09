@@ -43,7 +43,7 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
-    var handle = FileHandle.from(manifestFilePath);
+    var handle = FileHandleXML.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
       // 获取图标路径信息
@@ -56,8 +56,9 @@ class AndroidPlatform extends BasePlatform {
         // 获取包名
         package = await handle.singleAtt("manifest", attName: "package");
         // 获取权限集合
-        permissions = await permissionManage.findAllAndroidPermissions(
+        permissions = await permissionManage.findAllPermissions(
           await handle.attList('uses-permission', attName: 'android:name'),
+          platform: PlatformType.android,
         );
       }
     } catch (e) {
@@ -68,33 +69,33 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    var handle = FileHandle.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
-      // 修改label
-      await modifyDisplayName(label, handle: handle);
-      // 修改包名
-      await handle.setElAtt("manifest", attName: "package", value: package);
-      // 移除所有权限
-      await handle.removeEl("uses-permission", target: "manifest");
-      // 封装权限并插入
-      var nodes = permissions.map((e) {
-        return XmlElement(XmlName("uses-permission"), [
-          XmlAttribute(XmlName("android:name"), e.value),
-        ]);
-      }).toList();
-      await handle.insertEl("manifest", nodes: nodes);
-      // 中场休息，提交一次
-      if (!await handle.commit(indentAtt: true)) return false;
+      await FileHandleXML.from(manifestFilePath).fileWrite((handle) async {
+        // 修改label
+        await modifyDisplayName(label, handle: handle);
+        // 修改包名
+        await handle.setElAtt("manifest", attName: "package", value: package);
+        // 移除所有权限
+        await handle.removeEl("uses-permission", target: "manifest");
+        // 封装权限并插入
+        var nodes = permissions.map((e) {
+          return XmlElement(XmlName("uses-permission"), [
+            XmlAttribute(XmlName("android:name"), e.value),
+          ]);
+        }).toList();
+        await handle.insertEl("manifest", nodes: nodes);
+      });
       // 处理app/build.gradle文件
-      handle = FileHandle.from(appBuildGradle);
-      // 修改包名
-      await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
-          'applicationId "$package"');
+      await FileHandleXML.from(appBuildGradle).fileWrite((handle) async {
+        // 修改包名
+        await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
+            'applicationId "$package"');
+      });
     } catch (e) {
       return false;
     }
-    return handle.commit();
+    return true;
   }
 
   // 获取图标文件路径集合
@@ -116,7 +117,8 @@ class AndroidPlatform extends BasePlatform {
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
-    handle ??= FileHandle.from(manifestFilePath);
+    handle ??= FileHandleXML.from(manifestFilePath);
+    if (handle is! FileHandleXML) return false;
     // 修改label
     await handle.setElAtt("application", attName: "android:label", value: name);
     return autoCommit ? await handle.commit(indentAtt: true) : true;

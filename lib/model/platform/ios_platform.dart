@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
+import 'package:flutter_platform_manage/manager/permission_manage.dart';
+import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
@@ -18,10 +20,13 @@ class IOSPlatform extends BasePlatform {
   // 展示应用名
   String bundleDisplayName;
 
+  List<PermissionItemModel> permissions;
+
   IOSPlatform({
     required String platformPath,
     this.bundleName = "",
     this.bundleDisplayName = "",
+    this.permissions = const [],
   }) : super(type: PlatformType.ios, platformPath: platformPath);
 
   // info.plist文件绝对路径
@@ -31,12 +36,18 @@ class IOSPlatform extends BasePlatform {
   @override
   Future<bool> update(bool simple) async {
     if (simple) return true;
-    var handle = FileHandle.from(infoPlistFilePath);
+    var handle = FileHandlePList.from(infoPlistFilePath);
     try {
       // 处理info.plist文件
-      bundleName = await handle.matchElNext("key", target: "CFBundleName");
-      bundleDisplayName =
-          await handle.matchElNext("key", target: "CFBundleDisplayName");
+      // 获取包名
+      bundleName = await handle.getValue("CFBundleName", def: "");
+      // 获取打包展示名称
+      bundleDisplayName = await handle.getValue("CFBundleDisplayName", def: "");
+      // 获取权限集合
+      permissions = await permissionManage.findAllPermissions(
+        await handle.getValueList<String>(includeKey: "NS"),
+        platform: PlatformType.ios,
+      );
     } catch (e) {
       return false;
     }
@@ -47,12 +58,12 @@ class IOSPlatform extends BasePlatform {
   Future<bool> commit() async {
     var handle = FileHandle.from(infoPlistFilePath);
     try {
-      // 处理info.plist文件
-      // 修改打包名称
-      await handle.setMatchElNext("key",
-          target: 'CFBundleName', value: bundleName);
-      // 修改显示名称
-      await modifyDisplayName(bundleDisplayName, handle: handle);
+      // // 处理info.plist文件
+      // // 修改打包名称
+      // await handle.setMatchElNext("key",
+      //     target: 'CFBundleName', value: bundleName);
+      // // 修改显示名称
+      // await modifyDisplayName(bundleDisplayName, handle: handle);
     } catch (e) {
       return false;
     }
@@ -85,8 +96,8 @@ class IOSPlatform extends BasePlatform {
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(infoPlistFilePath);
-    await handle.setMatchElNext("key",
-        target: 'CFBundleDisplayName', value: bundleDisplayName);
+    // await handle.setMatchElNext("key",
+    //     target: 'CFBundleDisplayName', value: bundleDisplayName);
     return autoCommit ? await handle.commit() : true;
   }
 
@@ -108,13 +119,16 @@ class IOSPlatform extends BasePlatform {
     if (other.runtimeType != runtimeType) return false;
     final IOSPlatform typedOther = other;
     return bundleName == typedOther.bundleName &&
-        bundleDisplayName == typedOther.bundleDisplayName;
+        bundleDisplayName == typedOther.bundleDisplayName &&
+        (permissions.length == typedOther.permissions.length &&
+            !permissions.any((e) => !typedOther.permissions.contains(e)));
   }
 
   @override
   int get hashCode => Object.hash(
         bundleName,
         bundleDisplayName,
+        Object.hashAll(permissions),
       );
 }
 

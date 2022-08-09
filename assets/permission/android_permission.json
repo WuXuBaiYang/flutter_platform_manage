@@ -7,7 +7,7 @@
       "describe": "读取或写入登记check-in数据库属性表的权限"
     },
     {
-      "name": "获取错略位置",
+      "name": "获取粗略位置",
       "value": "android.permission.ACCESS_COARSE_LOCATION",
       "describe": "通过WiFi或移动基站的方式获取用户错略的经纬度信息，定位精度大概误差在30~1500米"
     },

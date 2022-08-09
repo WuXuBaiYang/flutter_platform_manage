@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_platform_manage/model/permission.dart';
+import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
 import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
+import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
-import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/permission_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
 * ios平台分页
@@ -33,6 +37,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   List<Widget> loadItemList(BuildContext context) {
     return [
       buildBundleName(),
+      buildPermissionManage(),
       buildBundleDisplayName(),
       buildAppLogo(),
     ];
@@ -86,6 +91,98 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
             info.bundleDisplayName = v;
           },
         ),
+      ),
+    );
+  }
+
+  // 构建权限管理项
+  Widget buildPermissionManage() {
+    var info = widget.platformInfo;
+    return buildItem(
+      times: 4,
+      child: FormField<List<PermissionItemModel>>(
+        initialValue: info.permissions,
+        onSaved: (v) => info.permissions = v ?? [],
+        builder: (f) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Text("权限管理"),
+              trailing: Button(
+                child: const Text("添加权限"),
+                onPressed: () {
+                  PermissionImportDialog.show(
+                    context,
+                    platformType: PlatformType.ios,
+                    permissions: f.value,
+                  ).then((v) {
+                    if (null != v) {
+                      setState(() => widget.platformInfo.permissions = v);
+                    }
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: CardItem(
+                child: f.value?.isEmpty ?? true
+                    ? const Center(child: Text("还未添加任何权限哦~"))
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: f.value?.length ?? 0,
+                        separatorBuilder: (_, i) => const ThicknessDivider(),
+                        itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 构建权限管理列表子项
+  Widget _buildPermissionManageItem(
+      FormFieldState<List<PermissionItemModel>> f, int i) {
+    var item = f.value?[i];
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Expanded(
+            child: DefaultTextStyle(
+              style: const TextStyle(fontSize: 12, color: Color(0xff333333)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item?.name ?? "",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(item?.value ?? ""),
+                  const SizedBox(height: 4),
+                  TextBox(
+                    controller: TextEditingController(
+                      text: item?.describe ?? "",
+                    ),
+                    placeholder: item?.hint ?? "请输入对该权限的描述",
+                    onChanged: (v) => item?.describe = v,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(FluentIcons.delete),
+            onPressed: () => ImportantOptionDialog.show(
+              context,
+              message: "是否删除 ‘${item?.name ?? ""}’ 权限",
+              onConfirmTap: () => f.didChange(f.value?..remove(item)),
+            ),
+          ),
+        ],
       ),
     );
   }

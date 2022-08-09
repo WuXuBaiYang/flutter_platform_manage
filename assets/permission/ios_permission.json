@@ -1,0 +1,210 @@
+{
+  "total": 41,
+  "items": [
+    {
+      "name": "Bluetooth",
+      "value": "NSBluetoothAlwaysUsageDescription",
+      "hint": "A message that tells the user why the app needs access to Bluetooth."
+    },
+    {
+      "name": "Bluetooth",
+      "value": "NSBluetoothPeripheralUsageDescription",
+      "hint": "A message that tells the user why the app is requesting the ability to connect to Bluetooth peripherals."
+    },
+    {
+      "name": "Calendar and Reminders",
+      "value": "NSCalendarsUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s calendar data."
+    },
+    {
+      "name": "Calendar and Reminders",
+      "value": "NSRemindersUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s reminders."
+    },
+    {
+      "name": "Camera and Microphone",
+      "value": "NSCameraUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the device’s camera."
+    },
+    {
+      "name": "Camera and Microphone",
+      "value": "NSMicrophoneUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the device’s microphone."
+    },
+    {
+      "name": "Contacts",
+      "value": "NSContactsUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s contacts."
+    },
+    {
+      "name": "Face ID",
+      "value": "NSFaceIDUsageDescription",
+      "hint": "A message that tells the user why the app is requesting the ability to authenticate with Face ID."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSDesktopFolderUsageDescription",
+      "hint": "A message that tells the user why the app needs access to the user’s Desktop folder."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSDocumentsFolderUsageDescription",
+      "hint": "A message that tells the user why the app needs access to the user’s Documents folder."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSDownloadsFolderUsageDescription",
+      "hint": "A message that tells the user why the app needs access to the user’s Downloads folder."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSNetworkVolumesUsageDescription",
+      "hint": "A message that tells the user why the app needs access to files on a network volume."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSRemovableVolumesUsageDescription",
+      "hint": "A message that tells the user why the app needs access to files on a removable volume."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSFileProviderPresenceUsageDescription",
+      "hint": "A message that tells the user why the app needs to be informed when other apps access files that it manages."
+    },
+    {
+      "name": "Files and Folders",
+      "value": "NSFileProviderDomainUsageDescription",
+      "hint": "A message that tells the user why the app needs access to files managed by a file provider."
+    },
+    {
+      "name": "Health",
+      "value": "NSHealthClinicalHealthRecordsShareUsageDescription",
+      "hint": "A message to the user that explains why the app requested permission to read clinical records."
+    },
+    {
+      "name": "Health",
+      "value": "NSHealthShareUsageDescription",
+      "hint": "A message to the user that explains why the app requested permission to read samples from the HealthKit store."
+    },
+    {
+      "name": "Health",
+      "value": "NSHealthUpdateUsageDescription",
+      "hint": "A message to the user that explains why the app requested permission to save samples to the HealthKit store."
+    },
+    {
+      "name": "Health",
+      "value": "NSHealthRequiredReadAuthorizationTypeIdentifiers",
+      "hint": "The clinical record data types that your app must get permission to read."
+    },
+    {
+      "name": "Home",
+      "value": "NSHomeKitUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s HomeKit configuration data."
+    },
+    {
+      "name": "Location",
+      "value": "NSLocationAlwaysAndWhenInUseUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s location information at all times."
+    },
+    {
+      "name": "Location",
+      "value": "NSLocationUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s location information."
+    },
+    {
+      "name": "Location",
+      "value": " NSLocationWhenInUseUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s location information while the app is running in the foreground."
+    },
+    {
+      "name": "Location",
+      "value": "NSLocationAlwaysUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user's location at all times."
+    },
+    {
+      "name": "Location",
+      "value": "NSWidgetWantsLocation",
+      "hint": "A Boolean value indicating that a widget uses the user’s location information."
+    },
+    {
+      "name": "MediaPlayer",
+      "value": "NSAppleMusicUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s media library."
+    },
+    {
+      "name": "Motion",
+      "value": "NSMotionUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the device’s accelerometer."
+    },
+    {
+      "name": "Networking",
+      "value": "NSLocalNetworkUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the local network."
+    },
+    {
+      "name": "NFC",
+      "value": "NFCReaderUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the device’s NFC hardware."
+    },
+    {
+      "name": "Photos",
+      "value": "NSPhotoLibraryAddUsageDescription",
+      "hint": "A message that tells the user why the app is requesting write-only access to the user’s photo library."
+    },
+    {
+      "name": "Photos",
+      "value": "NSPhotoLibraryUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s photo library."
+    },
+    {
+      "name": "Scripting",
+      "value": " NSAppleScriptEnabled",
+      "hint": "A Boolean value indicating whether AppleScript is enabled."
+    },
+    {
+      "name": "Security",
+      "value": "NSUserTrackingUsageDescription",
+      "hint": "A message that informs the user why an app is requesting permission to use data for tracking the user or the device."
+    },
+    {
+      "name": "Security",
+      "value": "NSAppleEventsUsageDescription",
+      "hint": "A message that tells the user why the app is requesting the ability to send Apple events."
+    },
+    {
+      "name": "Security",
+      "value": "NSSystemAdministrationUsageDescription",
+      "hint": "A message in macOS that tells the user why the app is requesting to manipulate the system configuration."
+    },
+    {
+      "name": "Security",
+      "value": "ITSAppUsesNonExemptEncryption",
+      "hint": "A Boolean value indicating whether the app uses encryption."
+    },
+    {
+      "name": "Security",
+      "value": "ITSEncryptionExportComplianceCode",
+      "hint": "The export compliance code provided by App Store Connect for apps that require it."
+    },
+    {
+      "name": "Siri",
+      "value": "NSSiriUsageDescription",
+      "hint": "A message that tells the user why the app is requesting to send user data to Siri."
+    },
+    {
+      "name": "Speech",
+      "value": "NSSpeechRecognitionUsageDescription",
+      "hint": "A message that tells the user why the app is requesting to send user data to Apple’s speech recognition servers."
+    },
+    {
+      "name": "TV",
+      "value": "NSVideoSubscriberAccountUsageDescription",
+      "hint": "A message that tells the user why the app is requesting access to the user’s TV provider account."
+    },
+    {
+      "name": "Wi-Fi",
+      "value": " UIRequiresPersistentWiFi",
+      "hint": "A Boolean value indicating whether the app requires a Wi-Fi connection."
+    }
+  ]
+}
