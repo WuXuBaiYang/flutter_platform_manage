@@ -170,7 +170,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  item.describe ?? item.hint ?? "",
+                  item.hint ?? item.describe ?? "",
                   overflow: TextOverflow.ellipsis,
                 ),
                 trailing: Checkbox(
