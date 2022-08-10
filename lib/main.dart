@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
     return FluentApp(
       debugShowCheckedModeBanner: debugMode,
       navigatorKey: jRouter.navigateKey,
+      routes: RoutePath.routeMap,
       theme: ThemeData(
         typography: const Typography.raw(
           title: TextStyle(
@@ -58,7 +59,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      routes: RoutePath.routeMap,
       home: const HomePage(),
     );
   }
