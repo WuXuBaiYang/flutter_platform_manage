@@ -24,8 +24,8 @@ class PermissionModel {
   // 从json中解析对象
   static PermissionModel fromJson(obj, {required PlatformType platform}) {
     return PermissionModel(
-      obj["total"],
-      obj["items"]
+      obj['total'],
+      obj['items']
           .map<PermissionItemModel>((e) => PermissionItemModel.fromJson(e))
           .toList(),
       platform,
@@ -56,10 +56,10 @@ class PermissionItemModel {
   // 从json中解析对象
   static PermissionItemModel fromJson(obj) {
     return PermissionItemModel(
-      obj["name"],
-      obj["describe"],
-      obj["hint"],
-      obj["value"],
+      obj['name'],
+      obj['describe'],
+      obj['hint'],
+      obj['value'],
     );
   }
 

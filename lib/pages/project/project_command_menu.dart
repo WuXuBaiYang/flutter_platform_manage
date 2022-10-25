@@ -28,17 +28,17 @@ class ProjectCommandMenu {
           primaryItems: [
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("打开根目录"),
+              label: const Text('打开根目录'),
               onPressed: () async {
-                final uri = Uri.parse("file:${projectModel.project.path}");
+                final uri = Uri.parse('file:${projectModel.project.path}');
                 if (!await launchUrl(uri)) {
-                  Utils.showSnack(context, "目录启动失败");
+                  Utils.showSnack(context, '目录启动失败');
                 }
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("修改版本号"),
+              label: const Text('修改版本号'),
               onPressed: () => ProjectVersionDialog.show(
                 context,
                 projectModel: projectModel,
@@ -48,7 +48,7 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("修改项目名称"),
+              label: const Text('修改项目名称'),
               onPressed: () => ProjectReNameDialog.show(
                 context,
                 projectModel: projectModel,
@@ -58,23 +58,23 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("修改应用名称"),
+              label: const Text('修改应用名称'),
               onPressed: () {
-                Utils.showSnack(context, "开发中");
+                Utils.showSnack(context, '开发中');
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("应用打包"),
+              label: const Text('应用打包'),
               onPressed: () {
-                Utils.showSnack(context, "开发中");
+                Utils.showSnack(context, '开发中');
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text("替换图标"),
+              label: const Text('替换图标'),
               onPressed: () {
-                Utils.showSnack(context, "开发中");
+                Utils.showSnack(context, '开发中');
               },
             ),
           ],
@@ -84,15 +84,15 @@ class ProjectCommandMenu {
           primaryItems: [
             CommandBarButton(
               icon: const Icon(FluentIcons.refresh),
-              label: const Text("刷新"),
+              label: const Text('刷新'),
               onPressed: () {
                 controller.refreshValue();
-                Utils.showSnack(context, "项目信息已刷新");
+                Utils.showSnack(context, '项目信息已刷新');
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.app_icon_default_edit),
-              label: const Text("编辑"),
+              label: const Text('编辑'),
               onPressed: () => ProjectImportDialog.show(
                 context,
                 project: projectModel.project,
@@ -102,11 +102,11 @@ class ProjectCommandMenu {
             ),
             CommandBarButton(
               icon: Icon(FluentIcons.delete, color: Colors.red),
-              label: Text("删除", style: TextStyle(color: Colors.red)),
+              label: Text('删除', style: TextStyle(color: Colors.red)),
               onPressed: () => ImportantOptionDialog.show(
                 context,
-                message: "是否删除该项目 ${projectModel.showTitle}",
-                confirm: "删除",
+                message: '是否删除该项目 ${projectModel.showTitle}',
+                confirm: '删除',
                 onConfirmTap: () {
                   dbManage.delete(projectModel.project);
                   Navigator.maybePop(context);

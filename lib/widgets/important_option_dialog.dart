@@ -77,7 +77,7 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
         children: [
           Icon(widget.icon ?? FluentIcons.warning, color: Colors.red),
           const SizedBox(width: 8),
-          Text(widget.title ?? "操作警告", style: TextStyle(color: Colors.red)),
+          Text(widget.title ?? '操作警告', style: TextStyle(color: Colors.red)),
         ],
       ),
       content: Text(widget.message),
@@ -89,14 +89,14 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
   List<Widget> get actions {
     var actions = <Widget>[
       Button(
-        child: const Text("取消"),
+        child: const Text('取消'),
         onPressed: () => Navigator.maybePop(context),
       ),
       FilledButton(
         style: ButtonStyle(
           backgroundColor: ButtonState.all(Colors.red),
         ),
-        child: Text(widget.confirm ?? "确认"),
+        child: Text(widget.confirm ?? '确认'),
         onPressed: () {
           var result = widget.onConfirmTap();
           Navigator.pop<T>(context, result);

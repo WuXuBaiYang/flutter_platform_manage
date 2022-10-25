@@ -15,7 +15,7 @@ class WebPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
-    final handle = FileHandle.from("");
+    final handle = FileHandle.from('');
     try {
       ///待实现
     } catch (e) {
@@ -26,7 +26,7 @@ class WebPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    final handle = FileHandle.from("");
+    final handle = FileHandle.from('');
     try {
       ///待实现
     } catch (e) {
@@ -38,7 +38,7 @@ class WebPlatform extends BasePlatform {
   @override
   String get projectIcon {
     ///待实现
-    return "";
+    return '';
   }
 
   @override

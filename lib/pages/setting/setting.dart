@@ -24,7 +24,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return ScaffoldPage.withPadding(
       header: const PageHeader(
-        title: Text("设置"),
+        title: Text('设置'),
       ),
       content: SingleChildScrollView(
         child: Column(

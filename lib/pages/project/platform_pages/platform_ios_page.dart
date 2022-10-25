@@ -48,7 +48,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
-        label: "应用名称（BundleName）",
+        label: '应用名称（BundleName）',
         child: TextFormBox(
           initialValue: info.bundleName,
           inputFormatters: [
@@ -57,7 +57,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
           ],
           validator: (v) {
             if (null == v || v.isEmpty) {
-              return "不能为空";
+              return '不能为空';
             }
             return null;
           },
@@ -76,12 +76,12 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
-        label: "展示应用名称（BundleDisplayName）",
+        label: '展示应用名称（BundleDisplayName）',
         child: TextFormBox(
           initialValue: info.bundleDisplayName,
           validator: (v) {
             if (null == v || v.isEmpty) {
-              return "不能为空";
+              return '不能为空';
             }
             return null;
           },
@@ -109,8 +109,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
         builder: (f) => Column(
           children: [
             ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Text("权限管理"),
+              leading: const Text('权限管理'),
               trailing: Row(
                 children: [
                   IconButton(
@@ -122,7 +121,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
                   ),
                   const SizedBox(width: 8),
                   Button(
-                    child: const Text("添加权限"),
+                    child: const Text('添加权限'),
                     onPressed: () {
                       PermissionImportDialog.show(
                         context,
@@ -141,7 +140,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
             Expanded(
               child: CardItem(
                 child: f.value?.isEmpty ?? true
-                    ? const Center(child: Text("还未添加任何权限哦~"))
+                    ? const Center(child: Text('还未添加任何权限哦~'))
                     : ListView.separated(
                         shrinkWrap: true,
                         itemCount: f.value?.length ?? 0,
@@ -171,17 +170,17 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item?.name ?? "",
+                    item?.name ?? '',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 4),
-                  Text(item?.value ?? ""),
+                  Text(item?.value ?? ''),
                   const SizedBox(height: 4),
                   TextBox(
                     controller: TextEditingController(
-                      text: item?.describe ?? "",
+                      text: item?.describe ?? '',
                     ),
-                    placeholder: item?.hint ?? "请输入对该权限的描述",
+                    placeholder: item?.hint ?? '请输入对该权限的描述',
                     onChanged: (v) => item?.describe = v,
                   ),
                 ],
@@ -192,7 +191,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
             icon: const Icon(FluentIcons.delete),
             onPressed: () => ImportantOptionDialog.show(
               context,
-              message: "是否删除 ‘${item?.name ?? ""}’ 权限",
+              message: '是否删除 ‘${item?.name ?? ''}’ 权限',
               onConfirmTap: () => f.didChange(f.value?..remove(item)),
             ),
           ),
@@ -206,21 +205,24 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
-        child: TappableListTile(
-          leading: LogoFileImage(
-            File(info.projectIcon),
-            size: 30,
-          ),
-          title: const Text("应用图标（立即生效）"),
-          trailing: Button(
-            child: const Text("批量替换"),
-            onPressed: () {
-              Utils.pickProjectLogo(minSize: const Size.square(1024)).then((v) {
-                if (null != v) widget.platformInfo.modifyProjectIcon(v);
-              }).catchError((e) {
-                Utils.showSnack(context, e.toString());
-              });
-            },
+        child: GestureDetector(
+          child: ListTile(
+            leading: LogoFileImage(
+              File(info.projectIcon),
+              size: 30,
+            ),
+            title: const Text('应用图标（立即生效）'),
+            trailing: Button(
+              child: const Text('批量替换'),
+              onPressed: () {
+                Utils.pickProjectLogo(minSize: const Size.square(1024))
+                    .then((v) {
+                  if (null != v) widget.platformInfo.modifyProjectIcon(v);
+                }).catchError((e) {
+                  Utils.showSnack(context, e.toString());
+                });
+              },
+            ),
           ),
           onTap: () => _showLogoList(info.loadGroupIcons()),
         ),
@@ -258,7 +260,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Text("${k.name}(${k.sizePx}x${k.sizePx})"),
+                              Text('${k.name}(${k.sizePx}x${k.sizePx})'),
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
                                 child: IconButton(

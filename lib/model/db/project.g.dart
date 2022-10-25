@@ -6,7 +6,7 @@ part of 'project.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class Project extends _Project with RealmEntity, RealmObject {
+class Project extends _Project with RealmEntity, RealmObjectBase, RealmObject {
   Project(
     String primaryKey,
     String alias,
@@ -14,52 +14,56 @@ class Project extends _Project with RealmEntity, RealmObject {
     String environmentKey,
     int order,
   ) {
-    RealmObject.set(this, 'primaryKey', primaryKey);
-    RealmObject.set(this, 'alias', alias);
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'environmentKey', environmentKey);
-    RealmObject.set(this, 'order', order);
+    RealmObjectBase.set(this, 'primaryKey', primaryKey);
+    RealmObjectBase.set(this, 'alias', alias);
+    RealmObjectBase.set(this, 'path', path);
+    RealmObjectBase.set(this, 'environmentKey', environmentKey);
+    RealmObjectBase.set(this, 'order', order);
   }
 
   Project._();
 
   @override
   String get primaryKey =>
-      RealmObject.get<String>(this, 'primaryKey') as String;
+      RealmObjectBase.get<String>(this, 'primaryKey') as String;
   @override
-  set primaryKey(String value) => throw RealmUnsupportedSetError();
+  set primaryKey(String value) =>
+      RealmObjectBase.set(this, 'primaryKey', value);
 
   @override
-  String get alias => RealmObject.get<String>(this, 'alias') as String;
+  String get alias => RealmObjectBase.get<String>(this, 'alias') as String;
   @override
-  set alias(String value) => RealmObject.set(this, 'alias', value);
+  set alias(String value) => RealmObjectBase.set(this, 'alias', value);
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get path => RealmObjectBase.get<String>(this, 'path') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
+  set path(String value) => RealmObjectBase.set(this, 'path', value);
 
   @override
   String get environmentKey =>
-      RealmObject.get<String>(this, 'environmentKey') as String;
+      RealmObjectBase.get<String>(this, 'environmentKey') as String;
   @override
   set environmentKey(String value) =>
-      RealmObject.set(this, 'environmentKey', value);
+      RealmObjectBase.set(this, 'environmentKey', value);
 
   @override
-  int get order => RealmObject.get<int>(this, 'order') as int;
+  int get order => RealmObjectBase.get<int>(this, 'order') as int;
   @override
-  set order(int value) => RealmObject.set(this, 'order', value);
+  set order(int value) => RealmObjectBase.set(this, 'order', value);
 
   @override
   Stream<RealmObjectChanges<Project>> get changes =>
-      RealmObject.getChanges<Project>(this);
+      RealmObjectBase.getChanges<Project>(this);
+
+  @override
+  Project freeze() => RealmObjectBase.freezeObject<Project>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObject.registerFactory(Project._);
-    return const SchemaObject(Project, 'Project', [
+    RealmObjectBase.registerFactory(Project._);
+    return const SchemaObject(ObjectType.realmObject, Project, 'Project', [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('alias', RealmPropertyType.string),
       SchemaProperty('path', RealmPropertyType.string),

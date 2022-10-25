@@ -1,9 +1,6 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_manage/manager/event_manage.dart';
-import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/android_platform.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
@@ -52,12 +49,12 @@ class _PlatformAndroidPageState
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
-        label: "应用名称（安装之后的名称）",
+        label: '应用名称（安装之后的名称）',
         child: TextFormBox(
           initialValue: info.label,
           validator: (v) {
             if (null == v || v.isEmpty) {
-              return "不能为空";
+              return '不能为空';
             }
             return null;
           },
@@ -72,19 +69,19 @@ class _PlatformAndroidPageState
   }
 
   // 应用包名输入校验
-  final packageNameRegExp = RegExp(r"[A-Z,a-z,0-9,.]");
+  final packageNameRegExp = RegExp(r'[A-Z,a-z,0-9,.]');
 
   // 构建应用包名编辑项
   Widget buildPackageName() {
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
-        label: "应用包名",
+        label: '应用包名',
         child: TextFormBox(
           initialValue: info.package,
           validator: (v) {
             if (null == v || v.isEmpty) {
-              return "不能为空";
+              return '不能为空';
             }
             return null;
           },
@@ -116,8 +113,7 @@ class _PlatformAndroidPageState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Text("权限管理"),
+              leading: const Text('权限管理'),
               trailing: Row(
                 children: [
                   IconButton(
@@ -129,7 +125,7 @@ class _PlatformAndroidPageState
                   ),
                   const SizedBox(width: 8),
                   Button(
-                    child: const Text("添加权限"),
+                    child: const Text('添加权限'),
                     onPressed: () {
                       PermissionImportDialog.show(
                         context,
@@ -148,7 +144,7 @@ class _PlatformAndroidPageState
             Expanded(
               child: CardItem(
                 child: f.value?.isEmpty ?? true
-                    ? const Center(child: Text("还未添加任何权限哦~"))
+                    ? const Center(child: Text('还未添加任何权限哦~'))
                     : ListView.separated(
                         shrinkWrap: true,
                         itemCount: f.value?.length ?? 0,
@@ -178,12 +174,12 @@ class _PlatformAndroidPageState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item?.name ?? "",
+                    item?.name ?? '',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 4),
-                  Text(item?.describe ?? ""),
-                  Text(item?.value ?? ""),
+                  Text(item?.describe ?? ''),
+                  Text(item?.value ?? ''),
                 ],
               ),
             ),
@@ -192,7 +188,7 @@ class _PlatformAndroidPageState
             icon: const Icon(FluentIcons.delete),
             onPressed: () => ImportantOptionDialog.show(
               context,
-              message: "是否删除 ‘${item?.name ?? ""}’ 权限",
+              message: '是否删除 ‘${item?.name ?? ''}’ 权限',
               onConfirmTap: () => f.didChange(f.value?..remove(item)),
             ),
           ),
@@ -206,21 +202,24 @@ class _PlatformAndroidPageState
     final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
-        child: TappableListTile(
-          leading: LogoFileImage(
-            File(info.projectIcon),
-            size: 30,
-          ),
-          title: const Text("应用图标（立即生效）"),
-          trailing: Button(
-            child: const Text("批量替换"),
-            onPressed: () {
-              Utils.pickProjectLogo(minSize: const Size.square(192)).then((v) {
-                if (null != v) widget.platformInfo.modifyProjectIcon(v);
-              }).catchError((e) {
-                Utils.showSnack(context, e.toString());
-              });
-            },
+        child: GestureDetector(
+          child: ListTile(
+            leading: LogoFileImage(
+              File(info.projectIcon),
+              size: 30,
+            ),
+            title: const Text('应用图标（立即生效）'),
+            trailing: Button(
+              child: const Text('批量替换'),
+              onPressed: () {
+                Utils.pickProjectLogo(minSize: const Size.square(192))
+                    .then((v) {
+                  if (null != v) widget.platformInfo.modifyProjectIcon(v);
+                }).catchError((e) {
+                  Utils.showSnack(context, e.toString());
+                });
+              },
+            ),
           ),
           onTap: () => _showLogoList(info.loadIcons(reversed: true)),
         ),
@@ -241,7 +240,7 @@ class _PlatformAndroidPageState
             separatorBuilder: (_, i) => const SizedBox(height: 24),
             itemBuilder: (_, i) {
               final type = iconsMap.keys.elementAt(i),
-                  path = iconsMap[type] ?? "",
+                  path = iconsMap[type] ?? '',
                   sizePx = type.sizePx;
               return Row(
                 children: [
@@ -253,7 +252,7 @@ class _PlatformAndroidPageState
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text("${type.name}(${sizePx}x$sizePx)"),
+                    child: Text('${type.name}(${sizePx}x$sizePx)'),
                   ),
                   IconButton(
                     icon: const Icon(FluentIcons.info),

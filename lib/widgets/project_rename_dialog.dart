@@ -54,12 +54,12 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
     return ContentDialog(
       title: Row(
         children: [
-          const Text("修改 pubspec.yaml 文件中的项目名称"),
+          const Text('修改 pubspec.yaml 文件中的项目名称'),
           IconButton(
             icon: const Icon(FluentIcons.info),
             onPressed: () {
               final filePath =
-                  "${widget.projectModel.project.path}/${ProjectFilePath.pubspec}";
+                  '${widget.projectModel.project.path}/${ProjectFilePath.pubspec}';
               Utils.showSnackWithFilePath(context, filePath);
             },
           ),
@@ -71,7 +71,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           key: formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: InfoLabel(
-            label: "项目名称 '${reNameRegExp.pattern}'",
+            label: '项目名称 "${reNameRegExp.pattern}"',
             child: StatefulBuilder(
               builder: (_, state) {
                 return TextFormBox(
@@ -86,7 +86,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
                   ),
                   onChanged: (v) => state(() {}),
                   validator: (v) {
-                    if (null == v || v.isEmpty) return "不能为空";
+                    if (null == v || v.isEmpty) return '不能为空';
                     return null;
                   },
                   onSaved: (v) {
@@ -106,11 +106,11 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
       ),
       actions: [
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          child: const Text("修改"),
+          child: const Text('修改'),
           onPressed: () {
             var state = formKey.currentState;
             if (null != state && state.validate()) {

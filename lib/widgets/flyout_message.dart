@@ -31,7 +31,7 @@ class FlyoutMessage extends StatelessWidget {
             Text(message),
             const SizedBox(height: 8),
             Button(
-              child: const Text("确定"),
+              child: const Text('确定'),
               onPressed: () => Navigator.pop(context),
             ),
           ],

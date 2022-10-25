@@ -33,7 +33,7 @@ class DBManage extends BaseManage {
         Setting.schema,
       ],
       schemaVersion: 0,
-      path: "jtech.db",
+      path: 'jtech.db',
     );
     realm = Realm(config);
   }

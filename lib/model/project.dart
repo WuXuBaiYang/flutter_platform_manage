@@ -30,8 +30,8 @@ class ProjectModel {
   ProjectModel({
     required this.project,
     this.exist = true,
-    this.name = "",
-    this.version = "",
+    this.name = '',
+    this.version = '',
     this.platformMap = const {},
   });
 
@@ -41,7 +41,7 @@ class ProjectModel {
   // 获取展示标题
   String get showTitle {
     final t = project.alias;
-    return t.isEmpty ? name : "$t($name)";
+    return t.isEmpty ? name : '$t($name)';
   }
 
   // 获取应用图标
@@ -69,7 +69,7 @@ class ProjectModel {
   final _versionRegRe = RegExp(r'version: ');
 
   // pubspec文件绝对路径
-  String get pubspecFilePath => "${project.path}/${ProjectFilePath.pubspec}";
+  String get pubspecFilePath => '${project.path}/${ProjectFilePath.pubspec}';
 
   // 更新项目信息
   Future<bool> update(bool simple) async {
@@ -86,7 +86,7 @@ class ProjectModel {
       // 遍历并创建平台对象
       platformMap = {};
       for (final t in PlatformType.values) {
-        final d = Directory("${project.path}/${t.name}");
+        final d = Directory('${project.path}/${t.name}');
         if (!d.existsSync()) continue;
         final p = t.create(d.path);
         // 更新平台信息
@@ -128,7 +128,7 @@ class ProjectModel {
       {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(pubspecFilePath);
     // 修改项目名称
-    await handle.replace(_nameReg, "name: $name");
+    await handle.replace(_nameReg, 'name: $name');
     return autoCommit ? await handle.commit() : true;
   }
 
@@ -137,7 +137,7 @@ class ProjectModel {
       {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(pubspecFilePath);
     // 修改项目版本号
-    await handle.replace(_versionReg, "version: $version");
+    await handle.replace(_versionReg, 'version: $version');
     return autoCommit ? await handle.commit() : true;
   }
 

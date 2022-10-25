@@ -11,7 +11,7 @@ import 'base_manage.dart';
 */
 class JCacheManage extends BaseManage {
   // 时效字段后缀
-  final String _expirationSuffix = "expiration";
+  final String _expirationSuffix = 'expiration';
 
   static final JCacheManage _instance = JCacheManage._internal();
 
@@ -171,8 +171,8 @@ class JCacheManage extends BaseManage {
 
   // 获取有效期的存储字段
   String _getExpirationKey(String key) {
-    key = "${key}_$_expirationSuffix";
-    return "${key}_${Utils.md5(key)}";
+    key = '${key}_$_expirationSuffix';
+    return '${key}_${Utils.md5(key)}';
   }
 }
 

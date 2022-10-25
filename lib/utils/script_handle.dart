@@ -17,9 +17,9 @@ class ScriptHandle {
   // 查看flutter版本号信息
   static Future<Environment> loadFlutterEnv(String path) async {
     final outText = await runShell(
-      "$path/${ProjectFilePath.flutter} --version",
+      '$path/${ProjectFilePath.flutter} --version',
     );
-    var version = "Flutter", channel = "channel", dart = "Dart";
+    var version = 'Flutter', channel = 'channel', dart = 'Dart';
     for (var it in outText.split(r'•')) {
       it = it.trim();
       if (it.startsWith(version)) {
@@ -39,7 +39,7 @@ class ScriptHandle {
     final env = projectInfo.environment;
     if (null == env) return false;
     final outText = await runShell(
-      "${env.path}/${ProjectFilePath.flutter} create --platforms=${platforms.map((e) => e.name).join(',')} .",
+      '${env.path}/${ProjectFilePath.flutter} create --platforms=${platforms.map((e) => e.name).join(',')} .',
       path: projectInfo.project.path,
     );
     return RegExp(r'All done').hasMatch(outText);
@@ -53,8 +53,8 @@ class ScriptHandle {
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     ).run(script);
-    final errText = list.map((e) => e.errText).join("");
+    final errText = list.map((e) => e.errText).join('');
     if (errText.isNotEmpty) throw Exception(errText);
-    return list.map((e) => e.outText).join("");
+    return list.map((e) => e.outText).join('');
   }
 }

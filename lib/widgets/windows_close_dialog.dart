@@ -32,15 +32,15 @@ class _WindowsCloseDialogState extends State<WindowsCloseDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text("关闭提醒"),
-      content: const Text("确定要关闭应用吗？"),
+      title: const Text('关闭提醒'),
+      content: const Text('确定要关闭应用吗？'),
       actions: [
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          child: const Text("关闭"),
+          child: const Text('关闭'),
           onPressed: () {
             Navigator.maybePop(context);
             windowManager.destroy();

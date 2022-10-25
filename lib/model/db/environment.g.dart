@@ -6,7 +6,8 @@ part of 'environment.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class Environment extends _Environment with RealmEntity, RealmObject {
+class Environment extends _Environment
+    with RealmEntity, RealmObjectBase, RealmObject {
   Environment(
     String primaryKey,
     String path,
@@ -14,50 +15,55 @@ class Environment extends _Environment with RealmEntity, RealmObject {
     String channel,
     String dart,
   ) {
-    RealmObject.set(this, 'primaryKey', primaryKey);
-    RealmObject.set(this, 'path', path);
-    RealmObject.set(this, 'flutter', flutter);
-    RealmObject.set(this, 'channel', channel);
-    RealmObject.set(this, 'dart', dart);
+    RealmObjectBase.set(this, 'primaryKey', primaryKey);
+    RealmObjectBase.set(this, 'path', path);
+    RealmObjectBase.set(this, 'flutter', flutter);
+    RealmObjectBase.set(this, 'channel', channel);
+    RealmObjectBase.set(this, 'dart', dart);
   }
 
   Environment._();
 
   @override
   String get primaryKey =>
-      RealmObject.get<String>(this, 'primaryKey') as String;
+      RealmObjectBase.get<String>(this, 'primaryKey') as String;
   @override
-  set primaryKey(String value) => throw RealmUnsupportedSetError();
+  set primaryKey(String value) =>
+      RealmObjectBase.set(this, 'primaryKey', value);
 
   @override
-  String get path => RealmObject.get<String>(this, 'path') as String;
+  String get path => RealmObjectBase.get<String>(this, 'path') as String;
   @override
-  set path(String value) => RealmObject.set(this, 'path', value);
+  set path(String value) => RealmObjectBase.set(this, 'path', value);
 
   @override
-  String get flutter => RealmObject.get<String>(this, 'flutter') as String;
+  String get flutter => RealmObjectBase.get<String>(this, 'flutter') as String;
   @override
-  set flutter(String value) => RealmObject.set(this, 'flutter', value);
+  set flutter(String value) => RealmObjectBase.set(this, 'flutter', value);
 
   @override
-  String get channel => RealmObject.get<String>(this, 'channel') as String;
+  String get channel => RealmObjectBase.get<String>(this, 'channel') as String;
   @override
-  set channel(String value) => RealmObject.set(this, 'channel', value);
+  set channel(String value) => RealmObjectBase.set(this, 'channel', value);
 
   @override
-  String get dart => RealmObject.get<String>(this, 'dart') as String;
+  String get dart => RealmObjectBase.get<String>(this, 'dart') as String;
   @override
-  set dart(String value) => RealmObject.set(this, 'dart', value);
+  set dart(String value) => RealmObjectBase.set(this, 'dart', value);
 
   @override
   Stream<RealmObjectChanges<Environment>> get changes =>
-      RealmObject.getChanges<Environment>(this);
+      RealmObjectBase.getChanges<Environment>(this);
+
+  @override
+  Environment freeze() => RealmObjectBase.freezeObject<Environment>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObject.registerFactory(Environment._);
-    return const SchemaObject(Environment, 'Environment', [
+    RealmObjectBase.registerFactory(Environment._);
+    return const SchemaObject(
+        ObjectType.realmObject, Environment, 'Environment', [
       SchemaProperty('primaryKey', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('path', RealmPropertyType.string),
       SchemaProperty('flutter', RealmPropertyType.string),

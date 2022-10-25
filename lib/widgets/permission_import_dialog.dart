@@ -71,11 +71,11 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
       ),
       actions: [
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          child: const Text("选择"),
+          child: const Text('选择'),
           onPressed: () => Navigator.pop(context, widget.permissions),
         ),
       ],
@@ -87,11 +87,11 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
     return StatefulBuilder(
       builder: (_, state) {
         return InfoLabel(
-          label: "权限列表过滤",
+          label: '权限列表过滤',
           child: TextBox(
             autofocus: true,
             controller: controller,
-            placeholder: "根据名称/描述/值进行过滤",
+            placeholder: '根据名称/描述/值进行过滤',
             onChanged: (v) {
               deBouncer(() => setState(() {}));
               state(() {});
@@ -104,7 +104,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
                 onPressed: () => setState(() => controller.clear()),
               ),
             ),
-            outsideSuffix: buildFilterCombobox(),
+            outsideSuffix: buildFilterComboBox(),
           ),
         );
       },
@@ -112,14 +112,13 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
   }
 
   // 构建过滤下拉框
-  Widget buildFilterCombobox() {
+  Widget buildFilterComboBox() {
     return Container(
       padding: const EdgeInsets.only(left: 6),
       width: 90,
       child: Card(
-        elevation: 1,
         padding: EdgeInsets.zero,
-        child: Combobox<PermissionFilter>(
+        child: ComboBox<PermissionFilter>(
           value: filter,
           onChanged: (v) {
             if (null != v) {
@@ -128,7 +127,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
           },
           items: List.generate(PermissionFilter.values.length, (i) {
             final it = PermissionFilter.values[i];
-            return ComboboxItem(
+            return ComboBoxItem(
               value: it,
               child: Text(it.name),
             );
@@ -145,7 +144,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
       builder: (_, snap) {
         if (snap.hasError) {
           return const Center(
-            child: Text("权限列表加载失败，请关闭重试"),
+            child: Text('权限列表加载失败，请关闭重试'),
           );
         }
         if (snap.hasData) {
@@ -159,23 +158,20 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             itemBuilder: (_, i) {
               final item = list[i];
               var checked = widget.permissions.contains(item);
-              return TappableListTile(
-                isThreeLine: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 4,
-                ),
-                title: Text(
-                  item.name,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  item.hint ?? item.describe ?? "",
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: Checkbox(
-                  checked: checked,
-                  onChanged: (v) => permissionSelected(checked, item),
+              return GestureDetector(
+                child: ListTile(
+                  title: Text(
+                    item.name,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    item.hint ?? item.describe ?? '',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Checkbox(
+                    checked: checked,
+                    onChanged: (v) => permissionSelected(checked, item),
+                  ),
                 ),
                 onTap: () => permissionSelected(checked, item),
               );
@@ -238,12 +234,12 @@ extension PermissionFilterExtension on PermissionFilter {
   String get name {
     switch (this) {
       case PermissionFilter.selected:
-        return "已选择";
+        return '已选择';
       case PermissionFilter.unselected:
-        return "未选择";
+        return '未选择';
       case PermissionFilter.all:
       default:
-        return "全部";
+        return '全部';
     }
   }
 }

@@ -28,18 +28,18 @@ class AndroidPlatform extends BasePlatform {
 
   AndroidPlatform({
     required String platformPath,
-    this.label = "",
-    this.package = "",
-    this.iconPath = "",
+    this.label = '',
+    this.package = '',
+    this.iconPath = '',
     this.permissions = const [],
   }) : super(type: PlatformType.android, platformPath: platformPath);
 
   // androidManifest.xml文件绝对路径
   String get manifestFilePath =>
-      "$platformPath/${ProjectFilePath.androidManifest}";
+      '$platformPath/${ProjectFilePath.androidManifest}';
 
   String get appBuildGradle =>
-      "$platformPath/${ProjectFilePath.androidAppBuildGradle}";
+      '$platformPath/${ProjectFilePath.androidAppBuildGradle}';
 
   @override
   Future<bool> update(bool simple) async {
@@ -48,13 +48,13 @@ class AndroidPlatform extends BasePlatform {
       // 处理androidManifest.xml文件
       // 获取图标路径信息
       iconPath =
-          (await handle.singleAtt("application", attName: "android:icon"))
-              .replaceAll(r'@', "");
+          (await handle.singleAtt('application', attName: 'android:icon'))
+              .replaceAll(r'@', '');
       if (!simple) {
         // 获取label
-        label = await handle.singleAtt("application", attName: "android:label");
+        label = await handle.singleAtt('application', attName: 'android:label');
         // 获取包名
-        package = await handle.singleAtt("manifest", attName: "package");
+        package = await handle.singleAtt('manifest', attName: 'package');
         // 获取权限集合
         permissions = await permissionManage.findAllPermissions(
           await handle.attList('uses-permission', attName: 'android:name'),
@@ -75,14 +75,14 @@ class AndroidPlatform extends BasePlatform {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名
-        await handle.setElAtt("manifest", attName: "package", value: package);
+        await handle.setElAtt('manifest', attName: 'package', value: package);
         // 移除所有权限
-        await handle.removeEl("uses-permission", target: "manifest");
+        await handle.removeEl('uses-permission', target: 'manifest');
         // 封装权限并插入
-        await handle.insertEl("manifest",
+        await handle.insertEl('manifest',
             nodes: permissions.map((e) {
-              return XmlElement(XmlName("uses-permission"), [
-                XmlAttribute(XmlName("android:name"), e.value),
+              return XmlElement(XmlName('uses-permission'), [
+                XmlAttribute(XmlName('android:name'), e.value),
               ]);
             }).toList());
       })) return false;
@@ -101,17 +101,17 @@ class AndroidPlatform extends BasePlatform {
   // 获取图标文件路径集合
   Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
     if (iconPath.isEmpty) return {};
-    final values = AndroidIcons.values;
+    const values = AndroidIcons.values;
     return Map.fromEntries((reversed ? values.reversed : values).map((e) {
       final path = e.getAbsolutePath(iconPath);
-      return MapEntry(e, "$platformPath/$path");
+      return MapEntry(e, '$platformPath/$path');
     }));
   }
 
   @override
   String get projectIcon => loadIcons().values.lastWhere(
         (e) => File(e).existsSync(),
-        orElse: () => "",
+        orElse: () => '',
       );
 
   @override
@@ -120,7 +120,7 @@ class AndroidPlatform extends BasePlatform {
     handle ??= FileHandleXML.from(manifestFilePath);
     if (handle is! FileHandleXML) return false;
     // 修改label
-    await handle.setElAtt("application", attName: "android:label", value: name);
+    await handle.setElAtt('application', attName: 'android:label', value: name);
     return autoCommit ? await handle.commit(indentAtt: true) : true;
   }
 
@@ -129,7 +129,7 @@ class AndroidPlatform extends BasePlatform {
     return Utils.compressIcons(file,
         Map.fromEntries(AndroidIcons.values.map((e) {
       final size = Size.square(e.sizePx.toDouble());
-      return MapEntry(size, "$platformPath/${e.getAbsolutePath(iconPath)}");
+      return MapEntry(size, '$platformPath/${e.getAbsolutePath(iconPath)}');
     })));
   }
 
@@ -191,7 +191,7 @@ extension AndroidIconsExtension on AndroidIcons {
 
   // 拼装附件相对路径
   String getAbsolutePath(String iconPath) {
-    final t = iconPath.split("/"), dir = t.first, fileName = "${t.last}.png";
-    return "${ProjectFilePath.androidRes}/$dir-$name/$fileName";
+    final t = iconPath.split('/'), dir = t.first, fileName = '${t.last}.png';
+    return '${ProjectFilePath.androidRes}/$dir-$name/$fileName';
   }
 }

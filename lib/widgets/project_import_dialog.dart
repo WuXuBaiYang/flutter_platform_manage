@@ -52,13 +52,13 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
 
   // 步骤视图集合
   late Map<String, Widget Function()> stepsMap = {
-    "选择项目": () => buildProjectSelect(),
-    "确认信息": () => buildProjectInfo(),
+    '选择项目': () => buildProjectSelect(),
+    '确认信息': () => buildProjectInfo(),
   };
 
   // 项目信息
   late Project project =
-      widget.project ?? Project(Utils.genID(), "", "", "", 0);
+      widget.project ?? Project(Utils.genID(), '', '', '', 0);
 
   @override
   Widget build(BuildContext context) {
@@ -106,14 +106,14 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                     _currentStep -= 1;
                   })
               : null,
-          child: const Text("上一步"),
+          child: const Text('上一步'),
         ),
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          child: Text(_currentStep < stepsMap.length - 1 ? "下一步" : "导入"),
+          child: Text(_currentStep < stepsMap.length - 1 ? '下一步' : '导入'),
           onPressed: () async {
             switch (_currentStep) {
               case 0: // 项目选择
@@ -153,41 +153,41 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         children: [
           TextFormBox(
             controller: TextEditingController(text: project.alias),
-            header: "别名",
-            placeholder: "默认取项目名",
+            header: '别名',
+            placeholder: '默认取项目名',
             onSaved: (v) {
               dbManage.write((realm) {
-                project.alias = v ?? "";
+                project.alias = v ?? '';
               });
             },
           ),
           const SizedBox(height: 14),
           TextFormBox(
             controller: projectPathController,
-            header: "项目路径",
-            placeholder: "粘贴或选择项目根目录",
+            header: '项目路径',
+            placeholder: '粘贴或选择项目根目录',
             onSaved: (v) {
               dbManage.write((realm) {
-                project.path = v ?? "";
+                project.path = v ?? '';
               });
             },
             validator: (v) {
-              if (null == v || v.isEmpty) return "项目路径不能为空";
-              var path = "$v/${ProjectFilePath.pubspec}";
+              if (null == v || v.isEmpty) return '项目路径不能为空';
+              var path = '$v/${ProjectFilePath.pubspec}';
               if (!File(path).existsSync()) {
-                return "项目不存在（缺少pubspec.yaml文件）";
+                return '项目不存在（缺少pubspec.yaml文件）';
               }
               if (!project.isManaged && projectManage.has(v)) {
-                return "项目已存在";
+                return '项目已存在';
               }
               return null;
             },
             suffix: Button(
-              child: const Text("选择"),
+              child: const Text('选择'),
               onPressed: () {
                 FilePicker.platform
                     .getDirectoryPath(
-                        dialogTitle: "选择项目路径",
+                        dialogTitle: '选择项目路径',
                         lockParentWindow: true,
                         initialDirectory: projectPathController.text)
                     .then((v) {
@@ -198,7 +198,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           ),
           const SizedBox(height: 14),
           InfoLabel(
-            label: "运行时环境",
+            label: '运行时环境',
             child: FormField<Environment>(
               initialValue: dbManage.loadFirstEnvironment(
                   environmentKey: project.environmentKey),
@@ -209,18 +209,18 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Combobox<Environment>(
+                        child: ComboBox<Environment>(
                           isExpanded: true,
-                          placeholder: const Text("请添加flutter环境"),
+                          placeholder: const Text('请添加flutter环境'),
                           value: f.value,
                           onChanged: f.didChange,
                           items: dbManage
                               .loadAllEnvironments()
-                              .map<ComboboxItem<Environment>>((e) {
-                            return ComboboxItem(
+                              .map<ComboBoxItem<Environment>>((e) {
+                            return ComboBoxItem(
                               value: e,
                               child:
-                                  Text("Flutter ${e.flutter} · ${e.channel}"),
+                                  Text('Flutter ${e.flutter} · ${e.channel}'),
                             );
                           }).toList(),
                         ),
@@ -241,12 +241,12 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                 );
               },
               validator: (v) {
-                if (null == v) return "运行时环境不能为空";
+                if (null == v) return '运行时环境不能为空';
                 return null;
               },
               onSaved: (v) {
                 dbManage.write((realm) {
-                  project.environmentKey = v?.primaryKey ?? "";
+                  project.environmentKey = v?.primaryKey ?? '';
                 });
               },
             ),
@@ -271,15 +271,15 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         TextBox(
-          header: "项目名称",
+          header: '项目名称',
           readOnly: true,
           controller: TextEditingController(
-            text: _projectInfo?.showTitle ?? "",
+            text: _projectInfo?.showTitle ?? '',
           ),
         ),
         const SizedBox(height: 14),
         TextBox(
-          header: "版本号",
+          header: '版本号',
           readOnly: true,
           controller: TextEditingController(
             text: _projectInfo?.version,
@@ -287,15 +287,15 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         ),
         const SizedBox(height: 14),
         TextBox(
-          header: "环境",
+          header: '环境',
           readOnly: true,
           controller: TextEditingController(
-            text: "Flutter ${env?.flutter} · ${env?.channel}",
+            text: 'Flutter ${env?.flutter} · ${env?.channel}',
           ),
         ),
         const SizedBox(height: 14),
         TextBox(
-          header: "项目地址",
+          header: '项目地址',
           readOnly: true,
           controller: TextEditingController(
             text: project.path,
@@ -303,7 +303,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         ),
         const SizedBox(height: 14),
         InfoLabel(
-          label: "平台支持",
+          label: '平台支持',
           child: PlatformTagGroup(
             platforms: _projectInfo?.platformList ?? [],
           ),
@@ -331,7 +331,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       projectManage.add(project);
       Navigator.maybePop(context, _projectInfo);
     } catch (e) {
-      setState(() => _errText = "项目导入失败");
+      setState(() => _errText = '项目导入失败');
     }
   }
 }

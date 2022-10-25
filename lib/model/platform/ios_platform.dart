@@ -24,14 +24,14 @@ class IOSPlatform extends BasePlatform {
 
   IOSPlatform({
     required String platformPath,
-    this.bundleName = "",
-    this.bundleDisplayName = "",
+    this.bundleName = '',
+    this.bundleDisplayName = '',
     this.permissions = const [],
   }) : super(type: PlatformType.ios, platformPath: platformPath);
 
   // info.plist文件绝对路径
   String get infoPlistFilePath =>
-      "$platformPath/${ProjectFilePath.iosInfoPlist}";
+      '$platformPath/${ProjectFilePath.iosInfoPlist}';
 
   @override
   Future<bool> update(bool simple) async {
@@ -40,12 +40,12 @@ class IOSPlatform extends BasePlatform {
     try {
       // 处理info.plist文件
       // 获取包名
-      bundleName = await handle.getValue("CFBundleName", def: "");
+      bundleName = await handle.getValue('CFBundleName', def: '');
       // 获取打包展示名称
-      bundleDisplayName = await handle.getValue("CFBundleDisplayName", def: "");
+      bundleDisplayName = await handle.getValue('CFBundleDisplayName', def: '');
       // 获取权限集合
       permissions = await permissionManage.findAllPermissions(
-        await handle.getValueList<String>(includeKey: "NS"),
+        await handle.getValueList<String>(includeKey: 'NS'),
         platform: PlatformType.ios,
       );
     } catch (e) {
@@ -61,15 +61,15 @@ class IOSPlatform extends BasePlatform {
       if (!await FileHandlePList.from(infoPlistFilePath)
           .fileWrite((handle) async {
         // 修改打包名称
-        await handle.setValue("CFBundleName", bundleName);
+        await handle.setValue('CFBundleName', bundleName);
         // 修改显示名称
         await modifyDisplayName(bundleDisplayName, handle: handle);
         // 移除所有权限
-        await handle.removeValueList(includeKey: "NS");
+        await handle.removeValueList(includeKey: 'NS');
         // 插入编辑好的权限
         await handle.insertValueMap(
           valueMap: permissions.asMap().map((key, value) {
-            return MapEntry(value.value, value.describe ?? "");
+            return MapEntry(value.value, value.describe ?? '');
           }),
         );
       })) return false;
@@ -82,7 +82,7 @@ class IOSPlatform extends BasePlatform {
   // 获取图标文件路径集合
   Map<IOSIcons, String> loadIcons() => Map.fromEntries(
         IOSIcons.values.map(
-          (e) => MapEntry(e, "$platformPath/${e.absolutePath}"),
+          (e) => MapEntry(e, '$platformPath/${e.absolutePath}'),
         ),
       );
 
@@ -90,7 +90,7 @@ class IOSPlatform extends BasePlatform {
   List<Map<IOSIcons, String>> loadGroupIcons() {
     return IOSIconsExtension.groups.map<Map<IOSIcons, String>>((e) {
       return Map.fromEntries(e.map(
-        (i) => MapEntry(i, "$platformPath/${i.absolutePath}"),
+        (i) => MapEntry(i, '$platformPath/${i.absolutePath}'),
       ));
     }).toList();
   }
@@ -98,7 +98,7 @@ class IOSPlatform extends BasePlatform {
   @override
   String get projectIcon => loadIcons().values.lastWhere(
         (e) => File(e).existsSync(),
-        orElse: () => "",
+        orElse: () => '',
       );
 
   @override
@@ -106,7 +106,7 @@ class IOSPlatform extends BasePlatform {
       {FileHandle? handle, bool autoCommit = false}) async {
     handle ??= FileHandle.from(infoPlistFilePath);
     if (handle is! FileHandlePList) return false;
-    await handle.setValue("CFBundleDisplayName", name);
+    await handle.setValue('CFBundleDisplayName', name);
     return autoCommit ? await handle.commit() : true;
   }
 
@@ -114,7 +114,7 @@ class IOSPlatform extends BasePlatform {
   Future<List<String>> modifyProjectIcon(File file) async {
     return Utils.compressIcons(file, Map.fromEntries(IOSIcons.values.map((e) {
       final size = Size.square(e.sizePx.toDouble());
-      return MapEntry(size, "$platformPath/${e.absolutePath}");
+      return MapEntry(size, '$platformPath/${e.absolutePath}');
     })));
   }
 
@@ -241,7 +241,7 @@ extension IOSIconsExtension on IOSIcons {
   // 拼装附件相对路径
   String get absolutePath {
     final m = multiple, s = sizePx / m;
-    final fileName = "Icon-App-${s}x$s@${m}x.png".replaceAll(".0", '');
-    return "${ProjectFilePath.iosAssetsAppIcon}/$fileName";
+    final fileName = 'Icon-App-${s}x$s@${m}x.png'.replaceAll('.0', '');
+    return '${ProjectFilePath.iosAssetsAppIcon}/$fileName';
   }
 }

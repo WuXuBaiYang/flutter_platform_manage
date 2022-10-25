@@ -19,7 +19,7 @@ class Utils {
   // 生成id
   static String genID({int? seed}) {
     final time = DateTime.now().millisecondsSinceEpoch;
-    return md5("${time}_${Random(seed ?? time).nextDouble()}");
+    return md5('${time}_${Random(seed ?? time).nextDouble()}');
   }
 
   // 计算md5
@@ -48,11 +48,11 @@ class Utils {
     BuildContext context,
     String filePath,
   ) {
-    filePath = filePath.replaceAll('/', "\\");
+    filePath = filePath.replaceAll('/', '\\');
     var hasClip = false;
     return Utils.showSnack(
       context,
-      "文件路径：\n$filePath",
+      '文件路径：\n$filePath',
       action: StatefulBuilder(
         builder: (_, setState) {
           return TextButton(
@@ -62,7 +62,7 @@ class Utils {
                       Clipboard.setData(ClipboardData(text: filePath));
                       hasClip = true;
                     }),
-            child: Text(hasClip ? "已复制到剪切板" : "复制"),
+            child: Text(hasClip ? '已复制到剪切板' : '复制'),
           );
         },
       ),
@@ -148,16 +148,16 @@ class Utils {
       {Size minSize = const Size.square(1024)}) async {
     // 选择图标文件
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: "请选择 ${minSize.width}*${minSize.height}px 以上的正方形png图片",
+      dialogTitle: '请选择 ${minSize.width}*${minSize.height}px 以上的正方形png图片',
       allowCompression: false,
       lockParentWindow: true,
       type: FileType.image,
     );
     if (null != result && result.count > 0) {
-      final f = File(result.paths.first ?? "");
+      final f = File(result.paths.first ?? '');
       final imgSize = await Utils.loadImageSize(f);
       if (imgSize.aspectRatio != 1.0 || imgSize < minSize) {
-        throw Exception("图标必须是大于等于 ${minSize.width}*${minSize.height}px 的正方形");
+        throw Exception('图标必须是大于等于 ${minSize.width}*${minSize.height}px 的正方形');
       }
       return f;
     }
@@ -173,7 +173,7 @@ class Utils {
       var bytes = await Utils.resizeImage(rawImage,
           height: size.width.toInt(), width: size.height.toInt());
       if (null == bytes) continue;
-      var path = targetMap[size] ?? "";
+      var path = targetMap[size] ?? '';
       if (path.isEmpty) continue;
       await File(path).writeAsBytes(bytes.buffer.asInt8List());
       t.add(path);

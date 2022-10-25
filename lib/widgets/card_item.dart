@@ -17,7 +17,6 @@ class CardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
       padding: const EdgeInsets.all(4),
       child: child,
     );

@@ -54,12 +54,12 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
     return ContentDialog(
       title: Row(
         children: [
-          const Text("修改 pubspec.yaml 文件中的项目版本"),
+          const Text('修改 pubspec.yaml 文件中的项目版本'),
           IconButton(
               icon: const Icon(FluentIcons.info),
               onPressed: () {
                 var filePath =
-                    "${widget.projectModel.project.path}/${ProjectFilePath.pubspec}";
+                    '${widget.projectModel.project.path}/${ProjectFilePath.pubspec}';
                 Utils.showSnackWithFilePath(context, filePath);
               }),
         ],
@@ -70,7 +70,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
           key: formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: InfoLabel(
-            label: "版本号 '${versionRegExp.pattern}'",
+            label: '版本号 "${versionRegExp.pattern}"',
             child: TextFormBox(
               controller: controller,
               autofocus: true,
@@ -78,14 +78,14 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
               suffix: Row(
                 children: [
                   Tooltip(
-                    message: "自增版本号",
+                    message: '自增版本号',
                     child: IconButton(
                       icon: const Icon(FluentIcons.add_multiple),
                       onPressed: () => autoIncrement(),
                     ),
                   ),
                   Tooltip(
-                    message: "重置版本号",
+                    message: '重置版本号',
                     child: IconButton(
                       icon: const Icon(FluentIcons.reset),
                       onPressed: () => updateInput(widget.projectModel.version),
@@ -94,8 +94,8 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
                 ],
               ),
               validator: (v) {
-                if (null == v || v.isEmpty) return "不能为空";
-                if (v.split("+").length != 2) return "'+'号必须有且只有一个";
+                if (null == v || v.isEmpty) return '不能为空';
+                if (v.split('+').length != 2) return ''+'号必须有且只有一个';
                 return null;
               },
               onSaved: (v) {
@@ -112,11 +112,11 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
       ),
       actions: [
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          child: const Text("修改"),
+          child: const Text('修改'),
           onPressed: () {
             var state = formKey.currentState;
             if (null != state && state.validate()) {
@@ -140,21 +140,21 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
 
   // 版本号自增
   void autoIncrement() {
-    var t = controller.text.split("+");
+    var t = controller.text.split('+');
     if (t.length != 2) {
-      Utils.showSnack(context, "版本号格式错误");
+      Utils.showSnack(context, '版本号格式错误');
       return;
     }
     var vName = t.first, vCode = t.last;
     var c = int.tryParse(vCode);
     if (null == c) {
-      Utils.showSnack(context, "版本号格式化失败");
+      Utils.showSnack(context, '版本号格式化失败');
       return;
     }
-    vCode = "${++c}";
-    t = vName.split(".");
+    vCode = '${++c}';
+    t = vName.split('.');
     t.last = vCode;
-    vName = t.join(".");
-    updateInput("$vName+$vCode");
+    vName = t.join('.');
+    updateInput('$vName+$vCode');
   }
 }

@@ -48,7 +48,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   Widget build(BuildContext context) {
     return ScaffoldPage.withPadding(
       header: PageHeader(
-        title: const Text("项目列表"),
+        title: const Text('项目列表'),
         commandBar: buildCommandBar(),
       ),
       content: CacheFutureBuilder<List<ProjectModel>>(
@@ -61,7 +61,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           }
           return Center(
             child: NoticeBox.empty(
-              message: "点击右上角添加一个项目",
+              message: '点击右上角添加一个项目',
             ),
           );
         },
@@ -72,13 +72,12 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   // 构建动作菜单
   Widget buildCommandBar() {
     return CommandBarCard(
-      elevation: 0,
       child: CommandBar(
         overflowBehavior: CommandBarOverflowBehavior.noWrap,
         primaryItems: [
           CommandBarButton(
             icon: const Icon(FluentIcons.add),
-            label: const Text("添加"),
+            label: const Text('添加'),
             onPressed: () {
               ProjectImportDialog.show(context).then((v) {
                 if (null != v) controller.refreshValue();
@@ -87,10 +86,10 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           ),
           CommandBarButton(
             icon: const Icon(FluentIcons.refresh),
-            label: const Text("刷新"),
+            label: const Text('刷新'),
             onPressed: () {
               controller.refreshValue();
-              Utils.showSnack(context, "项目信息已刷新");
+              Utils.showSnack(context, '项目信息已刷新');
             },
           ),
         ],
@@ -142,9 +141,11 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     return MouseRightClickMenu(
       key: ObjectKey(item.project.primaryKey),
       menuItems: [
-        TappableListTile(
-          leading: const Icon(FluentIcons.rename, size: 14),
-          title: const Text("项目名称"),
+        GestureDetector(
+          child: const ListTile(
+            leading: Icon(FluentIcons.rename, size: 14),
+            title: Text('项目名称'),
+          ),
           onTap: () {
             Navigator.pop(context);
             ProjectReNameDialog.show(
@@ -155,9 +156,11 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             });
           },
         ),
-        TappableListTile(
-          leading: const Icon(FluentIcons.version_control_push, size: 14),
-          title: const Text("版本号"),
+        GestureDetector(
+          child: const ListTile(
+            leading: Icon(FluentIcons.version_control_push, size: 14),
+            title: Text('版本号'),
+          ),
           onTap: () {
             Navigator.pop(context);
             ProjectVersionDialog.show(
@@ -168,45 +171,46 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             });
           },
         ),
-        TappableListTile(
-          leading: const Icon(FluentIcons.app_icon_default_edit, size: 14),
-          title: const Text("编辑"),
+        GestureDetector(
+          child: const ListTile(
+            leading: Icon(FluentIcons.app_icon_default_edit, size: 14),
+            title: Text('编辑'),
+          ),
           onTap: () {
             Navigator.pop(context);
             modifyProjectInfo(item);
           },
         ),
-        TappableListTile(
-          leading: Icon(FluentIcons.delete, size: 14, color: Colors.red),
-          title: Text(
-            "删除",
-            style: TextStyle(color: Colors.red),
+        GestureDetector(
+          child: ListTile(
+            leading: Icon(FluentIcons.delete, size: 14, color: Colors.red),
+            title: Text(
+              '删除',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
           onTap: () {
             Navigator.pop(context);
             deleteProjectInfo(item);
           },
-        ),
+        )
       ],
       child: Center(
         child: GestureDetector(
           onTap: () {
             if (!item.exist) return modifyProjectInfo(item);
             jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-              "key": item.project.primaryKey,
+              'key': item.project.primaryKey,
             })?.then((_) => controller.refreshValue());
           },
           child: Card(
-            elevation: 0,
             child: !item.exist
                 ? Center(
                     child: Text(
-                    "项目信息丢失,点击重新编辑",
+                    '项目信息丢失,点击重新编辑',
                     style: TextStyle(color: Colors.red),
                   ))
                 : ListTile(
-                    isThreeLine: true,
-                    contentPadding: EdgeInsets.zero,
                     leading: ProjectLogo(projectInfo: item),
                     title: Text(
                       item.showTitle,
@@ -217,8 +221,8 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
                       maxLines: 1,
                     ),
                     subtitle: Text(
-                      "${!item.exist ? item.project.alias : item.version}"
-                      "\nFlutter · ${item.environment?.flutter}",
+                      '${!item.exist ? item.project.alias : item.version}'
+                      '\nFlutter · ${item.environment?.flutter}',
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -243,8 +247,8 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   void deleteProjectInfo(ProjectModel item) {
     ImportantOptionDialog.show(
       context,
-      message: "是否删除该项目 ${item.showTitle}",
-      confirm: "删除",
+      message: '是否删除该项目 ${item.showTitle}',
+      confirm: '删除',
       onConfirmTap: () {
         dbManage.delete(item.project);
         controller.refreshValue();

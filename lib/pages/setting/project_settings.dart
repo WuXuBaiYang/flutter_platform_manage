@@ -49,7 +49,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                   });
                 },
               ),
-              header: const Text("Flutter环境列表"),
+              header: const Text('Flutter环境列表'),
               content: ListView.separated(
                 shrinkWrap: true,
                 itemCount: snap.data!.length,
@@ -57,8 +57,8 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                 itemBuilder: (_, i) {
                   final item = snap.data![i];
                   return ListTile(
-                    title: Text("Flutter · ${item.flutter} · ${item.channel}"),
-                    subtitle: Text("Dart · ${item.dart}"),
+                    title: Text('Flutter · ${item.flutter} · ${item.channel}'),
+                    subtitle: Text('Dart · ${item.dart}'),
                     trailing: IconButton(
                       icon: const Icon(FluentIcons.info),
                       onPressed: () {
@@ -67,13 +67,13 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                           builder: (_) {
                             return ContentDialog(
                               content: Text(
-                                "Flutter · ${item.flutter} · ${item.channel}\n"
-                                "Dart · ${item.dart}\n"
-                                "${item.path}",
+                                'Flutter · ${item.flutter} · ${item.channel}\n'
+                                'Dart · ${item.dart}\n'
+                                '${item.path}',
                               ),
                               actions: [
                                 TextButton(
-                                  child: const Text("确定"),
+                                  child: const Text('确定'),
                                   onPressed: () => Navigator.maybePop(context),
                                 ),
                               ],
@@ -105,13 +105,13 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
           ),
         ),
         child: const Text(
-          "查看本项目源码以及说明文档",
+          '查看本项目源码以及说明文档',
           textAlign: TextAlign.start,
         ),
         onPressed: () async {
           final uri = Uri.parse(Common.appSourceUrl);
           if (!await launchUrl(uri)) {
-            Utils.showSnack(context, "网址打开失败");
+            Utils.showSnack(context, '网址打开失败');
           }
         },
       ),

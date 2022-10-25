@@ -58,7 +58,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   @override
   Widget build(BuildContext context) {
     return AppPage(
-      title: "项目详情",
+      title: '项目详情',
       content: ScaffoldPage.withPadding(
         content: CacheFutureBuilder<ProjectModel>(
           controller: controller,
@@ -91,7 +91,6 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   // 构建项目信息
   Widget buildProjectInfo(ProjectModel item) {
     return Card(
-      elevation: 0,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,18 +99,16 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  isThreeLine: true,
-                  contentPadding: EdgeInsets.zero,
                   leading: ProjectLogo(projectInfo: item),
                   title: Text(
-                    !item.exist ? "项目信息丢失" : item.showTitle,
+                    !item.exist ? '项目信息丢失' : item.showTitle,
                     style: TextStyle(
                       color: !item.exist ? Colors.red : null,
                     ),
                   ),
                   subtitle:
-                      Text("${!item.exist ? item.project.alias : item.version}"
-                          "\nFlutter · ${item.environment?.flutter}"),
+                      Text('${!item.exist ? item.project.alias : item.version}'
+                          '\nFlutter · ${item.environment?.flutter}'),
                 ),
                 const SizedBox(height: 4),
                 PlatformTagGroup(
@@ -161,12 +158,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                 primaryItems: [
                   CommandBarButton(
                     icon: const Icon(FluentIcons.add),
-                    label: const Text("创建平台"),
+                    label: const Text('创建平台'),
                     onPressed: () {
                       final projectDir =
                           item.project.path.split(RegExp(r'[\\/]')).last;
                       if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
-                        Utils.showSnack(context, "创建失败，本地目录名称只能使用字母数字下划线");
+                        Utils.showSnack(context, '创建失败，本地目录名称只能使用字母数字下划线');
                         return;
                       }
                       Utils.showLoading<bool>(
@@ -175,9 +172,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                       ).then((value) {
                         if (value!) {
                           controller.refreshValue();
-                          return Utils.showSnack(context, "平台创建成功");
+                          return Utils.showSnack(context, '平台创建成功');
                         }
-                        throw Exception("平台创建失败");
+                        throw Exception('平台创建失败');
                       }).catchError((e) {
                         Utils.showSnack(context, e.toString());
                       });
@@ -220,10 +217,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
 
   // 更新当前项目信息
   Future<ProjectModel> loadProjectInfo() async {
-    final key = jRouter.find<String>(context, "key");
-    if (null == key || key.isEmpty) throw Exception("项目key不能为空");
+    final key = jRouter.find<String>(context, 'key');
+    if (null == key || key.isEmpty) throw Exception('项目key不能为空');
     final value = await projectManage.getProjectInfo(key);
-    if (null == value) throw Exception("项目信息不存在");
+    if (null == value) throw Exception('项目信息不存在');
     return Future.value(value);
   }
 

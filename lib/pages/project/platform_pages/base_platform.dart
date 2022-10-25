@@ -42,7 +42,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   @override
   Widget build(BuildContext context) {
     final itemList = loadItemList(context);
-    if (itemList.isEmpty) return const Center(child: Text("功能开发中"));
+    if (itemList.isEmpty) return const Center(child: Text('功能开发中'));
     return PrimaryScrollController(
       controller: ScrollController(),
       child: ScaffoldPage(
@@ -51,17 +51,16 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
           padding: 0,
           title: Text(
             Utils.toBeginningOfSentenceCase(
-              "${widget.platformInfo.type.name}平台",
+              '${widget.platformInfo.type.name}平台',
             ),
           ),
           commandBar: CommandBarCard(
-            elevation: 0,
             child: CommandBar(
               overflowBehavior: CommandBarOverflowBehavior.noWrap,
               primaryItems: [
                 CommandBarButton(
                   icon: const Icon(FluentIcons.save),
-                  label: const Text("保存"),
+                  label: const Text('保存'),
                   onPressed: () => submit(),
                 )
               ],
@@ -79,16 +78,16 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
                   ImportantOptionDialog.show(
                     context,
                     title:
-                        "${widget.platformInfo.type.name.toUpperCase()}平台未保存",
-                    message: "继续退出将丢失已编辑的信息",
+                        '${widget.platformInfo.type.name.toUpperCase()}平台未保存',
+                    message: '继续退出将丢失已编辑的信息',
                     middle: Button(
-                      child: const Text("保存"),
+                      child: const Text('保存'),
                       onPressed: () => submit().then((v) {
                         Navigator.pop(context);
                         if (v) Navigator.pop(context);
                       }),
                     ),
-                    confirm: "不保存",
+                    confirm: '不保存',
                     onConfirmTap: () => Navigator.pop(context),
                   );
                   return false;
@@ -118,11 +117,11 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
       state.save();
       return widget.platformInfo.commit().whenComplete(() {
         _hashCode = widget.platformInfo.hashCode;
-        Utils.showSnack(context, "保存成功");
+        Utils.showSnack(context, '保存成功');
       });
     }
     return Future.value(false).whenComplete(() {
-      Utils.showSnack(context, "保存失败");
+      Utils.showSnack(context, '保存失败');
     });
   }
 

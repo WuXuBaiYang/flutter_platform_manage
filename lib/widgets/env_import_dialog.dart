@@ -37,7 +37,7 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
   Environment? _env;
 
   // 异常提示
-  String? _errText = "";
+  String? _errText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -51,19 +51,19 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
             error: null != _errText ? Text(_errText!) : null,
             child: TextBox(
               controller: _envPathController,
-              header: "flutter路径",
-              placeholder: "粘贴或导入flutter根目录",
+              header: 'flutter路径',
+              placeholder: '粘贴或导入flutter根目录',
               readOnly: true,
               suffix: Button(
                 onPressed: doPathPicker,
-                child: const Text("选择"),
+                child: const Text('选择'),
               ),
             ),
           ),
           const SizedBox(height: 14),
           null != _env
-              ? Text("Flutter ${_env?.flutter} · ${_env?.channel}"
-                  "\nDart ${_env?.dart}")
+              ? Text('Flutter ${_env?.flutter} · ${_env?.channel}'
+                  '\nDart ${_env?.dart}')
               : (null == _errText
                   ? const Center(child: ProgressRing())
                   : const SizedBox()),
@@ -71,7 +71,7 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
       ),
       actions: [
         Button(
-          child: const Text("取消"),
+          child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
@@ -81,11 +81,11 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
                     dbManage.addEnvironment(_env!);
                     Navigator.maybePop(context, _env);
                   } catch (e) {
-                    setState(() => _errText = "环境添加失败");
+                    setState(() => _errText = '环境添加失败');
                   }
                 }
               : null,
-          child: const Text("导入"),
+          child: const Text('导入'),
         ),
       ],
     );
@@ -95,19 +95,19 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
   void doPathPicker() {
     FilePicker.platform
         .getDirectoryPath(
-            dialogTitle: "选择flutter路径",
+            dialogTitle: '选择flutter路径',
             lockParentWindow: true,
             initialDirectory: _envPathController.text)
         .then((v) {
       if (null == v || v.isEmpty) return Future.value(null);
       setState(() {
-        _envPathController.text = "";
+        _envPathController.text = '';
         _errText = null;
         _env = null;
       });
       if (dbManage.hasEnvironment(v)) {
         setState(() {
-          _errText = "已存在相同环境";
+          _errText = '已存在相同环境';
         });
         return Future.value(null);
       }
@@ -122,8 +122,8 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
       }
     }).catchError((e) {
       setState(() {
-        _envPathController.text = "";
-        _errText = "环境信息读取失败";
+        _envPathController.text = '';
+        _errText = '环境信息读取失败';
         _env = null;
       });
     });

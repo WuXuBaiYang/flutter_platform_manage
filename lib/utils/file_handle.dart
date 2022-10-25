@@ -37,16 +37,16 @@ class FileHandle {
 
   // 使用正则匹配字符串
   Future<String> stringMatch(RegExp reg, {RegExp? re}) async {
-    final v = reg.stringMatch(await fileContent) ?? "";
-    return null != re ? v.replaceAll(re, "") : v;
+    final v = reg.stringMatch(await fileContent) ?? '';
+    return null != re ? v.replaceAll(re, '') : v;
   }
 
   // 使用正则匹配字符串集合
   Future<List<String>> stringListMatch(RegExp reg,
       {int group = 0, RegExp? re}) async {
     return reg.allMatches(await fileContent).map((e) {
-      final v = e.group(group) ?? "";
-      return null != re ? v.replaceAll(re, "") : v;
+      final v = e.group(group) ?? '';
+      return null != re ? v.replaceAll(re, '') : v;
     }).toList();
   }
 
@@ -115,14 +115,14 @@ class FileHandleXML extends FileHandle {
     } catch (e) {
       // 文件选择异常
     }
-    return "";
+    return '';
   }
 
   // 获取xml文件所有目标标签的属性值集合
   Future<List<String>> attList(String elName,
       {required String attName, String? namespace}) async {
     return (await _xmlFindAll(elName, namespace: namespace))
-        .map((e) => e.getAttribute(attName) ?? "")
+        .map((e) => e.getAttribute(attName) ?? '')
         .toList();
   }
 
@@ -232,7 +232,7 @@ class FileHandlePList extends FileHandleXML {
 
   // 获取xml结构中的dict节点
   Future<XmlElement?> get _dictXml async =>
-      (await xmlDocument).getElement("plist")?.getElement("dict");
+      (await xmlDocument).getElement('plist')?.getElement('dict');
 
   // 获取值
   Future<dynamic> getValue(String key, {dynamic def}) async =>
@@ -279,25 +279,25 @@ class FileHandlePList extends FileHandleXML {
   Map<String, dynamic> _convertDictXml2Map(XmlElement? element) {
     if (null == element) return {};
     var temp = <String, dynamic>{};
-    for (var child in element.findElements("key")) {
+    for (var child in element.findElements('key')) {
       var next = child.nextElementSibling;
       var key = child.text;
-      if (next?.name == XmlName("string")) {
+      if (next?.name == XmlName('string')) {
         // 解析字符串值
-        temp[key] = next?.text ?? "";
-      } else if (next?.name == XmlName("array")) {
+        temp[key] = next?.text ?? '';
+      } else if (next?.name == XmlName('array')) {
         // 解析集合值
         temp[key] = next?.childElements.map((e) {
-          if (e.name == XmlName("string")) {
+          if (e.name == XmlName('string')) {
             // 集合中的字符串值
             return e.text;
           }
-          return "";
+          return '';
         }).toList();
-      } else if (next?.name == XmlName("true")) {
+      } else if (next?.name == XmlName('true')) {
         // 解析布尔值true
         temp[key] = true;
-      } else if (next?.name == XmlName("false")) {
+      } else if (next?.name == XmlName('false')) {
         // 解析布尔值false
         temp[key] = false;
       }
@@ -310,29 +310,29 @@ class FileHandlePList extends FileHandleXML {
     var children = <XmlNode>[];
     for (var k in map.keys) {
       var v = map[k];
-      children.add(XmlElement(XmlName("key"), [], [XmlText(k)]));
+      children.add(XmlElement(XmlName('key'), [], [XmlText(k)]));
       if (v is String) {
         // 封装字符串值
-        children.add(XmlElement(XmlName("string"), [], [XmlText(v)]));
+        children.add(XmlElement(XmlName('string'), [], [XmlText(v)]));
       } else if (v is bool) {
         // 封装布尔值
-        children.add(XmlElement(XmlName("$v")));
+        children.add(XmlElement(XmlName('$v')));
       } else if (v is List) {
         // 封装集合值
         children.add(XmlElement(
-          XmlName("array"),
+          XmlName('array'),
           [],
           List.generate(v.length, (i) {
             var it = v[i];
             if (it is String) {
               // 封装集合中的字符串值
-              return XmlElement(XmlName("string"), [], [XmlText(it)]);
+              return XmlElement(XmlName('string'), [], [XmlText(it)]);
             }
-            return XmlElement(XmlName("unknown"));
+            return XmlElement(XmlName('unknown'));
           }),
         ));
       }
     }
-    return XmlElement(XmlName("dict"), [], children);
+    return XmlElement(XmlName('dict'), [], children);
   }
 }
