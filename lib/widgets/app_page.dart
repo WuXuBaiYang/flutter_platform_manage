@@ -19,7 +19,7 @@ class AppPage extends StatelessWidget {
   final Widget? leading;
 
   // 页面内容
-  final Widget content;
+  final Widget? content;
 
   // 导航菜单
   final NavigationPane? pane;
@@ -27,9 +27,9 @@ class AppPage extends StatelessWidget {
   const AppPage({
     Key? key,
     required this.title,
-    required this.content,
     this.showBack = true,
     this.leading,
+    this.content,
     this.pane,
   }) : super(key: key);
 

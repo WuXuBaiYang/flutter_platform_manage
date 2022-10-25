@@ -59,27 +59,22 @@ class _HomePageState extends State<HomePage> with WindowListener {
             items: [
               PaneItem(
                 icon: const Icon(FluentIcons.project_management),
-                body: const Text('项目管理'),
+                title: const Text('项目管理'),
+                body: const ProjectListPage(),
               ),
               PaneItem(
                 icon: const Icon(FluentIcons.packages),
-                body: const Text('打包记录'),
+                title: const Text('打包记录'),
+                body: const PackageRecordPage(),
               )
             ],
             footerItems: [
               PaneItemSeparator(),
               PaneItem(
                 icon: const Icon(FluentIcons.settings),
-                body: const Text('设置'),
+                title: const Text('设置'),
+                body: const SettingPage(),
               ),
-            ],
-          ),
-          content: IndexedStack(
-            index: value,
-            children: const [
-              ProjectListPage(),
-              PackageRecordPage(),
-              SettingPage(),
             ],
           ),
         );

@@ -205,26 +205,24 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
-        child: GestureDetector(
-          child: ListTile(
-            leading: LogoFileImage(
-              File(info.projectIcon),
-              size: 30,
-            ),
-            title: const Text('应用图标（立即生效）'),
-            trailing: Button(
-              child: const Text('批量替换'),
-              onPressed: () {
-                Utils.pickProjectLogo(minSize: const Size.square(1024))
-                    .then((v) {
-                  if (null != v) widget.platformInfo.modifyProjectIcon(v);
-                }).catchError((e) {
-                  Utils.showSnack(context, e.toString());
-                });
-              },
-            ),
+        child: ListTile(
+          leading: LogoFileImage(
+            File(info.projectIcon),
+            size: 30,
           ),
-          onTap: () => _showLogoList(info.loadGroupIcons()),
+          title: const Text('应用图标（立即生效）'),
+          trailing: Button(
+            child: const Text('批量替换'),
+            onPressed: () {
+              Utils.pickProjectLogo(minSize: const Size.square(1024))
+                  .then((v) {
+                if (null != v) widget.platformInfo.modifyProjectIcon(v);
+              }).catchError((e) {
+                Utils.showSnack(context, e.toString());
+              });
+            },
+          ),
+          onPressed: () => _showLogoList(info.loadGroupIcons()),
         ),
       ),
     );

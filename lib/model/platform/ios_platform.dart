@@ -114,7 +114,7 @@ class IOSPlatform extends BasePlatform {
   Future<List<String>> modifyProjectIcon(File file) async {
     return Utils.compressIcons(file, Map.fromEntries(IOSIcons.values.map((e) {
       final size = Size.square(e.sizePx.toDouble());
-      return MapEntry(size, '$platformPath/${e.absolutePath}');
+      return MapEntry('$platformPath/${e.absolutePath}', size);
     })));
   }
 

@@ -141,12 +141,13 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     return MouseRightClickMenu(
       key: ObjectKey(item.project.primaryKey),
       menuItems: [
-        GestureDetector(
-          child: const ListTile(
-            leading: Icon(FluentIcons.rename, size: 14),
-            title: Text('项目名称'),
+        ListTile(
+          leading: const Icon(
+            FluentIcons.rename,
+            size: 14,
           ),
-          onTap: () {
+          title: const Text('项目名称'),
+          onPressed: () {
             Navigator.pop(context);
             ProjectReNameDialog.show(
               context,
@@ -156,12 +157,13 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             });
           },
         ),
-        GestureDetector(
-          child: const ListTile(
-            leading: Icon(FluentIcons.version_control_push, size: 14),
-            title: Text('版本号'),
+        ListTile(
+          leading: const Icon(
+            FluentIcons.version_control_push,
+            size: 14,
           ),
-          onTap: () {
+          title: const Text('版本号'),
+          onPressed: () {
             Navigator.pop(context);
             ProjectVersionDialog.show(
               context,
@@ -171,63 +173,64 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             });
           },
         ),
-        GestureDetector(
-          child: const ListTile(
-            leading: Icon(FluentIcons.app_icon_default_edit, size: 14),
-            title: Text('编辑'),
+        ListTile(
+          leading: const Icon(
+            FluentIcons.app_icon_default_edit,
+            size: 14,
           ),
-          onTap: () {
+          title: const Text('编辑'),
+          onPressed: () {
             Navigator.pop(context);
             modifyProjectInfo(item);
           },
         ),
-        GestureDetector(
-          child: ListTile(
-            leading: Icon(FluentIcons.delete, size: 14, color: Colors.red),
-            title: Text(
-              '删除',
-              style: TextStyle(color: Colors.red),
-            ),
+        ListTile(
+          leading: Icon(
+            FluentIcons.delete,
+            size: 14,
+            color: Colors.red,
           ),
-          onTap: () {
+          title: Text(
+            '删除',
+            style: TextStyle(color: Colors.red),
+          ),
+          onPressed: () {
             Navigator.pop(context);
             deleteProjectInfo(item);
           },
-        )
+        ),
       ],
       child: Center(
-        child: GestureDetector(
-          onTap: () {
-            if (!item.exist) return modifyProjectInfo(item);
-            jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-              'key': item.project.primaryKey,
-            })?.then((_) => controller.refreshValue());
-          },
-          child: Card(
-            child: !item.exist
-                ? Center(
-                    child: Text(
-                    '项目信息丢失,点击重新编辑',
-                    style: TextStyle(color: Colors.red),
-                  ))
-                : ListTile(
-                    leading: ProjectLogo(projectInfo: item),
-                    title: Text(
-                      item.showTitle,
-                      style: TextStyle(
-                        color: !item.exist ? Colors.red : null,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+        child: Card(
+          child: !item.exist
+              ? Center(
+                  child: Text(
+                  '项目信息丢失,点击重新编辑',
+                  style: TextStyle(color: Colors.red),
+                ))
+              : ListTile(
+                  leading: ProjectLogo(projectInfo: item),
+                  title: Text(
+                    item.showTitle,
+                    style: TextStyle(
+                      color: !item.exist ? Colors.red : null,
                     ),
-                    subtitle: Text(
-                      '${!item.exist ? item.project.alias : item.version}'
-                      '\nFlutter · ${item.environment?.flutter}',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-          ),
+                  subtitle: Text(
+                    'v${!item.exist ? item.project.alias : item.version}'
+                    ' · Flutter ${item.environment?.flutter}',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  onPressed: () {
+                    if (!item.exist) return modifyProjectInfo(item);
+                    jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+                      'key': item.project.primaryKey,
+                    })?.then((_) => controller.refreshValue());
+                  },
+                ),
         ),
       ),
     );

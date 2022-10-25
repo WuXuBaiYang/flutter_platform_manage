@@ -115,24 +115,21 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
   Widget buildFilterComboBox() {
     return Container(
       padding: const EdgeInsets.only(left: 6),
-      width: 90,
-      child: Card(
-        padding: EdgeInsets.zero,
-        child: ComboBox<PermissionFilter>(
-          value: filter,
-          onChanged: (v) {
-            if (null != v) {
-              setState(() => filter = v);
-            }
-          },
-          items: List.generate(PermissionFilter.values.length, (i) {
-            final it = PermissionFilter.values[i];
-            return ComboBoxItem(
-              value: it,
-              child: Text(it.name),
-            );
-          }),
-        ),
+      width: 100,
+      child: ComboBox<PermissionFilter>(
+        value: filter,
+        onChanged: (v) {
+          if (null != v) {
+            setState(() => filter = v);
+          }
+        },
+        items: List.generate(PermissionFilter.values.length, (i) {
+          final it = PermissionFilter.values[i];
+          return ComboBoxItem(
+            value: it,
+            child: Text(it.name),
+          );
+        }),
       ),
     );
   }
@@ -158,22 +155,20 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             itemBuilder: (_, i) {
               final item = list[i];
               var checked = widget.permissions.contains(item);
-              return GestureDetector(
-                child: ListTile(
-                  title: Text(
-                    item.name,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    item.hint ?? item.describe ?? '',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Checkbox(
-                    checked: checked,
-                    onChanged: (v) => permissionSelected(checked, item),
-                  ),
+              return ListTile(
+                title: Text(
+                  item.name,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () => permissionSelected(checked, item),
+                subtitle: Text(
+                  item.hint ?? item.describe ?? '',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Checkbox(
+                  checked: checked,
+                  onChanged: (v) => permissionSelected(checked, item),
+                ),
+                onPressed: () => permissionSelected(checked, item),
               );
             },
           );

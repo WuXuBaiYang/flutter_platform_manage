@@ -129,7 +129,7 @@ class AndroidPlatform extends BasePlatform {
     return Utils.compressIcons(file,
         Map.fromEntries(AndroidIcons.values.map((e) {
       final size = Size.square(e.sizePx.toDouble());
-      return MapEntry(size, '$platformPath/${e.getAbsolutePath(iconPath)}');
+      return MapEntry('$platformPath/${e.getAbsolutePath(iconPath)}', size);
     })));
   }
 

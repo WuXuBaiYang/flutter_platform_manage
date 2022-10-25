@@ -166,14 +166,15 @@ class Utils {
 
   // 将一张图片的尺寸压缩为不同尺寸并写入本地
   static Future<List<String>> compressImageSize(
-      File sourceImage, Map<Size, String> targetMap) async {
+      File sourceImage, Map<String, Size> targetMap) async {
     var t = <String>[];
     final rawImage = await sourceImage.readAsBytes();
-    for (var size in targetMap.keys) {
+    for (var entry in targetMap.entries) {
+      final size = entry.value;
       var bytes = await Utils.resizeImage(rawImage,
           height: size.width.toInt(), width: size.height.toInt());
       if (null == bytes) continue;
-      var path = targetMap[size] ?? '';
+      final path = entry.key;
       if (path.isEmpty) continue;
       await File(path).writeAsBytes(bytes.buffer.asInt8List());
       t.add(path);
@@ -183,7 +184,7 @@ class Utils {
 
   // 修改平台图标
   static Future<List<String>> compressIcons(
-      File sourceImage, Map<Size, String> targetMap) {
+      File sourceImage, Map<String, Size> targetMap) {
     return compressImageSize(sourceImage, targetMap).then((v) {
       if (v.isNotEmpty) {
         // 发送图片源变动的地址集合
