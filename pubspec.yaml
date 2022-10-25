@@ -55,7 +55,7 @@ dependencies:
   process_run: ^0.12.3+2
 
   # svg图片展示
-  flutter_svg: ^1.1.5
+  flutter_svg: ^1.1.6
 
   # 可拖动换位的grid
   flutter_reorderable_grid_view: ^3.1.3
