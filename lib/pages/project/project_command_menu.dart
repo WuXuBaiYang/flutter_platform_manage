@@ -30,7 +30,7 @@ class ProjectCommandMenu {
               icon: const Icon(FluentIcons.access_logo),
               label: const Text("打开根目录"),
               onPressed: () async {
-                var uri = Uri.parse("file:${projectModel.project.path}");
+                final uri = Uri.parse("file:${projectModel.project.path}");
                 if (!await launchUrl(uri)) {
                   Utils.showSnack(context, "目录启动失败");
                 }

@@ -16,7 +16,7 @@ import 'package:process_run/shell.dart';
 class ScriptHandle {
   // 查看flutter版本号信息
   static Future<Environment> loadFlutterEnv(String path) async {
-    var outText = await runShell(
+    final outText = await runShell(
       "$path/${ProjectFilePath.flutter} --version",
     );
     var version = "Flutter", channel = "channel", dart = "Dart";
@@ -36,9 +36,9 @@ class ScriptHandle {
   // 创建平台信息
   static Future<bool> createPlatforms(
       ProjectModel projectInfo, List<PlatformType> platforms) async {
-    var env = projectInfo.environment;
+    final env = projectInfo.environment;
     if (null == env) return false;
-    var outText = await runShell(
+    final outText = await runShell(
       "${env.path}/${ProjectFilePath.flutter} create --platforms=${platforms.map((e) => e.name).join(',')} .",
       path: projectInfo.project.path,
     );
@@ -47,13 +47,13 @@ class ScriptHandle {
 
   // 脚本执行方法
   static Future<String> runShell(String script, {String? path}) async {
-    var list = await Shell(
+    final list = await Shell(
       throwOnError: false,
       workingDirectory: path,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     ).run(script);
-    var errText = list.map((e) => e.errText).join("");
+    final errText = list.map((e) => e.errText).join("");
     if (errText.isNotEmpty) throw Exception(errText);
     return list.map((e) => e.outText).join("");
   }

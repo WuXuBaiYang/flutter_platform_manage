@@ -37,7 +37,7 @@ class FileHandle {
 
   // 使用正则匹配字符串
   Future<String> stringMatch(RegExp reg, {RegExp? re}) async {
-    var v = reg.stringMatch(await fileContent) ?? "";
+    final v = reg.stringMatch(await fileContent) ?? "";
     return null != re ? v.replaceAll(re, "") : v;
   }
 
@@ -45,14 +45,14 @@ class FileHandle {
   Future<List<String>> stringListMatch(RegExp reg,
       {int group = 0, RegExp? re}) async {
     return reg.allMatches(await fileContent).map((e) {
-      var v = e.group(group) ?? "";
+      final v = e.group(group) ?? "";
       return null != re ? v.replaceAll(re, "") : v;
     }).toList();
   }
 
   // 使用正则替换目标参数并返回文件内容
   Future<void> replace(RegExp reg, String value) async {
-    var content = await fileContent;
+    final content = await fileContent;
     if (reg.hasMatch(content)) {
       _fileContent = content.replaceAll(reg, value);
     }
@@ -150,7 +150,7 @@ class FileHandleXML extends FileHandle {
       {required String attName,
       required String value,
       String? namespace}) async {
-    for (var it in await _xmlFindAll(elName, namespace: namespace)) {
+    for (final it in await _xmlFindAll(elName, namespace: namespace)) {
       it.setAttribute(attName, value);
     }
   }
@@ -158,7 +158,7 @@ class FileHandleXML extends FileHandle {
   // 修改xml文件标签的文本值
   Future<void> setElText(String elName,
       {required String value, String? namespace}) async {
-    for (var it in await _xmlFindAll(elName, namespace: namespace)) {
+    for (final it in await _xmlFindAll(elName, namespace: namespace)) {
       it.innerText = value;
     }
   }
@@ -171,7 +171,7 @@ class FileHandleXML extends FileHandle {
     String? namespace,
   }) async {
     try {
-      var el = (await xmlDocument).getElement(elName);
+      final el = (await xmlDocument).getElement(elName);
       el?.children.insertAll(index, nodes);
     } catch (e) {
       // 插入失败
@@ -181,10 +181,10 @@ class FileHandleXML extends FileHandle {
   // 删除xml文件指定标签
   Future<void> removeEl(String elName,
       {required String target, String? namespace}) async {
-    for (var it in await _xmlFindAll(target, namespace: namespace)) {
+    for (final it in await _xmlFindAll(target, namespace: namespace)) {
       it.children.removeWhere((e) {
         if (e.nodeType == XmlNodeType.ELEMENT) {
-          var el = e as XmlElement;
+          final el = e as XmlElement;
           return el.name.toString() == elName;
         }
         return false;
@@ -240,7 +240,7 @@ class FileHandlePList extends FileHandleXML {
 
   // 根据key模糊搜索值列表
   Future<List<T>> getValueList<T>({required String includeKey}) async {
-    var map = await plistMap;
+    final map = await plistMap;
     var list = <T>[];
     for (var k in map.keys) {
       if (!k.contains(includeKey)) continue;

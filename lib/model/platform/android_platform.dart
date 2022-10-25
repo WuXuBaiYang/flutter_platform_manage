@@ -43,7 +43,7 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
-    var handle = FileHandleXML.from(manifestFilePath);
+    final handle = FileHandleXML.from(manifestFilePath);
     try {
       // 处理androidManifest.xml文件
       // 获取图标路径信息
@@ -101,9 +101,9 @@ class AndroidPlatform extends BasePlatform {
   // 获取图标文件路径集合
   Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
     if (iconPath.isEmpty) return {};
-    var values = AndroidIcons.values;
+    final values = AndroidIcons.values;
     return Map.fromEntries((reversed ? values.reversed : values).map((e) {
-      var path = e.getAbsolutePath(iconPath);
+      final path = e.getAbsolutePath(iconPath);
       return MapEntry(e, "$platformPath/$path");
     }));
   }
@@ -128,7 +128,7 @@ class AndroidPlatform extends BasePlatform {
   Future<List<String>> modifyProjectIcon(File file) async {
     return Utils.compressIcons(file,
         Map.fromEntries(AndroidIcons.values.map((e) {
-      var size = Size.square(e.sizePx.toDouble());
+      final size = Size.square(e.sizePx.toDouble());
       return MapEntry(size, "$platformPath/${e.getAbsolutePath(iconPath)}");
     })));
   }
@@ -191,7 +191,7 @@ extension AndroidIconsExtension on AndroidIcons {
 
   // 拼装附件相对路径
   String getAbsolutePath(String iconPath) {
-    var t = iconPath.split("/"), dir = t.first, fileName = "${t.last}.png";
+    final t = iconPath.split("/"), dir = t.first, fileName = "${t.last}.png";
     return "${ProjectFilePath.androidRes}/$dir-$name/$fileName";
   }
 }

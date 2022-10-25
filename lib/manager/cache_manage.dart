@@ -61,7 +61,7 @@ class JCacheManage extends BaseManage {
   // 获取json类型
   dynamic getJson(String key, {dynamic def}) {
     if (!_checkExpiration(key)) return def;
-    var value = _sp.getString(key);
+    final value = _sp.getString(key);
     if (null == value) return def;
     return jsonDecode(value) ?? def;
   }
@@ -148,9 +148,9 @@ class JCacheManage extends BaseManage {
 
   // 检查有效期
   bool _checkExpiration(String key) {
-    var expirationKey = _getExpirationKey(key);
+    final expirationKey = _getExpirationKey(key);
     if (_sp.containsKey(expirationKey)) {
-      var expirationTime =
+      final expirationTime =
           DateTime.fromMillisecondsSinceEpoch(_sp.getInt(expirationKey) ?? 0);
       if (expirationTime.isBefore(DateTime.now())) {
         remove(expirationKey);
@@ -164,8 +164,8 @@ class JCacheManage extends BaseManage {
   // 设置有效期
   Future<bool> _setupExpiration(String key, {Duration? expiration}) async {
     if (null == expiration) return true;
-    var expirationKey = _getExpirationKey(key);
-    var inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
+    final expirationKey = _getExpirationKey(key);
+    final inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
     return _sp.setInt(expirationKey, inTime);
   }
 

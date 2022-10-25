@@ -45,7 +45,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建应用名编辑项
   Widget buildBundleName() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: "应用名称（BundleName）",
@@ -73,7 +73,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建展示应用名编辑项
   Widget buildBundleDisplayName() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: "展示应用名称（BundleDisplayName）",
@@ -100,7 +100,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建权限管理项
   Widget buildPermissionManage() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       times: _permissionExpand ? 6 : 4,
       child: FormField<List<PermissionItemModel>>(
@@ -159,7 +159,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   // 构建权限管理列表子项
   Widget _buildPermissionManageItem(
       FormFieldState<List<PermissionItemModel>> f, int i) {
-    var item = f.value?[i];
+    final item = f.value?[i];
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -203,7 +203,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建应用图标编辑项
   Widget buildAppLogo() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
         child: TappableListTile(
@@ -241,12 +241,12 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
           content: SingleChildScrollView(
             child: Column(
               children: List.generate(groupIcons.length, (i) {
-                var it = groupIcons[i];
+                final it = groupIcons[i];
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: List.generate(it.length, (j) {
-                    var k = it.keys.elementAt(j), v = it[k]!;
+                    final k = it.keys.elementAt(j), v = it[k]!;
                     return Padding(
                       padding: const EdgeInsets.all(8),
                       child: Column(

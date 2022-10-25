@@ -55,7 +55,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                 itemCount: snap.data!.length,
                 separatorBuilder: (_, i) => const Divider(),
                 itemBuilder: (_, i) {
-                  var item = snap.data![i];
+                  final item = snap.data![i];
                   return ListTile(
                     title: Text("Flutter · ${item.flutter} · ${item.channel}"),
                     subtitle: Text("Dart · ${item.dart}"),
@@ -109,7 +109,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
           textAlign: TextAlign.start,
         ),
         onPressed: () async {
-          var uri = Uri.parse(Common.appSourceUrl);
+          final uri = Uri.parse(Common.appSourceUrl);
           if (!await launchUrl(uri)) {
             Utils.showSnack(context, "网址打开失败");
           }

@@ -64,7 +64,7 @@ class PermissionManage extends BaseManage {
   }) async {
     if (values.isEmpty) return [];
     List<PermissionItemModel> t = [];
-    for (var v in values) {
+    for (final v in values) {
       var it = getPermissionByPlatform(platform)?.itemsMap[v];
       if (null != it) t.add(it);
     }

@@ -36,7 +36,7 @@ class IOSPlatform extends BasePlatform {
   @override
   Future<bool> update(bool simple) async {
     if (simple) return true;
-    var handle = FileHandlePList.from(infoPlistFilePath);
+    final handle = FileHandlePList.from(infoPlistFilePath);
     try {
       // 处理info.plist文件
       // 获取包名
@@ -113,7 +113,7 @@ class IOSPlatform extends BasePlatform {
   @override
   Future<List<String>> modifyProjectIcon(File file) async {
     return Utils.compressIcons(file, Map.fromEntries(IOSIcons.values.map((e) {
-      var size = Size.square(e.sizePx.toDouble());
+      final size = Size.square(e.sizePx.toDouble());
       return MapEntry(size, "$platformPath/${e.absolutePath}");
     })));
   }
@@ -240,8 +240,8 @@ extension IOSIconsExtension on IOSIcons {
 
   // 拼装附件相对路径
   String get absolutePath {
-    var m = multiple, s = sizePx / m;
-    var fileName = "Icon-App-${s}x$s@${m}x.png".replaceAll(".0", '');
+    final m = multiple, s = sizePx / m;
+    final fileName = "Icon-App-${s}x$s@${m}x.png".replaceAll(".0", '');
     return "${ProjectFilePath.iosAssetsAppIcon}/$fileName";
   }
 }

@@ -49,7 +49,7 @@ class _PlatformAndroidPageState
 
   // 构建应用名称编辑项
   Widget buildAppName() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: "应用名称（安装之后的名称）",
@@ -76,7 +76,7 @@ class _PlatformAndroidPageState
 
   // 构建应用包名编辑项
   Widget buildPackageName() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: "应用包名",
@@ -106,7 +106,7 @@ class _PlatformAndroidPageState
 
   // 构建权限管理项
   Widget buildPermissionManage() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       times: _permissionExpand ? 6 : 4,
       child: FormField<List<PermissionItemModel>>(
@@ -166,7 +166,7 @@ class _PlatformAndroidPageState
   // 构建权限管理列表子项
   Widget _buildPermissionManageItem(
       FormFieldState<List<PermissionItemModel>> f, int i) {
-    var item = f.value?[i];
+    final item = f.value?[i];
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -203,7 +203,7 @@ class _PlatformAndroidPageState
 
   // 构建应用图标编辑项
   Widget buildAppLogo() {
-    var info = widget.platformInfo;
+    final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
         child: TappableListTile(
@@ -240,7 +240,7 @@ class _PlatformAndroidPageState
             itemCount: iconsMap.length,
             separatorBuilder: (_, i) => const SizedBox(height: 24),
             itemBuilder: (_, i) {
-              var type = iconsMap.keys.elementAt(i),
+              final type = iconsMap.keys.elementAt(i),
                   path = iconsMap[type] ?? "",
                   sizePx = type.sizePx;
               return Row(

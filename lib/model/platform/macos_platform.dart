@@ -15,7 +15,7 @@ class MacOSPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
-    var handle = FileHandle.from("");
+    final handle = FileHandle.from("");
     try {
       ///待实现
     } catch (e) {
@@ -26,7 +26,7 @@ class MacOSPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    var handle = FileHandle.from("");
+    final handle = FileHandle.from("");
     try {
       ///待实现
     } catch (e) {

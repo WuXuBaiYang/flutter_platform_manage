@@ -58,7 +58,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           IconButton(
             icon: const Icon(FluentIcons.info),
             onPressed: () {
-              var filePath =
+              final filePath =
                   "${widget.projectModel.project.path}/${ProjectFilePath.pubspec}";
               Utils.showSnackWithFilePath(context, filePath);
             },

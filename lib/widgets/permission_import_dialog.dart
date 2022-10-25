@@ -127,7 +127,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             }
           },
           items: List.generate(PermissionFilter.values.length, (i) {
-            var it = PermissionFilter.values[i];
+            final it = PermissionFilter.values[i];
             return ComboboxItem(
               value: it,
               child: Text(it.name),
@@ -149,7 +149,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
           );
         }
         if (snap.hasData) {
-          var list = snap.data!;
+          final list = snap.data!;
           return ListView.separated(
             shrinkWrap: true,
             itemCount: list.length,
@@ -157,7 +157,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
               horizontalMargin: EdgeInsets.zero,
             ),
             itemBuilder: (_, i) {
-              var item = list[i];
+              final item = list[i];
               var checked = widget.permissions.contains(item);
               return TappableListTile(
                 isThreeLine: true,

@@ -8,7 +8,7 @@ import 'package:flutter_platform_manage/pages/project/project_detail_page.dart';
 */
 class RoutePath {
   // 项目详情页
-  static const String projectDetail = "/project/detail";
+  static const String projectDetail = '/project/detail';
 
   // 获取路由表
   static Map<String, WidgetBuilder> get routeMap => {

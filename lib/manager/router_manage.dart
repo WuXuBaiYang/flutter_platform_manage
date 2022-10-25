@@ -68,7 +68,7 @@ class JRouter extends BaseManage {
 
   //页面跳转
   Future<T?>? pushNamed<T>(String url, {Map<String, String>? parameters}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushNamed<T>(
       uri.path,
       arguments: {

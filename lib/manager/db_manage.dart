@@ -26,7 +26,7 @@ class DBManage extends BaseManage {
 
   @override
   Future<void> init() async {
-    var config = Configuration.local(
+    final config = Configuration.local(
       [
         Project.schema,
         Environment.schema,

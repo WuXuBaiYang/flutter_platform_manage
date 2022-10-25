@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:file_picker/file_picker.dart';
@@ -19,7 +18,7 @@ import 'package:flutter_platform_manage/model/event/project_logo_change_event.da
 class Utils {
   // 生成id
   static String genID({int? seed}) {
-    var time = DateTime.now().millisecondsSinceEpoch;
+    final time = DateTime.now().millisecondsSinceEpoch;
     return md5("${time}_${Random(seed ?? time).nextDouble()}");
   }
 
@@ -78,7 +77,7 @@ class Utils {
     BuildContext context, {
     required Future<T?> loadFuture,
   }) async {
-    var navigator = Navigator.of(context);
+    final navigator = Navigator.of(context);
     try {
       if (null != _loadingDialog) navigator.maybePop();
       _loadingDialog = showDialog<void>(
@@ -89,7 +88,7 @@ class Utils {
           ),
         ),
       )..whenComplete(() => _loadingDialog = null);
-      var result = await loadFuture;
+      final result = await loadFuture;
       if (null != _loadingDialog) navigator.maybePop();
       return result;
     } catch (e) {
@@ -126,7 +125,7 @@ class Utils {
 
   // 获取图片参数信息
   static Future<ImageInfo> loadImageInfo(File file) {
-    var c = Completer<ImageInfo>();
+    final c = Completer<ImageInfo>();
     Image.file(file)
         .image
         .resolve(const ImageConfiguration())
@@ -140,7 +139,7 @@ class Utils {
 
   // 获取图片尺寸
   static Future<Size> loadImageSize(File file) async {
-    var img = (await loadImageInfo(file)).image;
+    final img = (await loadImageInfo(file)).image;
     return Size(img.width.toDouble(), img.height.toDouble());
   }
 
@@ -148,15 +147,15 @@ class Utils {
   static Future<File?> pickProjectLogo(
       {Size minSize = const Size.square(1024)}) async {
     // 选择图标文件
-    var result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: "请选择 ${minSize.width}*${minSize.height}px 以上的正方形png图片",
       allowCompression: false,
       lockParentWindow: true,
       type: FileType.image,
     );
     if (null != result && result.count > 0) {
-      var f = File(result.paths.first ?? "");
-      var imgSize = await Utils.loadImageSize(f);
+      final f = File(result.paths.first ?? "");
+      final imgSize = await Utils.loadImageSize(f);
       if (imgSize.aspectRatio != 1.0 || imgSize < minSize) {
         throw Exception("图标必须是大于等于 ${minSize.width}*${minSize.height}px 的正方形");
       }

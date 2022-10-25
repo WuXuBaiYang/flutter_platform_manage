@@ -40,14 +40,14 @@ class ProjectModel {
 
   // 获取展示标题
   String get showTitle {
-    var t = project.alias;
+    final t = project.alias;
     return t.isEmpty ? name : "$t($name)";
   }
 
   // 获取应用图标
   Map<PlatformType, String> get projectIconsMap {
-    for (var it in platformMap.values) {
-      var path = it.projectIcon;
+    for (final it in platformMap.values) {
+      final path = it.projectIcon;
       if (path.isNotEmpty) return {it.type: path};
     }
     return {};
@@ -73,7 +73,7 @@ class ProjectModel {
 
   // 更新项目信息
   Future<bool> update(bool simple) async {
-    var handle = FileHandle.from(pubspecFilePath);
+    final handle = FileHandle.from(pubspecFilePath);
     try {
       // 处理pubspec.yaml文件
       // 判断项目是否存在
@@ -85,10 +85,10 @@ class ProjectModel {
       // 处理平台信息
       // 遍历并创建平台对象
       platformMap = {};
-      for (var t in PlatformType.values) {
-        var d = Directory("${project.path}/${t.name}");
+      for (final t in PlatformType.values) {
+        final d = Directory("${project.path}/${t.name}");
         if (!d.existsSync()) continue;
-        var p = t.create(d.path);
+        final p = t.create(d.path);
         // 更新平台信息
         if (!await p.update(simple)) return false;
         platformMap[t] = p;
@@ -103,7 +103,7 @@ class ProjectModel {
 
   // 执行项目信息变动
   Future<bool> commit() async {
-    var handle = FileHandle.from(pubspecFilePath);
+    final handle = FileHandle.from(pubspecFilePath);
     try {
       // 处理pubspec.yaml文件
       // 修改项目名称
@@ -112,7 +112,7 @@ class ProjectModel {
       await modifyProjectVersion(version, handle: handle);
       // 处理平台信息
       // 遍历平台并执行提交
-      for (var p in platformMap.values) {
+      for (final p in platformMap.values) {
         if (!await p.commit()) return false;
       }
       // 置空环境对象

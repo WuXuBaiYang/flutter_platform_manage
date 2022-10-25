@@ -47,7 +47,7 @@ class _SettingPageState extends State<SettingPage> {
 abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
   @override
   Widget build(BuildContext context) {
-    var settingList = loadSettingList;
+    final settingList = loadSettingList;
     return ListView.separated(
       shrinkWrap: true,
       itemCount: settingList.length,

@@ -65,7 +65,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
           future: loadProjectInfo,
           builder: (_, snap) {
             if (snap.hasData) {
-              var item = snap.data!;
+              final item = snap.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -152,8 +152,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
         return IndexedStack(
           index: bottomBarIndex.value,
           children: List.generate(PlatformType.values.length, (i) {
-            var t = PlatformType.values[i];
-            var p = item.platformMap[t];
+            final t = PlatformType.values[i];
+            final p = item.platformMap[t];
             if (null != p) return platformPage[t]!(p);
             return Center(
               child: CommandBar(
@@ -163,7 +163,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                     icon: const Icon(FluentIcons.add),
                     label: const Text("创建平台"),
                     onPressed: () {
-                      var projectDir =
+                      final projectDir =
                           item.project.path.split(RegExp(r'[\\/]')).last;
                       if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
                         Utils.showSnack(context, "创建失败，本地目录名称只能使用字母数字下划线");
@@ -203,7 +203,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             index: v,
             onChanged: (i) => bottomBarIndex.value = i,
             items: List.generate(PlatformType.values.length, (i) {
-              var type = PlatformType.values[i];
+              final type = PlatformType.values[i];
               return BottomNavigationItem(
                 icon: SvgPicture.asset(
                   type.platformImage,
@@ -220,9 +220,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
 
   // 更新当前项目信息
   Future<ProjectModel> loadProjectInfo() async {
-    var key = jRouter.find<String>(context, "key");
+    final key = jRouter.find<String>(context, "key");
     if (null == key || key.isEmpty) throw Exception("项目key不能为空");
-    var value = await projectManage.getProjectInfo(key);
+    final value = await projectManage.getProjectInfo(key);
     if (null == value) throw Exception("项目信息不存在");
     return Future.value(value);
   }

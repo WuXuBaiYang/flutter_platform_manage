@@ -55,7 +55,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
         controller: controller,
         future: () => projectManage.loadAll(simple: true),
         builder: (_, snap) {
-          var value = snap.data;
+          final value = snap.data;
           if (null != value && value.isNotEmpty) {
             return buildProjectGrid(value);
           }

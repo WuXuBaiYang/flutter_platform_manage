@@ -41,7 +41,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
 
   @override
   Widget build(BuildContext context) {
-    var itemList = loadItemList(context);
+    final itemList = loadItemList(context);
     if (itemList.isEmpty) return const Center(child: Text("功能开发中"));
     return PrimaryScrollController(
       controller: ScrollController(),
@@ -113,7 +113,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
 
   // 执行提交操作
   Future<bool> submit() {
-    var state = _formKey.currentState;
+    final state = _formKey.currentState;
     if (null != state && state.validate()) {
       state.save();
       return widget.platformInfo.commit().whenComplete(() {
