@@ -14,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 * @author wuxubaiyang
 * @Time 2022-07-28 15:50:43
 */
-class ProjectCommandMenu {
+class ProjectMenu {
   // 获取功能菜单列表
   static Widget getProjectCommands(
     BuildContext context,

@@ -54,10 +54,10 @@ abstract class BasePlatform {
 enum PlatformType {
   android,
   ios,
+  web,
   windows,
   macos,
   linux,
-  web,
 }
 
 /*

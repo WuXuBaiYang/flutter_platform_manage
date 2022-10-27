@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
-import 'base_manage.dart';
+import '../common/manage.dart';
 
 /*
 * 权限管理

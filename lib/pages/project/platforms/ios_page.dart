@@ -1,27 +1,29 @@
 import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/base_platform.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
 import 'package:flutter_platform_manage/widgets/permission_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
+import 'platform.dart';
 
 /*
 * ios平台分页
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
-  const PlatformIosPage({
-    Key? key,
-    required IOSPlatform platformInfo,
-  }) : super(key: key, platformInfo: platformInfo);
+class PlatformIosPage
+    extends BasePlatformPage<IOSPlatform, _PlatformIosPageLogic> {
+  PlatformIosPage({
+    super.key,
+    required super.platformInfo,
+  }) : super(logic: _PlatformIosPageLogic(platformInfo.hashCode));
 
   @override
   State<StatefulWidget> createState() => _PlatformIosPageState();
@@ -36,15 +38,15 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [
-      buildBundleName(),
-      buildPermissionManage(),
-      buildBundleDisplayName(),
-      buildAppLogo(),
+      _buildBundleName(),
+      _buildPermissionManage(),
+      _buildBundleDisplayName(),
+      _buildAppLogo(),
     ];
   }
 
   // 构建应用名编辑项
-  Widget buildBundleName() {
+  Widget _buildBundleName() {
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
@@ -74,7 +76,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   }
 
   // 构建展示应用名编辑项
-  Widget buildBundleDisplayName() {
+  Widget _buildBundleDisplayName() {
     final info = widget.platformInfo;
     return buildItem(
       child: InfoLabel(
@@ -97,62 +99,75 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
     );
   }
 
-  // 权限管理的展示倍数
-  bool _permissionExpand = false;
-
   // 构建权限管理项
-  Widget buildPermissionManage() {
+  Widget _buildPermissionManage() {
     final info = widget.platformInfo;
-    return buildItem(
-      times: _permissionExpand ? 6 : 4,
-      child: FormField<List<PermissionItemModel>>(
-        initialValue: info.permissions,
-        onSaved: (v) => info.permissions = v ?? [],
-        builder: (f) => Column(
-          children: [
-            ListTile(
-              leading: const Text('权限管理'),
-              trailing: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(_permissionExpand
-                        ? FluentIcons.chevron_fold10
-                        : FluentIcons.chevron_unfold10),
-                    onPressed: () =>
-                        setState(() => _permissionExpand = !_permissionExpand),
-                  ),
-                  const SizedBox(width: 8),
-                  Button(
-                    child: const Text('添加权限'),
-                    onPressed: () {
-                      PermissionImportDialog.show(
-                        context,
-                        platformType: PlatformType.ios,
-                        permissions: f.value,
-                      ).then((v) {
-                        if (null != v) {
-                          setState(() => widget.platformInfo.permissions = v);
-                        }
-                      });
-                    },
-                  ),
-                ],
-              ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: widget.logic.permissionExpand,
+      builder: (_, expanded, __) {
+        return buildItem(
+          times: expanded ? 6 : 4,
+          child: FormField<List<PermissionItemModel>>(
+            initialValue: info.permissions,
+            onSaved: (v) => info.permissions = v ?? [],
+            builder: (f) => Column(
+              children: [
+                _buildPermissionManageHeader(f, expanded),
+                _buildPermissionManageList(f),
+              ],
             ),
-            Expanded(
-              child: CardItem(
-                child: f.value?.isEmpty ?? true
-                    ? const Center(child: Text('还未添加任何权限哦~'))
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: f.value?.length ?? 0,
-                        separatorBuilder: (_, i) => const ThicknessDivider(),
-                        itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
-                      ),
+          ),
+        );
+      },
+    );
+  }
+
+  // 构建权限管理头部
+  Widget _buildPermissionManageHeader(
+      FormFieldState<List<PermissionItemModel>> f, bool expanded) {
+    return ListTile(
+      leading: const Text('权限管理'),
+      trailing: Row(
+        children: [
+          IconButton(
+            icon: Icon(expanded
+                ? FluentIcons.chevron_fold10
+                : FluentIcons.chevron_unfold10),
+            onPressed: () => widget.logic.permissionExpand.setValue(!expanded),
+          ),
+          const SizedBox(width: 8),
+          Button(
+            child: const Text('添加权限'),
+            onPressed: () {
+              PermissionImportDialog.show(
+                context,
+                platformType: PlatformType.ios,
+                permissions: f.value,
+              ).then((v) {
+                if (null != v) {
+                  setState(() => widget.platformInfo.permissions = v);
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 构建权限管理列表
+  Widget _buildPermissionManageList(
+      FormFieldState<List<PermissionItemModel>> f) {
+    return Expanded(
+      child: CardItem(
+        child: f.value?.isEmpty ?? true
+            ? const Center(child: Text('还未添加任何权限哦~'))
+            : ListView.separated(
+                shrinkWrap: true,
+                itemCount: f.value?.length ?? 0,
+                separatorBuilder: (_, i) => const ThicknessDivider(),
+                itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -203,7 +218,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   }
 
   // 构建应用图标编辑项
-  Widget buildAppLogo() {
+  Widget _buildAppLogo() {
     final info = widget.platformInfo;
     return buildItem(
       child: CardItem(
@@ -242,40 +257,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
           content: SingleChildScrollView(
             child: Column(
               children: List.generate(groupIcons.length, (i) {
-                final it = groupIcons[i];
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: List.generate(it.length, (j) {
-                    final k = it.keys.elementAt(j), v = it[k]!;
-                    return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        children: [
-                          LogoFileImage(
-                            File(v),
-                            size: k.showSize.toDouble(),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Text('${k.name}(${k.sizePx}x${k.sizePx})'),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: IconButton(
-                                  icon: const Icon(FluentIcons.info),
-                                  onPressed: () {
-                                    Utils.showSnackWithFilePath(context, v);
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                );
+                return _buildLogoListItem(groupIcons[i]);
               }),
             ),
           ),
@@ -283,4 +265,51 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
       },
     );
   }
+
+  // 构建图标展示列表子项
+  Widget _buildLogoListItem(Map<IOSIcons, String> it) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(it.length, (j) {
+        final k = it.keys.elementAt(j), v = it[k]!;
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              LogoFileImage(
+                File(v),
+                size: k.showSize.toDouble(),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text('${k.name}(${k.sizePx}x${k.sizePx})'),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: IconButton(
+                      icon: const Icon(FluentIcons.info),
+                      onPressed: () => Utils.showSnackWithFilePath(context, v),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+}
+
+/*
+* ios平台-逻辑
+* @author wuxubaiyang
+* @Time 2022/10/27 15:59
+*/
+class _PlatformIosPageLogic extends BasePlatformPageLogic {
+  // 权限管理的展示倍数
+  final permissionExpand = ValueChangeNotifier<bool>(false);
+
+  _PlatformIosPageLogic(super.hashCode);
 }

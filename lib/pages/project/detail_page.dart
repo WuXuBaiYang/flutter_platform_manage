@@ -1,15 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
 import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_android_page.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_ios_page.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_linux_page.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_macos_page.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_web_page.dart';
-import 'package:flutter_platform_manage/pages/project/platform_pages/platform_win_page.dart';
-import 'package:flutter_platform_manage/pages/project/project_command_menu.dart';
+import 'package:flutter_platform_manage/pages/project/menu.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
@@ -20,6 +16,13 @@ import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:window_manager/window_manager.dart';
+
+import 'platforms/android_page.dart';
+import 'platforms/ios_page.dart';
+import 'platforms/linux_page.dart';
+import 'platforms/macos_page.dart';
+import 'platforms/web_page.dart';
+import 'platforms/win_page.dart';
 
 /*
 * 项目详情页
@@ -43,11 +46,8 @@ typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 */
 class _ProjectDetailPageState extends State<ProjectDetailPage>
     with WindowListener {
-  // 异步缓存加载控制器
-  final controller = CacheFutureBuilderController<ProjectModel>();
-
-  // 底部导航条当前下标
-  final bottomBarIndex = ValueNotifier<int>(0);
+  // 逻辑管理
+  final _logic = _ProjectDetailPageLogic();
 
   @override
   void initState() {
@@ -61,17 +61,17 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       title: '项目详情',
       content: ScaffoldPage.withPadding(
         content: CacheFutureBuilder<ProjectModel>(
-          controller: controller,
-          future: loadProjectInfo,
+          controller: _logic.controller,
+          future: () => _logic.loadProjectInfo(context),
           builder: (_, snap) {
             if (snap.hasData) {
               final item = snap.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  buildProjectInfo(item),
+                  _buildProjectInfo(item),
                   const SizedBox(height: 14),
-                  Expanded(child: buildPlatformView(item)),
+                  Expanded(child: _buildPlatformView(item)),
                 ],
               );
             }
@@ -83,56 +83,60 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             return const Center(child: ProgressRing());
           },
         ),
-        bottomBar: buildBottomBar(),
+        bottomBar: _buildBottomBar(),
       ),
     );
   }
 
   // 构建项目信息
-  Widget buildProjectInfo(ProjectModel item) {
+  Widget _buildProjectInfo(ProjectModel item) {
     return Card(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListTile(
-                  leading: ProjectLogo(projectInfo: item),
-                  title: Text(
-                    !item.exist ? '项目信息丢失' : item.showTitle,
-                    style: TextStyle(
-                      color: !item.exist ? Colors.red : null,
-                    ),
-                  ),
-                  subtitle:
-                      Text('${!item.exist ? item.project.alias : item.version}'
-                          '\nFlutter · ${item.environment?.flutter}'),
-                ),
-                const SizedBox(height: 4),
-                PlatformTagGroup(
-                  platforms: item.platformList,
-                  tagSize: PlatformTagSize.small,
-                ),
-              ],
-            ),
+            child: _buildProjectInfoItem(item),
           ),
           const ThicknessDivider(
             size: 70,
             direction: Axis.vertical,
           ),
           Expanded(
-            child: ProjectCommandMenu.getProjectCommands(
-                context, item, controller),
+            child: ProjectMenu.getProjectCommands(
+                context, item, _logic.controller),
           ),
         ],
       ),
     );
   }
 
+  // 构建项目信息子项
+  Widget _buildProjectInfoItem(ProjectModel item) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: ProjectLogo(projectInfo: item),
+          title: Text(
+            !item.exist ? '项目信息丢失' : item.showTitle,
+            style: TextStyle(
+              color: !item.exist ? Colors.red : null,
+            ),
+          ),
+          subtitle: Text('${!item.exist ? item.project.alias : item.version}'
+              '\nFlutter · ${item.environment?.flutter}'),
+        ),
+        const SizedBox(height: 4),
+        PlatformTagGroup(
+          platforms: item.platformList,
+          tagSize: PlatformTagSize.small,
+        ),
+      ],
+    );
+  }
+
   // 平台对照表
-  final Map<PlatformType, PlatformPageBuilder> platformPage = {
+  final Map<PlatformType, PlatformPageBuilder> _platformPage = {
     PlatformType.android: (p) => PlatformAndroidPage(platformInfo: p),
     PlatformType.ios: (p) => PlatformIosPage(platformInfo: p),
     PlatformType.web: (p) => PlatformWebPage(platformInfo: p),
@@ -142,16 +146,16 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   };
 
   // 构建平台信息切页
-  Widget buildPlatformView(ProjectModel item) {
+  Widget _buildPlatformView(ProjectModel item) {
     return ValueListenableBuilder<int>(
-      valueListenable: bottomBarIndex,
+      valueListenable: _logic.bottomBarIndex,
       builder: (_, v, child) {
         return IndexedStack(
-          index: bottomBarIndex.value,
+          index: _logic.bottomBarIndex.value,
           children: List.generate(PlatformType.values.length, (i) {
             final t = PlatformType.values[i];
             final p = item.platformMap[t];
-            if (null != p) return platformPage[t]!(p);
+            if (null != p) return _platformPage[t]!(p);
             return Center(
               child: CommandBar(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -159,26 +163,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                   CommandBarButton(
                     icon: const Icon(FluentIcons.add),
                     label: const Text('创建平台'),
-                    onPressed: () {
-                      final projectDir =
-                          item.project.path.split(RegExp(r'[\\/]')).last;
-                      if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
-                        Utils.showSnack(context, '创建失败，本地目录名称只能使用字母数字下划线');
-                        return;
-                      }
-                      Utils.showLoading<bool>(
-                        context,
-                        loadFuture: ScriptHandle.createPlatforms(item, [t]),
-                      ).then((value) {
-                        if (value!) {
-                          controller.refreshValue();
-                          return Utils.showSnack(context, '平台创建成功');
-                        }
-                        throw Exception('平台创建失败');
-                      }).catchError((e) {
-                        Utils.showSnack(context, e.toString());
-                      });
-                    },
+                    onPressed: () => _logic.createPlatform(context, item, t),
                   ),
                 ],
               ),
@@ -190,15 +175,15 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   }
 
   // 构建底部导航
-  Widget buildBottomBar() {
+  Widget _buildBottomBar() {
     const iconSize = 24.0;
     final style = BottomNavigationTheme.of(context);
     return ValueListenableBuilder<int>(
-        valueListenable: bottomBarIndex,
+        valueListenable: _logic.bottomBarIndex,
         builder: (_, v, child) {
           return BottomNavigation(
             index: v,
-            onChanged: (i) => bottomBarIndex.value = i,
+            onChanged: (i) => _logic.bottomBarIndex.setValue(i),
             items: List.generate(PlatformType.values.length, (i) {
               final type = PlatformType.values[i];
               return BottomNavigationItem(
@@ -215,28 +200,61 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
         });
   }
 
-  // 更新当前项目信息
-  Future<ProjectModel> loadProjectInfo() async {
-    final key = jRouter.find<String>(context, 'key');
-    if (null == key || key.isEmpty) throw Exception('项目key不能为空');
-    final value = await projectManage.getProjectInfo(key);
-    if (null == value) throw Exception('项目信息不存在');
-    return Future.value(value);
-  }
-
   @override
   void onWindowFocus() {
-    controller.refreshValue();
+    _logic.controller.refreshValue();
   }
 
   @override
   void onWindowRestore() {
-    controller.refreshValue();
+    _logic.controller.refreshValue();
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
+    _logic.dispose();
     super.dispose();
+  }
+}
+
+/*
+* 项目详情页-逻辑
+* @author wuxubaiyang
+* @Time 2022/10/27 15:14
+*/
+class _ProjectDetailPageLogic extends BaseLogic {
+  // 异步缓存加载控制器
+  final controller = CacheFutureBuilderController<ProjectModel>();
+
+  // 底部导航条当前下标
+  final bottomBarIndex = ValueChangeNotifier<int>(0);
+
+  // 创建平台
+  Future<void> createPlatform(
+      BuildContext context, ProjectModel item, PlatformType platform) async {
+    try {
+      final projectDir = item.project.path.split(RegExp(r'[\\/]')).last;
+      if (!RegExp(r'^\w+$').hasMatch(projectDir)) {
+        Utils.showSnack(context, '创建失败，本地目录名称只能使用字母数字下划线');
+        return;
+      }
+      final result = await Utils.showLoading<bool>(
+        context,
+        loadFuture: ScriptHandle.createPlatforms(item, [platform]),
+      );
+      if (result ?? false) controller.refreshValue();
+    } catch (e) {
+      Utils.showSnack(context, "平台创建失败");
+    }
+  }
+
+  // 更新当前项目信息
+  Future<ProjectModel> loadProjectInfo(BuildContext context) async {
+    final key = jRouter.find<String>(context, 'key');
+    if (null == key || key.isEmpty) throw Exception('项目key不能为空');
+    final value = await projectManage.getProjectInfo(key);
+    if (null == value) throw Exception('项目信息不存在');
+    return Future.value(value);
   }
 }

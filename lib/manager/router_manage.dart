@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'base_manage.dart';
+import '../common/manage.dart';
 
 /*
 * 路由管理类

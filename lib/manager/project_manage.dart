@@ -4,7 +4,7 @@ import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 
-import 'base_manage.dart';
+import '../common/manage.dart';
 
 /*
 * 项目管理

@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/model/event/base_event.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/event_bus.dart';
 
-import 'base_manage.dart';
+import '../common/manage.dart';
 
 /*
 * 消息总线管理

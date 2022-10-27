@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/pages/project/project_detail_page.dart';
+import 'package:flutter_platform_manage/pages/project/detail_page.dart';
 
 /*
 * 路由路径

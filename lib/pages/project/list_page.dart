@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
+import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -35,8 +37,8 @@ class ProjectListPage extends StatefulWidget {
 * @Time 5/18/2022 5:14 PM
 */
 class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
-  // 异步加载控制器
-  final controller = CacheFutureBuilderController<List<ProjectModel>>();
+  // 逻辑管理
+  final _logic = _ProjectListPageLogic();
 
   @override
   void initState() {
@@ -49,15 +51,15 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     return ScaffoldPage.withPadding(
       header: PageHeader(
         title: const Text('项目列表'),
-        commandBar: buildCommandBar(),
+        commandBar: _buildCommandBar(),
       ),
       content: CacheFutureBuilder<List<ProjectModel>>(
-        controller: controller,
+        controller: _logic.controller,
         future: () => projectManage.loadAll(simple: true),
         builder: (_, snap) {
           final value = snap.data;
           if (null != value && value.isNotEmpty) {
-            return buildProjectGrid(value);
+            return _buildProjectGrid(value);
           }
           return Center(
             child: NoticeBox.empty(
@@ -70,7 +72,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   }
 
   // 构建动作菜单
-  Widget buildCommandBar() {
+  Widget _buildCommandBar() {
     return CommandBarCard(
       child: CommandBar(
         overflowBehavior: CommandBarOverflowBehavior.noWrap,
@@ -80,7 +82,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             label: const Text('添加'),
             onPressed: () {
               ProjectImportDialog.show(context).then((v) {
-                if (null != v) controller.refreshValue();
+                if (null != v) _logic.controller.refreshValue();
               });
             },
           ),
@@ -88,7 +90,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
             icon: const Icon(FluentIcons.refresh),
             label: const Text('刷新'),
             onPressed: () {
-              controller.refreshValue();
+              _logic.controller.refreshValue();
               Utils.showSnack(context, '项目信息已刷新');
             },
           ),
@@ -97,29 +99,14 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
     );
   }
 
-  // 滚动控制器
-  final _scrollController = ScrollController();
-
-  // grid Key
-  final _gridViewKey = GlobalKey();
-
   // 构建项目列表
-  Widget buildProjectGrid(List<ProjectModel> projectList) {
+  Widget _buildProjectGrid(List<ProjectModel> projectList) {
     return ReorderableBuilder(
-      scrollController: _scrollController,
-      onReorder: (entities) {
-        for (final entity in entities) {
-          final item = projectList.removeAt(entity.oldIndex);
-          projectList.insert(entity.newIndex, item);
-        }
-        dbManage.write((realm) {
-          for (var i = 0; i < projectList.length; i++) {
-            projectList[i].project.order = i;
-          }
-        });
-      },
+      scrollController: _logic.scrollController,
+      onReorder: (entities) =>
+          _logic.updateProjectListOrder(projectList, entities),
       builder: (children) => GridView(
-        key: _gridViewKey,
+        key: _logic.gridViewKey,
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
           mainAxisExtent: 90,
@@ -130,17 +117,60 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
       ),
       children: List.generate(
         projectList.length,
-        (i) => buildProjectGridItem(projectList[i]),
+        (i) => _buildProjectGridItem(projectList[i]),
       ),
     );
   }
 
   // 构建项目表格子项
-  Widget buildProjectGridItem(ProjectModel item) {
+  Widget _buildProjectGridItem(ProjectModel item) {
     if (!item.project.isValid) return const SizedBox();
     return MouseRightClickMenu(
       key: ObjectKey(item.project.primaryKey),
-      menuItems: [
+      menuItems: _getProjectGirdItemMenuItems(item),
+      child: Center(
+        child: Card(
+          child: !item.exist
+              ? Center(
+                  child: Text(
+                  '项目信息丢失,点击重新编辑',
+                  style: TextStyle(color: Colors.red),
+                ))
+              : _buildProjectGridItemContent(item),
+        ),
+      ),
+    );
+  }
+
+  // 构建项目列表子项内容
+  Widget _buildProjectGridItemContent(ProjectModel item) {
+    return ListTile(
+      leading: ProjectLogo(projectInfo: item),
+      title: Text(
+        item.showTitle,
+        style: TextStyle(
+          color: !item.exist ? Colors.red : null,
+        ),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      ),
+      subtitle: Text(
+        'v${!item.exist ? item.project.alias : item.version}'
+        ' · Flutter ${item.environment?.flutter}',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+      ),
+      onPressed: () {
+        if (!item.exist) return _showModifyProjectDialog(item);
+        jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+          'key': item.project.primaryKey,
+        })?.then((_) => _logic.controller.refreshValue());
+      },
+    );
+  }
+
+  // 获取项目列表子项右键菜单项
+  List<Widget> _getProjectGirdItemMenuItems(ProjectModel item) => [
         ListTile(
           leading: const Icon(
             FluentIcons.rename,
@@ -153,7 +183,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
               context,
               projectModel: item,
             ).then((v) {
-              if (null != v) controller.refreshValue();
+              if (null != v) _logic.controller.refreshValue();
             });
           },
         ),
@@ -169,7 +199,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
               context,
               projectModel: item,
             ).then((v) {
-              if (null != v) controller.refreshValue();
+              if (null != v) _logic.controller.refreshValue();
             });
           },
         ),
@@ -181,7 +211,7 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           title: const Text('编辑'),
           onPressed: () {
             Navigator.pop(context);
-            modifyProjectInfo(item);
+            _showModifyProjectDialog(item);
           },
         ),
         ListTile(
@@ -196,82 +226,73 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
           ),
           onPressed: () {
             Navigator.pop(context);
-            deleteProjectInfo(item);
+            ImportantOptionDialog.show(
+              context,
+              message: '是否删除该项目 ${item.showTitle}',
+              confirm: '删除',
+              onConfirmTap: () {
+                dbManage.delete(item.project);
+                _logic.controller.refreshValue();
+              },
+            );
           },
         ),
-      ],
-      child: Center(
-        child: Card(
-          child: !item.exist
-              ? Center(
-                  child: Text(
-                  '项目信息丢失,点击重新编辑',
-                  style: TextStyle(color: Colors.red),
-                ))
-              : ListTile(
-                  leading: ProjectLogo(projectInfo: item),
-                  title: Text(
-                    item.showTitle,
-                    style: TextStyle(
-                      color: !item.exist ? Colors.red : null,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  subtitle: Text(
-                    'v${!item.exist ? item.project.alias : item.version}'
-                    ' · Flutter ${item.environment?.flutter}',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                  onPressed: () {
-                    if (!item.exist) return modifyProjectInfo(item);
-                    jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-                      'key': item.project.primaryKey,
-                    })?.then((_) => controller.refreshValue());
-                  },
-                ),
-        ),
-      ),
-    );
-  }
+      ];
 
-  // 重新编辑项目信息
-  void modifyProjectInfo(ProjectModel item) {
+  // 展示编辑项目信息弹窗
+  void _showModifyProjectDialog(ProjectModel item) {
     ProjectImportDialog.show(
       context,
       project: item.project,
     ).then((v) {
-      if (null != v) controller.refreshValue();
+      if (null != v) _logic.controller.refreshValue();
     });
-  }
-
-  // 删除项目信息
-  void deleteProjectInfo(ProjectModel item) {
-    ImportantOptionDialog.show(
-      context,
-      message: '是否删除该项目 ${item.showTitle}',
-      confirm: '删除',
-      onConfirmTap: () {
-        dbManage.delete(item.project);
-        controller.refreshValue();
-      },
-    );
   }
 
   @override
   void onWindowFocus() {
-    controller.refreshValue();
+    _logic.controller.refreshValue();
   }
 
   @override
   void onWindowRestore() {
-    controller.refreshValue();
+    _logic.controller.refreshValue();
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
+    _logic.dispose();
     super.dispose();
+  }
+}
+
+/*
+* 项目列表页-逻辑
+* @author wuxubaiyang
+* @Time 2022/10/27 14:33
+*/
+class _ProjectListPageLogic extends BaseLogic {
+  // 异步加载控制器
+  final controller = CacheFutureBuilderController<List<ProjectModel>>();
+
+  // 滚动控制器
+  final scrollController = ScrollController();
+
+  // grid Key
+  final gridViewKey = GlobalKey();
+
+  // 更新项目列表排序
+  void updateProjectListOrder(
+      List<ProjectModel> projectList, List<OrderUpdateEntity> entities) {
+    for (final entity in entities) {
+      final item = projectList.removeAt(entity.oldIndex);
+      projectList.insert(entity.newIndex, item);
+    }
+    dbManage.write((realm) {
+      for (var i = 0; i < projectList.length; i++) {
+        projectList[i].project.order = i;
+      }
+    });
   }
 }

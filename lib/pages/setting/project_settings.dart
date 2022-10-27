@@ -27,12 +27,12 @@ class ProjectSettings extends StatefulWidget {
 class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
   @override
   List<Widget> get loadSettingList => [
-        buildEnvironmentList(),
-        buildAppSourceInfo(),
+        _buildEnvironmentInfo(),
+        _buildAppSourceInfo(),
       ];
 
   // 构建环境列表设置项
-  Widget buildEnvironmentList() {
+  Widget _buildEnvironmentInfo() {
     return FutureBuilder<List<Environment>>(
       future: Future.value(dbManage.loadAllEnvironments().toList()),
       builder: (_, snap) {
@@ -50,41 +50,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
                 },
               ),
               header: const Text('Flutter环境列表'),
-              content: ListView.separated(
-                shrinkWrap: true,
-                itemCount: snap.data!.length,
-                separatorBuilder: (_, i) => const Divider(),
-                itemBuilder: (_, i) {
-                  final item = snap.data![i];
-                  return ListTile(
-                    title: Text('Flutter · ${item.flutter} · ${item.channel}'),
-                    subtitle: Text('Dart · ${item.dart}'),
-                    trailing: IconButton(
-                      icon: const Icon(FluentIcons.info),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) {
-                            return ContentDialog(
-                              content: Text(
-                                'Flutter · ${item.flutter} · ${item.channel}\n'
-                                'Dart · ${item.dart}\n'
-                                '${item.path}',
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('确定'),
-                                  onPressed: () => Navigator.maybePop(context),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
+              content: _buildEnvironmentList(snap.data!),
             ),
           );
         }
@@ -95,8 +61,50 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
     );
   }
 
+  // 构建环境列表
+  Widget _buildEnvironmentList(List<Environment> data) {
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: data.length,
+      separatorBuilder: (_, i) => const Divider(),
+      itemBuilder: (_, i) {
+        final item = data[i];
+        return ListTile(
+          title: Text('Flutter · ${item.flutter} · ${item.channel}'),
+          subtitle: Text('Dart · ${item.dart}'),
+          trailing: IconButton(
+            icon: const Icon(FluentIcons.info),
+            onPressed: () => _showEnvironmentItemInfo(item),
+          ),
+        );
+      },
+    );
+  }
+
+  // 展示环境配置详情
+  Future<void> _showEnvironmentItemInfo(Environment item) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return ContentDialog(
+          content: Text(
+            'Flutter · ${item.flutter} · ${item.channel}\n'
+            'Dart · ${item.dart}\n'
+            '${item.path}',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('确定'),
+              onPressed: () => Navigator.maybePop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // 构建应用源码说明文档
-  Widget buildAppSourceInfo() {
+  Widget _buildAppSourceInfo() {
     return buildItem(
       Button(
         style: ButtonStyle(

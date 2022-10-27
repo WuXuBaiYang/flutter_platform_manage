@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'base_manage.dart';
+import '../common/manage.dart';
 
 /*
 * 缓存管理
