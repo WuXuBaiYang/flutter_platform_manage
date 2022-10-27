@@ -41,7 +41,7 @@ class _SettingPageState extends State<SettingPage> {
 
 /*
 * 设置项子页面状态基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-26 09:17:26
 */
 abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {

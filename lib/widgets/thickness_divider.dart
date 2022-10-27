@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 /*
 * 超薄分割线
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 16:44:46
 */
 class ThicknessDivider extends StatelessWidget {

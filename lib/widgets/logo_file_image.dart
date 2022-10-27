@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/model/event/project_logo_change_event.da
 
 /*
 * 图标图片文件
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-30 15:37:02
 */
 class LogoFileImage extends StatefulWidget {
@@ -32,7 +32,7 @@ class LogoFileImage extends StatefulWidget {
 
 /*
 * 图标图片文件-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-30 15:37:26
 */
 class _LogoFileImageState extends State<LogoFileImage> {
@@ -73,7 +73,7 @@ class _LogoFileImageState extends State<LogoFileImage> {
 
 /*
 * 图标图片文件代理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-30 15:31:59
 */
 class _LogoFileImageProvider extends FileImage {

@@ -10,7 +10,7 @@ import 'base_manage.dart';
 
 /*
 * 消息总线管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-30 15:54:25
 */
 class EventManage extends BaseManage {

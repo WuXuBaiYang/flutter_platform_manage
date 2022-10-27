@@ -14,7 +14,7 @@ import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
 * android平台分页
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
 class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
@@ -29,7 +29,7 @@ class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
 
 /*
 * android平台分页-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
 class _PlatformAndroidPageState
@@ -69,7 +69,7 @@ class _PlatformAndroidPageState
   }
 
   // 应用包名输入校验
-  final packageNameRegExp = RegExp(r'[A-Z,a-z,0-9,.]');
+  final packageNameRegExp = RegExp(r'[A-Za-z0-9.]');
 
   // 构建应用包名编辑项
   Widget buildPackageName() {
@@ -211,8 +211,7 @@ class _PlatformAndroidPageState
           trailing: Button(
             child: const Text('批量替换'),
             onPressed: () {
-              Utils.pickProjectLogo(minSize: const Size.square(192))
-                  .then((v) {
+              Utils.pickProjectLogo(minSize: const Size.square(192)).then((v) {
                 if (null != v) widget.platformInfo.modifyProjectIcon(v);
               }).catchError((e) {
                 Utils.showSnack(context, e.toString());

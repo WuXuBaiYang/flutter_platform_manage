@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
 
 /*
 * 项目图标组件
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:14:34
 */
 class ProjectLogo extends StatelessWidget {
@@ -44,14 +44,14 @@ class ProjectLogo extends StatelessWidget {
 
 /*
 * 图标尺寸
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:16:06
 */
 enum ProjectLogoSize { small, middle, large }
 
 /*
 * 图标尺寸方法扩展
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:16:26
 */
 extension ProjectlogoSizeExtension on ProjectLogoSize {

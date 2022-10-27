@@ -3,7 +3,7 @@ import 'package:flutter_platform_manage/pages/project/project_detail_page.dart';
 
 /*
 * 路由路径
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 11:35:59
 */
 class RoutePath {

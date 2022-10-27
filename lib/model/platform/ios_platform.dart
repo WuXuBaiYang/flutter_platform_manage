@@ -143,7 +143,7 @@ class IOSPlatform extends BasePlatform {
 
 /*
 * ios图标尺寸枚举
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-04 17:48:03
 */
 enum IOSIcons {
@@ -166,7 +166,7 @@ enum IOSIcons {
 
 /*
 * ios图标尺寸枚举扩展
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-04 17:48:17
 */
 extension IOSIconsExtension on IOSIcons {

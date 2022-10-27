@@ -4,7 +4,7 @@ import 'package:flutter_platform_manage/pages/project/platform_pages/base_platfo
 
 /*
 * linux平台分页
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
 class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
@@ -19,7 +19,7 @@ class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
 
 /*
 * linux平台分页-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
 class _PlatformLinuxPageState extends BasePlatformPageState<PlatformLinuxPage> {

@@ -14,7 +14,7 @@ import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
 * ios平台分页
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
 class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
@@ -29,7 +29,7 @@ class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
 
 /*
 * ios平台分页-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
 class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
@@ -52,8 +52,10 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
         child: TextFormBox(
           initialValue: info.bundleName,
           inputFormatters: [
-            FilteringTextInputFormatter(RegExp(r'[A-Z,a-z,0-9,_]'),
-                allow: true),
+            FilteringTextInputFormatter(
+              RegExp(r'[A-Za-z0-9_]'),
+              allow: true,
+            ),
           ],
           validator: (v) {
             if (null == v || v.isEmpty) {
@@ -214,8 +216,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
           trailing: Button(
             child: const Text('批量替换'),
             onPressed: () {
-              Utils.pickProjectLogo(minSize: const Size.square(1024))
-                  .then((v) {
+              Utils.pickProjectLogo(minSize: const Size.square(1024)).then((v) {
                 if (null != v) widget.platformInfo.modifyProjectIcon(v);
               }).catchError((e) {
                 Utils.showSnack(context, e.toString());

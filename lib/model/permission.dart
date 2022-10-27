@@ -2,7 +2,7 @@ import 'package:flutter_platform_manage/model/platform/base_platform.dart';
 
 /*
 * 平台权限
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 09:59:55
 */
 class PermissionModel {
@@ -35,7 +35,7 @@ class PermissionModel {
 
 /*
 * 平台权限子项
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 10:15:12
 */
 class PermissionItemModel {

@@ -9,7 +9,7 @@ import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 
 /*
 * 项目相关设置
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-25 17:22:18
 */
 class ProjectSettings extends StatefulWidget {
@@ -21,7 +21,7 @@ class ProjectSettings extends StatefulWidget {
 
 /*
 * 项目相关设置-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-25 17:22:43
 */
 class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {

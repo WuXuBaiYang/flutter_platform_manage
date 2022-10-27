@@ -6,7 +6,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
 * 平台页面基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-29 16:09:36
 */
 abstract class BasePlatformPage<T extends BasePlatform> extends StatefulWidget {
@@ -21,7 +21,7 @@ abstract class BasePlatformPage<T extends BasePlatform> extends StatefulWidget {
 
 /*
 * 平台状态基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-26 17:54:08
 */
 abstract class BasePlatformPageState<T extends BasePlatformPage>

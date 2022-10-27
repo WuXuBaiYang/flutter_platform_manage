@@ -5,7 +5,7 @@ import 'window_buttons.dart';
 
 /*
 * 应用页面组件
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 13:40:59
 */
 class AppPage extends StatelessWidget {

@@ -23,7 +23,7 @@ import 'package:window_manager/window_manager.dart';
 
 /*
 * 项目详情页
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 11:38:04
 */
 class ProjectDetailPage extends StatefulWidget {
@@ -38,7 +38,7 @@ typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 
 /*
 * 项目详情页-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-22 11:38:37
 */
 class _ProjectDetailPageState extends State<ProjectDetailPage>

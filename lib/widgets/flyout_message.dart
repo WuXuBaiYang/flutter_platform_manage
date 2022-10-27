@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 /*
 * 用于展示消息的flyout组件
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-02 10:12:16
 */
 class FlyoutMessage extends StatelessWidget {

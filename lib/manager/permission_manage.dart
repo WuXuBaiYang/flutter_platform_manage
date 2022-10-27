@@ -8,7 +8,7 @@ import 'base_manage.dart';
 
 /*
 * 权限管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 11:35:07
 */
 class PermissionManage extends BaseManage {

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 /*
 * 带缓存的future构造器
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-27 09:04:01
 */
 class CacheFutureBuilder<T> extends StatefulWidget {
@@ -33,7 +33,7 @@ class CacheFutureBuilder<T> extends StatefulWidget {
 
 /*
 * 带缓存的future构造器-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-27 09:04:31
 */
 class _CacheFutureBuilderState<T> extends State<CacheFutureBuilder<T>> {
@@ -60,7 +60,7 @@ class _CacheFutureBuilderState<T> extends State<CacheFutureBuilder<T>> {
 
 /*
 * 缓存future builder控制器
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-27 09:21:29
 */
 class CacheFutureBuilderController<V> extends ChangeNotifier

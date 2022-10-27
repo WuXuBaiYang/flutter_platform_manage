@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 /*
 * 卡片样式的子项
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-27 14:31:19
 */
 class CardItem extends StatelessWidget {

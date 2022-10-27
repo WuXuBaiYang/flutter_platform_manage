@@ -9,7 +9,7 @@ import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
 * 权限导入弹窗
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 17:10:15
 */
 class PermissionImportDialog extends StatefulWidget {
@@ -46,7 +46,7 @@ class PermissionImportDialog extends StatefulWidget {
 
 /*
 * 权限导入弹窗-状态
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 17:11:57
 */
 class _PermissionImportDialogState extends State<PermissionImportDialog> {
@@ -214,14 +214,14 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
 
 /*
 * 过滤状态枚举
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 17:45:32
 */
 enum PermissionFilter { all, selected, unselected }
 
 /*
 * 过滤状态枚举扩展
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-01 17:46:06
 */
 extension PermissionFilterExtension on PermissionFilter {

@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /*
 * 平台支持标签组
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 11:00:25
 */
 class PlatformTagGroup extends StatelessWidget {
@@ -59,14 +59,14 @@ class PlatformTagGroup extends StatelessWidget {
 
 /*
 * 平台类型标签大小
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 17:58:51
 */
 enum PlatformTagSize { small, middle }
 
 /*
 * 平台类型标签大小扩展
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 18:00:02
 */
 extension PlatformTagSizeExtension on PlatformTagSize {

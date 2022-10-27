@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /*
 * 消息盒子提示
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 16:35:28
 */
 class NoticeBox extends StatelessWidget {
@@ -73,14 +73,14 @@ class NoticeBox extends StatelessWidget {
 
 /*
 * 提示盒子尺寸枚举
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 16:36:45
 */
 enum NoticeBoxSize { small, middle, large }
 
 /*
 * 扩展提示盒子尺寸枚举
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-07-21 16:42:57
 */
 extension WarningBoxSizeExtension on NoticeBoxSize {

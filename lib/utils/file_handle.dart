@@ -80,7 +80,7 @@ class FileHandle {
 
 /*
 * 作为xml文件处理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-08 14:44:11
 */
 class FileHandleXML extends FileHandle {
@@ -216,7 +216,7 @@ class FileHandleXML extends FileHandle {
 
 /*
 * 作为PList文件处理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022-08-08 14:44:11
 */
 class FileHandlePList extends FileHandleXML {

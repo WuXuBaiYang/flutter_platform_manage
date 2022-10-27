@@ -6,7 +6,7 @@ import 'base_manage.dart';
 
 /*
 * 缓存管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 10:29
 */
 class JCacheManage extends BaseManage {
