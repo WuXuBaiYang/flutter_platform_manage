@@ -158,18 +158,10 @@ class AndroidPlatform extends BasePlatform {
       );
 }
 
-/*
-* android图标尺寸枚举
-* @author wuxubaiyang
-* @Time 2022-07-29 17:59:54
-*/
+// android图标尺寸枚举
 enum AndroidIcons { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
 
-/*
-* android图标尺寸枚举扩展
-* @author wuxubaiyang
-* @Time 2022-07-29 18:00:20
-*/
+// android图标尺寸枚举扩展
 extension AndroidIconsExtension on AndroidIcons {
   // 图标展示尺寸
   num get showSize => const {

@@ -141,11 +141,7 @@ class IOSPlatform extends BasePlatform {
       );
 }
 
-/*
-* ios图标尺寸枚举
-* @author wuxubaiyang
-* @Time 2022-08-04 17:48:03
-*/
+// ios图标尺寸枚举
 enum IOSIcons {
   x1_20,
   x2_20,
@@ -164,11 +160,7 @@ enum IOSIcons {
   x1_1024,
 }
 
-/*
-* ios图标尺寸枚举扩展
-* @author wuxubaiyang
-* @Time 2022-08-04 17:48:17
-*/
+// ios图标尺寸枚举扩展
 extension IOSIconsExtension on IOSIcons {
   // 图标展示尺寸
   num get showSize => const {
@@ -238,10 +230,102 @@ extension IOSIconsExtension on IOSIcons {
         [IOSIcons.x1_1024]
       ];
 
-  // 拼装附件相对路径
-  String get absolutePath {
+  // 拼装图标文件名称
+  String get fileName {
     final m = multiple, s = sizePx / m;
-    final fileName = 'Icon-App-${s}x$s@${m}x.png'.replaceAll('.0', '');
-    return '${ProjectFilePath.iosAssetsAppIcon}/$fileName';
+    return 'Icon-App-${s}x$s@${m}x.png'.replaceAll('.0', '');
   }
+
+  // 拼装附件相对路径
+  String get absolutePath => '${ProjectFilePath.iosAssetsAppIcon}/$fileName';
+}
+
+// ios启动图尺寸
+enum IOSLaunchImages {
+  x1_1125_2436,
+  x2_640_960,
+  x3_1125_2436,
+  x1_640_1136,
+  x2_640_1136,
+  x3_640_1136,
+  x3_1242_2208,
+  x2_750_1334,
+  x3_1242_2688,
+  x2_828_1792,
+}
+
+// ios启动图尺寸枚举扩展
+extension IOSLaunchImagesExtension on IOSLaunchImages {
+  // 图标展示尺寸
+  Size get showSize => const {
+        IOSLaunchImages.x1_1125_2436: Size(10, 10),
+        IOSLaunchImages.x2_640_960: Size(10, 10),
+        IOSLaunchImages.x3_1125_2436: Size(10, 10),
+        IOSLaunchImages.x1_640_1136: Size(10, 10),
+        IOSLaunchImages.x2_640_1136: Size(10, 10),
+        IOSLaunchImages.x3_640_1136: Size(10, 10),
+        IOSLaunchImages.x3_1242_2208: Size(10, 10),
+        IOSLaunchImages.x2_750_1334: Size(10, 10),
+        IOSLaunchImages.x3_1242_2688: Size(10, 10),
+        IOSLaunchImages.x2_828_1792: Size(10, 10),
+      }[this]!;
+
+  // 获取真实图片尺寸
+  num get sizePx => const {
+        IOSIcons.x1_20: 20,
+        IOSIcons.x2_20: 40,
+        IOSIcons.x3_20: 60,
+        IOSIcons.x1_29: 29,
+        IOSIcons.x2_29: 58,
+        IOSIcons.x3_29: 87,
+        IOSIcons.x1_40: 40,
+        IOSIcons.x2_40: 80,
+        IOSIcons.x3_40: 120,
+        IOSIcons.x2_60: 120,
+        IOSIcons.x3_60: 180,
+        IOSIcons.x1_76: 76,
+        IOSIcons.x2_76: 152,
+        IOSIcons.x2_83_5: 167,
+        IOSIcons.x1_1024: 1024,
+      }[this]!;
+
+  // 倍数关系
+  int get multiple => const {
+        IOSIcons.x1_20: 1,
+        IOSIcons.x1_29: 1,
+        IOSIcons.x1_40: 1,
+        IOSIcons.x1_76: 1,
+        IOSIcons.x1_1024: 1,
+        IOSIcons.x2_20: 2,
+        IOSIcons.x2_29: 2,
+        IOSIcons.x2_40: 2,
+        IOSIcons.x2_60: 2,
+        IOSIcons.x2_76: 2,
+        IOSIcons.x2_83_5: 2,
+        IOSIcons.x3_20: 3,
+        IOSIcons.x3_29: 3,
+        IOSIcons.x3_40: 3,
+        IOSIcons.x3_60: 3,
+      }[this]!;
+
+  // 将图标类型分组成二维数组
+  static List<List<IOSIcons>> get groups => const [
+        [IOSIcons.x1_20, IOSIcons.x2_20, IOSIcons.x3_20],
+        [IOSIcons.x1_29, IOSIcons.x2_29, IOSIcons.x3_29],
+        [IOSIcons.x1_40, IOSIcons.x2_40, IOSIcons.x3_40],
+        [IOSIcons.x2_60, IOSIcons.x3_60],
+        [IOSIcons.x1_76, IOSIcons.x2_76],
+        [IOSIcons.x2_83_5],
+        [IOSIcons.x1_1024]
+      ];
+
+  // 拼装图标文件名称
+  String get fileName {
+    final m = multiple, s = sizePx / m;
+    return 'LaunchImage-${s}x$s@${m}x.png'.replaceAll('.0', '');
+  }
+
+  // 拼装附件相对路径
+  String get absolutePath =>
+      '${ProjectFilePath.iosAssetsAppLaunchImage}/$fileName';
 }

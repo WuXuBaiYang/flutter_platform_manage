@@ -28,4 +28,8 @@ class ProjectFilePath {
   // ios/Runner/Assets.xcassets/AppIcon.appiconset/
   static const String iosAssetsAppIcon =
       'Runner/Assets.xcassets/AppIcon.appiconset';
+
+  // ios/Runner/Assets.xcassets/LaunchImage.imageset/
+  static const String iosAssetsAppLaunchImage =
+      'Runner/Assets.xcassets/LaunchImage.imageset';
 }
