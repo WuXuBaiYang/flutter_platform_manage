@@ -250,16 +250,6 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
   }
 
   @override
-  void onWindowFocus() {
-    _logic.controller.refreshValue();
-  }
-
-  @override
-  void onWindowRestore() {
-    _logic.controller.refreshValue();
-  }
-
-  @override
   void dispose() {
     windowManager.removeListener(this);
     _logic.dispose();

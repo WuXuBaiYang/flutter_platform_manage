@@ -54,19 +54,6 @@ class ProjectManage extends BaseManage {
     await p.update(simple);
     return p;
   }
-
-  // 监听项目数量变化
-  Stream<List<ProjectModel>> watchCount() {
-    var count = dbManage.all<Project>().length;
-    final c = StreamController<List<ProjectModel>>();
-    dbManage.changes<Project>().listen((e) {
-      if (count != e.results.length) {
-        count = e.results.length;
-        loadAll().then((v) => c.sink.add(v));
-      }
-    });
-    return c.stream;
-  }
 }
 
 //单例调用

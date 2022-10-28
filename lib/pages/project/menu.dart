@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
+import 'package:flutter_platform_manage/widgets/flyout_message.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
@@ -86,8 +87,14 @@ class ProjectMenu {
               icon: const Icon(FluentIcons.refresh),
               label: const Text('刷新'),
               onPressed: () {
-                controller.refreshValue();
-                Utils.showSnack(context, '项目信息已刷新');
+                ImportantOptionDialog.show(
+                  context,
+                  message: '未保存内容会在刷新后丢失',
+                  onConfirmTap: () {
+                    controller.refreshValue();
+                    Utils.showSnack(context, '项目信息已刷新');
+                  },
+                );
               },
             ),
             CommandBarButton(

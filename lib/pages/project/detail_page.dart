@@ -201,16 +201,6 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   }
 
   @override
-  void onWindowFocus() {
-    _logic.controller.refreshValue();
-  }
-
-  @override
-  void onWindowRestore() {
-    _logic.controller.refreshValue();
-  }
-
-  @override
   void dispose() {
     windowManager.removeListener(this);
     _logic.dispose();
