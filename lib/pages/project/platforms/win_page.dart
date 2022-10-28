@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/model/platform/windows_platform.dart';
+import 'package:flutter_platform_manage/model/platform/windows.dart';
 
 import 'platform.dart';
 
@@ -8,12 +8,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformWinPage
-    extends BasePlatformPage<WindowsPlatform, _PlatformWinPageLogic> {
+class PlatformWinPage extends BasePlatformPage<_PlatformWinPageLogic> {
   PlatformWinPage({
     super.key,
-    required super.platformInfo,
-  }) : super(logic: _PlatformWinPageLogic(platformInfo.hashCode));
+    required WindowsPlatform platformInfo,
+  }) : super(logic: _PlatformWinPageLogic(platformInfo));
 
   @override
   State<StatefulWidget> createState() => _PlatformWinPageState();
@@ -36,6 +35,6 @@ class _PlatformWinPageState extends BasePlatformPageState<PlatformWinPage> {
 * @author wuxubaiyang
 * @Time 2022/10/27 16:14
 */
-class _PlatformWinPageLogic extends BasePlatformPageLogic {
-  _PlatformWinPageLogic(super.hashCode);
+class _PlatformWinPageLogic extends BasePlatformPageLogic<WindowsPlatform> {
+  _PlatformWinPageLogic(super.platformInfo);
 }

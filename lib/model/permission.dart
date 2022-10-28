@@ -1,4 +1,4 @@
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 
 /*
 * 平台权限

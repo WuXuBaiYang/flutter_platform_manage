@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/model/platform/web_platform.dart';
+import 'package:flutter_platform_manage/model/platform/web.dart';
 import 'platform.dart';
 
 /*
@@ -7,12 +7,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformWebPage
-    extends BasePlatformPage<WebPlatform, _PlatformWebPageLogic> {
+class PlatformWebPage extends BasePlatformPage<_PlatformWebPageLogic> {
   PlatformWebPage({
     super.key,
-    required super.platformInfo,
-  }) : super(logic: _PlatformWebPageLogic(platformInfo.hashCode));
+    required WebPlatform platformInfo,
+  }) : super(logic: _PlatformWebPageLogic(platformInfo));
 
   @override
   State<StatefulWidget> createState() => _PlatformWebPageState();
@@ -35,6 +34,6 @@ class _PlatformWebPageState extends BasePlatformPageState<PlatformWebPage> {
 * @author wuxubaiyang
 * @Time 2022/10/27 16:13
 */
-class _PlatformWebPageLogic extends BasePlatformPageLogic {
-  _PlatformWebPageLogic(super.hashCode);
+class _PlatformWebPageLogic extends BasePlatformPageLogic<WebPlatform> {
+  _PlatformWebPageLogic(super.platformInfo);
 }

@@ -3,7 +3,7 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/project_manage.dart';
 import 'package:flutter_platform_manage/manager/router_manage.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/menu.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';

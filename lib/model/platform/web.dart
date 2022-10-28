@@ -1,27 +1,35 @@
 import 'dart:io';
 
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 
 /*
-* macos平台信息
+* web平台信息
 * @author wuxubaiyang
 * @Time 5/20/2022 11:28 AM
 */
-class MacOSPlatform extends BasePlatform {
-  MacOSPlatform({
+class WebPlatform extends BasePlatform {
+  WebPlatform({
     required String platformPath,
-  }) : super(type: PlatformType.macos, platformPath: platformPath);
+  }) : super(type: PlatformType.web, platformPath: platformPath);
 
   @override
   Future<bool> update(bool simple) async {
     final handle = FileHandle.from('');
     try {
+      // 加载项目图标
+      projectIcons = await _loadIcons();
+
       ///待实现
     } catch (e) {
       return false;
     }
     return true;
+  }
+
+  // 加载项目图标
+  Future<List<ProjectIcon>> _loadIcons() async {
+    return [];
   }
 
   @override
@@ -36,12 +44,6 @@ class MacOSPlatform extends BasePlatform {
   }
 
   @override
-  String get projectIcon {
-    ///待实现
-    return '';
-  }
-
-  @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
     ///待实现
@@ -49,13 +51,8 @@ class MacOSPlatform extends BasePlatform {
   }
 
   @override
-  Future<List<String>> modifyProjectIcon(File file) async {
+  Future<bool> projectPackaging(File output) async {
     ///待实现
-    return [];
-  }
-
-  @override
-  Future<void> projectPackaging(File output) async {
-    ///待实现
+    return true;
   }
 }

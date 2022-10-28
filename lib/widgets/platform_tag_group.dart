@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /*

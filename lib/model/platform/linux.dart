@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 
 /*
@@ -36,12 +36,6 @@ class LinuxPlatform extends BasePlatform {
   }
 
   @override
-  String get projectIcon {
-    ///待实现
-    return '';
-  }
-
-  @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
     ///待实现
@@ -49,13 +43,8 @@ class LinuxPlatform extends BasePlatform {
   }
 
   @override
-  Future<List<String>> modifyProjectIcon(File file) async {
+  Future<bool> projectPackaging(File output) async {
     ///待实现
-    return [];
-  }
-
-  @override
-  Future<void> projectPackaging(File output) async {
-    ///待实现
+    return true;
   }
 }

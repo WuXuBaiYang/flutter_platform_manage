@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/db_manage.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
 import 'db/environment.dart';
 
@@ -44,13 +44,13 @@ class ProjectModel {
     return t.isEmpty ? name : '$t($name)';
   }
 
-  // 获取应用图标
-  Map<PlatformType, String> get projectIconsMap {
+  // 获取唯一应用图标
+  ProjectIcon? get projectIcon {
     for (final it in platformMap.values) {
-      final path = it.projectIcon;
-      if (path.isNotEmpty) return {it.type: path};
+      final icon = it.singleIcon;
+      if (icon != null) return icon;
     }
-    return {};
+    return null;
   }
 
   // 缓存环境信息

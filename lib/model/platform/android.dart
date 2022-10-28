@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/manager/permission_manage.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:xml/xml.dart';
 
@@ -21,7 +21,7 @@ class AndroidPlatform extends BasePlatform {
   String package;
 
   // 图标对象
-  String iconPath;
+  String _iconPath;
 
   // 权限集合
   List<PermissionItemModel> permissions;
@@ -30,26 +30,32 @@ class AndroidPlatform extends BasePlatform {
     required String platformPath,
     this.label = '',
     this.package = '',
-    this.iconPath = '',
     this.permissions = const [],
-  }) : super(type: PlatformType.android, platformPath: platformPath);
+  })  : _iconPath = '',
+        super(type: PlatformType.android, platformPath: platformPath);
 
   // androidManifest.xml文件绝对路径
-  String get manifestFilePath =>
+  String get _manifestFile =>
       '$platformPath/${ProjectFilePath.androidManifest}';
 
-  String get appBuildGradle =>
+  // app/buildGradle 文件绝对路径
+  String get _appBuildGradleFile =>
       '$platformPath/${ProjectFilePath.androidAppBuildGradle}';
+
+  // app/src/main/res 资源路径
+  String get _appResPath => '$platformPath/${ProjectFilePath.androidRes}';
 
   @override
   Future<bool> update(bool simple) async {
-    final handle = FileHandleXML.from(manifestFilePath);
+    final handle = FileHandleXML.from(_manifestFile);
     try {
       // 处理androidManifest.xml文件
-      // 获取图标路径信息
-      iconPath =
+      // 获取图标路径
+      _iconPath =
           (await handle.singleAtt('application', attName: 'android:icon'))
               .replaceAll(r'@', '');
+      // 加载图标
+      projectIcons = await _loadIcons();
       if (!simple) {
         // 获取label
         label = await handle.singleAtt('application', attName: 'android:label');
@@ -67,11 +73,36 @@ class AndroidPlatform extends BasePlatform {
     return true;
   }
 
+  // 加载项目图标
+  Future<List<ProjectIcon>> _loadIcons() async {
+    if (_iconPath.isEmpty) return [];
+    final paths = _iconPath.split('/');
+    if (paths.length != 2) return [];
+    List<ProjectIcon> icons = [];
+    // 遍历目录下符合条件的图标
+    for (var resIt in Directory(_appResPath).listSync()) {
+      if (resIt.path.contains(paths.first)) {
+        for (var iconIt in Directory(resIt.path).listSync()) {
+          if (iconIt.path.contains(paths.last)) {
+            // 添加图片信息
+            final file = File(iconIt.path);
+            icons.add(ProjectIcon(
+              size: await Utils.loadImageSize(file),
+              src: file.path,
+            ));
+            break;
+          }
+        }
+      }
+    }
+    return icons;
+  }
+
   @override
   Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
-      if (!await FileHandleXML.from(manifestFilePath).fileWrite((handle) async {
+      if (!await FileHandleXML.from(_manifestFile).fileWrite((handle) async {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名
@@ -87,37 +118,23 @@ class AndroidPlatform extends BasePlatform {
             }).toList());
       })) return false;
       // 处理app/build.gradle文件
-      if (!await FileHandleXML.from(appBuildGradle).fileWrite((handle) async {
+      if (!await FileHandleXML.from(_appBuildGradleFile)
+          .fileWrite((handle) async {
         // 修改包名
         await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
             'applicationId "$package"');
       })) return false;
     } catch (e) {
+      LogTool.e('android平台信息提交失败：', error: e);
       return false;
     }
     return true;
   }
 
-  // 获取图标文件路径集合
-  Map<AndroidIcons, String> loadIcons({bool reversed = false}) {
-    if (iconPath.isEmpty) return {};
-    const values = AndroidIcons.values;
-    return Map.fromEntries((reversed ? values.reversed : values).map((e) {
-      final path = e.getAbsolutePath(iconPath);
-      return MapEntry(e, '$platformPath/$path');
-    }));
-  }
-
-  @override
-  String get projectIcon => loadIcons().values.lastWhere(
-        (e) => File(e).existsSync(),
-        orElse: () => '',
-      );
-
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
-    handle ??= FileHandleXML.from(manifestFilePath);
+    handle ??= FileHandleXML.from(_manifestFile);
     if (handle is! FileHandleXML) return false;
     // 修改label
     await handle.setElAtt('application', attName: 'android:label', value: name);
@@ -125,17 +142,9 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  Future<List<String>> modifyProjectIcon(File file) async {
-    return Utils.compressIcons(file,
-        Map.fromEntries(AndroidIcons.values.map((e) {
-      final size = Size.square(e.sizePx.toDouble());
-      return MapEntry('$platformPath/${e.getAbsolutePath(iconPath)}', size);
-    })));
-  }
-
-  @override
-  Future<void> projectPackaging(File output) async {
+  Future<bool> projectPackaging(File output) async {
     ///待实现
+    return true;
   }
 
   @override
@@ -144,7 +153,6 @@ class AndroidPlatform extends BasePlatform {
     final AndroidPlatform typedOther = other;
     return label == typedOther.label &&
         package == typedOther.package &&
-        iconPath == typedOther.iconPath &&
         (permissions.length == typedOther.permissions.length &&
             !permissions.any((e) => !typedOther.permissions.contains(e)));
   }
@@ -153,37 +161,6 @@ class AndroidPlatform extends BasePlatform {
   int get hashCode => Object.hash(
         label,
         package,
-        iconPath,
         Object.hashAll(permissions),
       );
-}
-
-// android图标尺寸枚举
-enum AndroidIcons { mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi }
-
-// android图标尺寸枚举扩展
-extension AndroidIconsExtension on AndroidIcons {
-  // 图标展示尺寸
-  num get showSize => const {
-        AndroidIcons.mdpi: 30,
-        AndroidIcons.hdpi: 40,
-        AndroidIcons.xhdpi: 50,
-        AndroidIcons.xxhdpi: 60,
-        AndroidIcons.xxxhdpi: 70,
-      }[this]!;
-
-  // 获取真实图片尺寸
-  num get sizePx => {
-        AndroidIcons.mdpi: 48,
-        AndroidIcons.hdpi: 72,
-        AndroidIcons.xhdpi: 96,
-        AndroidIcons.xxhdpi: 144,
-        AndroidIcons.xxxhdpi: 192,
-      }[this]!;
-
-  // 拼装附件相对路径
-  String getAbsolutePath(String iconPath) {
-    final t = iconPath.split('/'), dir = t.first, fileName = '${t.last}.png';
-    return '${ProjectFilePath.androidRes}/$dir-$name/$fileName';
-  }
 }

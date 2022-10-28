@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:process_run/shell.dart';

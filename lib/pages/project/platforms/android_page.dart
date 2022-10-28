@@ -1,14 +1,11 @@
-import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
-import 'package:flutter_platform_manage/model/platform/android_platform.dart';
-import 'package:flutter_platform_manage/model/platform/base_platform.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/model/platform/android.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
-import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
 import 'package:flutter_platform_manage/widgets/permission_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'platform.dart';
@@ -18,12 +15,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformAndroidPage
-    extends BasePlatformPage<AndroidPlatform, _PlatformAndroidPageLogic> {
+class PlatformAndroidPage extends BasePlatformPage<_PlatformAndroidPageLogic> {
   PlatformAndroidPage({
     super.key,
-    required super.platformInfo,
-  }) : super(logic: _PlatformAndroidPageLogic(platformInfo.hashCode));
+    required AndroidPlatform platformInfo,
+  }) : super(logic: _PlatformAndroidPageLogic(platformInfo));
 
   @override
   State<StatefulWidget> createState() => _PlatformAndroidPageState();
@@ -42,13 +38,13 @@ class _PlatformAndroidPageState
       _buildAppName(),
       _buildPermissionManage(),
       _buildPackageName(),
-      _buildAppLogo(),
+      buildAppLogo(),
     ];
   }
 
   // 构建应用名称编辑项
   Widget _buildAppName() {
-    final info = widget.platformInfo;
+    final info = widget.logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '应用名称（安装之后的名称）',
@@ -75,7 +71,7 @@ class _PlatformAndroidPageState
 
   // 构建应用包名编辑项
   Widget _buildPackageName() {
-    final info = widget.platformInfo;
+    final info = widget.logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '应用包名',
@@ -102,7 +98,7 @@ class _PlatformAndroidPageState
 
   // 构建权限管理项
   Widget _buildPermissionManage() {
-    final info = widget.platformInfo;
+    final info = widget.logic.platformInfo;
     return ValueListenableBuilder<bool>(
       valueListenable: widget.logic.permissionExpand,
       builder: (_, expanded, __) {
@@ -147,7 +143,7 @@ class _PlatformAndroidPageState
                 permissions: f.value,
               ).then((v) {
                 if (null != v) {
-                  setState(() => widget.platformInfo.permissions = v);
+                  setState(() => widget.logic.platformInfo.permissions = v);
                 }
               });
             },
@@ -211,73 +207,6 @@ class _PlatformAndroidPageState
       ),
     );
   }
-
-  // 构建应用图标编辑项
-  Widget _buildAppLogo() {
-    final info = widget.platformInfo;
-    return buildItem(
-      child: CardItem(
-        child: ListTile(
-          leading: LogoFileImage(
-            File(info.projectIcon),
-            size: 30,
-          ),
-          title: const Text('应用图标（立即生效）'),
-          trailing: Button(
-            child: const Text('批量替换'),
-            onPressed: () {
-              Utils.pickProjectLogo(minSize: const Size.square(192)).then((v) {
-                if (null != v) widget.platformInfo.modifyProjectIcon(v);
-              }).catchError((e) {
-                Utils.showSnack(context, e.toString());
-              });
-            },
-          ),
-          onPressed: () => _showLogoList(info.loadIcons(reversed: true)),
-        ),
-      ),
-    );
-  }
-
-  // 展示图标弹窗
-  void _showLogoList(Map<AndroidIcons, String> iconsMap) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) {
-        return ContentDialog(
-          content: ListView.separated(
-            shrinkWrap: true,
-            itemCount: iconsMap.length,
-            separatorBuilder: (_, i) => const SizedBox(height: 24),
-            itemBuilder: (_, i) {
-              final type = iconsMap.keys.elementAt(i),
-                  path = iconsMap[type] ?? '',
-                  sizePx = type.sizePx;
-              return Row(
-                children: [
-                  Expanded(
-                    child: LogoFileImage(
-                      File(path),
-                      size: type.showSize.toDouble(),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text('${type.name}(${sizePx}x$sizePx)'),
-                  ),
-                  IconButton(
-                    icon: const Icon(FluentIcons.info),
-                    onPressed: () => Utils.showSnackWithFilePath(context, path),
-                  )
-                ],
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
 }
 
 /*
@@ -285,9 +214,9 @@ class _PlatformAndroidPageState
 * @author wuxubaiyang
 * @Time 2022/10/27 16:09
 */
-class _PlatformAndroidPageLogic extends BasePlatformPageLogic {
+class _PlatformAndroidPageLogic extends BasePlatformPageLogic<AndroidPlatform> {
   // 权限管理的展示倍数
   final permissionExpand = ValueChangeNotifier<bool>(false);
 
-  _PlatformAndroidPageLogic(super.hashCode);
+  _PlatformAndroidPageLogic(super.platformInfo);
 }

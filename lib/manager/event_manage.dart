@@ -1,12 +1,7 @@
 import 'dart:async';
-
-import 'package:flutter_platform_manage/manager/db_manage.dart';
-import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/model/event/base_event.dart';
-import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/event_bus.dart';
-
-import '../common/manage.dart';
 
 /*
 * 消息总线管理

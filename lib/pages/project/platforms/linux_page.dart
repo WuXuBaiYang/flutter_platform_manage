@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/model/platform/linux_platform.dart';
+import 'package:flutter_platform_manage/model/platform/linux.dart';
 import 'platform.dart';
 
 /*
@@ -8,11 +8,11 @@ import 'platform.dart';
 * @Time 2022-07-22 17:48:47
 */
 class PlatformLinuxPage
-    extends BasePlatformPage<LinuxPlatform, _PlatformLinuxPageLogic> {
+    extends BasePlatformPage<_PlatformLinuxPageLogic> {
   PlatformLinuxPage({
     super.key,
-    required super.platformInfo,
-  }) : super(logic: _PlatformLinuxPageLogic(platformInfo.hashCode));
+    required LinuxPlatform platformInfo,
+  }) : super(logic: _PlatformLinuxPageLogic(platformInfo));
 
   @override
   State<StatefulWidget> createState() => _PlatformLinuxPageState();
@@ -35,6 +35,6 @@ class _PlatformLinuxPageState extends BasePlatformPageState<PlatformLinuxPage> {
 * @author wuxubaiyang
 * @Time 2022/10/27 16:12
 */
-class _PlatformLinuxPageLogic extends BasePlatformPageLogic {
-  _PlatformLinuxPageLogic(super.hashCode);
+class _PlatformLinuxPageLogic extends BasePlatformPageLogic<LinuxPlatform> {
+  _PlatformLinuxPageLogic(super.platformInfo);
 }

@@ -1,13 +1,15 @@
 import 'dart:io';
-
+import 'dart:ui';
 import 'package:flutter_platform_manage/common/common.dart';
-import 'package:flutter_platform_manage/model/platform/android_platform.dart';
-import 'package:flutter_platform_manage/model/platform/ios_platform.dart';
-import 'package:flutter_platform_manage/model/platform/linux_platform.dart';
-import 'package:flutter_platform_manage/model/platform/macos_platform.dart';
-import 'package:flutter_platform_manage/model/platform/web_platform.dart';
-import 'package:flutter_platform_manage/model/platform/windows_platform.dart';
+import 'package:flutter_platform_manage/model/platform/android.dart';
+import 'package:flutter_platform_manage/model/platform/ios.dart';
+import 'package:flutter_platform_manage/model/platform/linux.dart';
+import 'package:flutter_platform_manage/model/platform/macos.dart';
+import 'package:flutter_platform_manage/model/platform/web.dart';
+import 'package:flutter_platform_manage/model/platform/windows.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 
 /*
 * 平台基类
@@ -21,10 +23,13 @@ abstract class BasePlatform {
   // 平台根路径
   final String platformPath;
 
+  // 平台图标集合
+  late List<ProjectIcon> projectIcons;
+
   BasePlatform({
     required this.type,
     required this.platformPath,
-  });
+  }) : projectIcons = const [];
 
   // 更新信息
   Future<bool> update(bool simple);
@@ -32,25 +37,59 @@ abstract class BasePlatform {
   // 提交信息变动
   Future<bool> commit();
 
-  // 获取应用图标
-  String get projectIcon;
+  // 获取单一平台图标
+  ProjectIcon? get singleIcon {
+    if (projectIcons.isEmpty) return null;
+    return projectIcons.first;
+  }
+
+  // 修改平台图标
+  Future<bool> modifyIcons(File source) async {
+    try {
+      final targetMap =
+          projectIcons.asMap().map((_, v) => MapEntry(v.src, v.size));
+      return await Utils.compressImageSize(source, targetMap);
+    } catch (e) {
+      LogTool.e('${type.name}平台编辑图标失败：', error: e);
+    }
+    return false;
+  }
 
   // 修改平台应用名（展示名称）
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false});
 
-  // 修改平台图标
-  Future<List<String>> modifyProjectIcon(File file);
-
   // 项目打包
-  Future<void> projectPackaging(File output);
+  Future<bool> projectPackaging(File output);
 }
 
 /*
-* 平台类型枚举
+* 平台图标信息管理
 * @author wuxubaiyang
-* @Time 5/20/2022 11:14 AM
+* @Time 2022/10/28 10:17
 */
+class ProjectIcon {
+  // 图标尺寸
+  final Size size;
+
+  // 资源路径/名称
+  final String src;
+
+  // 资源类型
+  final String type;
+
+  // 资源描述
+  final String desc;
+
+  ProjectIcon({
+    required this.size,
+    required this.src,
+    this.type = '',
+    this.desc = '',
+  });
+}
+
+// 平台类型枚举
 enum PlatformType {
   android,
   ios,
@@ -60,11 +99,7 @@ enum PlatformType {
   linux,
 }
 
-/*
-* 平台类型枚举扩展
-* @author wuxubaiyang
-* @Time 5/20/2022 11:23 AM
-*/
+// 平台类型枚举扩展
 extension PlatformTypeExtension on PlatformType {
   // 创建平台信息对象
   BasePlatform create(String platformPath) => {

@@ -7,8 +7,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_manage/manager/event_manage.dart';
-import 'package:flutter_platform_manage/model/event/project_logo_change_event.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * 通用工具方法
@@ -165,32 +164,27 @@ class Utils {
   }
 
   // 将一张图片的尺寸压缩为不同尺寸并写入本地
-  static Future<List<String>> compressImageSize(
+  static Future<bool> compressImageSize(
       File sourceImage, Map<String, Size> targetMap) async {
-    var t = <String>[];
-    final rawImage = await sourceImage.readAsBytes();
-    for (var entry in targetMap.entries) {
-      final size = entry.value;
-      var bytes = await Utils.resizeImage(rawImage,
-          height: size.width.toInt(), width: size.height.toInt());
-      if (null == bytes) continue;
-      final path = entry.key;
-      if (path.isEmpty) continue;
-      await File(path).writeAsBytes(bytes.buffer.asInt8List());
-      t.add(path);
-    }
-    return t;
-  }
-
-  // 修改平台图标
-  static Future<List<String>> compressIcons(
-      File sourceImage, Map<String, Size> targetMap) {
-    return compressImageSize(sourceImage, targetMap).then((v) {
-      if (v.isNotEmpty) {
-        // 发送图片源变动的地址集合
-        eventManage.fire(ProjectLogoChangeEvent(v));
+    try {
+      final rawImage = await sourceImage.readAsBytes();
+      for (var entry in targetMap.entries) {
+        final size = entry.value;
+        var bytes = await Utils.resizeImage(rawImage,
+            height: size.width.toInt(), width: size.height.toInt());
+        if (null == bytes) continue;
+        final path = entry.key;
+        if (path.isEmpty) continue;
+        final target = File(path);
+        if (!target.existsSync()) {
+          target.createSync(recursive: true);
+        }
+        await target.writeAsBytes(bytes.buffer.asInt8List());
       }
-      return v;
-    });
+      return true;
+    } catch (e) {
+      LogTool.e('图片压缩失败：', error: e);
+    }
+    return false;
   }
 }

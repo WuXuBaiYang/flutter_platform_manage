@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/widgets/logo_file_image.dart';
 
 /*
 * 项目图标组件
@@ -32,13 +30,15 @@ class ProjectLogo extends StatelessWidget {
         size: iconSize,
       );
     }
-    var iconMap = projectInfo.projectIconsMap;
-    if (iconMap.isEmpty) return FlutterLogo(size: iconSize);
-    var icon = iconMap.entries.first;
-    return LogoFileImage(
-      File(icon.value),
-      size: iconSize,
-    );
+    final icon = projectInfo.projectIcon;
+    if (icon != null) {
+      return Image.file(
+        File(icon.src),
+        width: iconSize,
+        height: iconSize,
+      );
+    }
+    return FlutterLogo(size: iconSize);
   }
 }
 
