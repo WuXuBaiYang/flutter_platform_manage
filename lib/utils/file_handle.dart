@@ -238,6 +238,17 @@ class FileHandlePList extends FileHandleXML {
   Future<dynamic> getValue(String key, {dynamic def}) async =>
       (await plistMap)[key] ?? def;
 
+  // 根据key模糊搜索key列表
+  Future<List<String>> getKeyList({required String includeKey}) async {
+    final map = await plistMap;
+    var list = <String>[];
+    for (final k in map.keys) {
+      if (!k.contains(includeKey)) continue;
+      list.add(k);
+    }
+    return list;
+  }
+
   // 根据key模糊搜索值列表
   Future<List<T>> getValueList<T>({required String includeKey}) async {
     final map = await plistMap;

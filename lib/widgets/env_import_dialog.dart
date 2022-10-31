@@ -52,7 +52,7 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
             child: TextBox(
               controller: _envPathController,
               header: 'flutter路径',
-              placeholder: '粘贴或导入flutter根目录',
+              placeholder: '选择flutter根目录',
               readOnly: true,
               suffix: Button(
                 onPressed: doPathPicker,

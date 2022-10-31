@@ -52,7 +52,7 @@ class IOSPlatform extends BasePlatform {
             await handle.getValue('CFBundleDisplayName', def: '');
         // 获取权限集合
         permissions = await permissionManage.findAllPermissions(
-          await handle.getValueList<String>(includeKey: 'NS'),
+          await handle.getKeyList(includeKey: 'NS'),
           platform: PlatformType.ios,
         );
       }
