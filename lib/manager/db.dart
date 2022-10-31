@@ -5,8 +5,6 @@ import 'package:flutter_platform_manage/model/db/setting.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:realm/realm.dart';
 
-
-
 // 事件事务回调
 typedef DBTransaction = void Function(Realm realm);
 
@@ -73,9 +71,9 @@ class DBManage extends BaseManage {
   }
 
   // 写入环境信息
-  void addEnvironment(Environment env) {
+  void addEnvironment(Environment env, {bool update = false}) {
     return write((realm) {
-      realm.add<Environment>(env);
+      realm.add<Environment>(env, update: update);
     });
   }
 

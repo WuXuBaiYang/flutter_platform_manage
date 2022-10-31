@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/pages/setting/settings/project.dart';
+import 'package:flutter_platform_manage/pages/setting/settings/system.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 
 /*
@@ -32,6 +33,8 @@ class _SettingPageState extends State<SettingPage> {
           children: const [
             // 项目相关设置信息
             ProjectSettings(),
+            // 系统相关设置
+            SystemSettings(),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
@@ -72,9 +73,26 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
         return ListTile(
           title: Text('Flutter · ${item.flutter} · ${item.channel}'),
           subtitle: Text('Dart · ${item.dart}'),
-          trailing: IconButton(
-            icon: const Icon(FluentIcons.info),
-            onPressed: () => _showEnvironmentItemInfo(item),
+          trailing: Row(
+            children: [
+              IconButton(
+                icon: const Icon(FluentIcons.refresh),
+                onPressed: () {
+                  Utils.showLoading(
+                    context,
+                    loadFuture:
+                        ScriptHandle.loadFlutterEnv(item.path).then((env) {
+                      env.primaryKey = item.primaryKey;
+                      dbManage.addEnvironment(env, update: true);
+                    }),
+                  ).then((_) => setState(() {}));
+                },
+              ),
+              IconButton(
+                icon: const Icon(FluentIcons.info),
+                onPressed: () => _showEnvironmentItemInfo(item),
+              ),
+            ],
           ),
         );
       },

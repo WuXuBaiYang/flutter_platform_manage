@@ -55,21 +55,23 @@ extension ThemeTypeExtension on ThemeType {
         ThemeType.dark: '夜间模式',
       }[this]!;
 
-  // ThemeData(
-  // typography: const Typography.raw(
-  // title: TextStyle(
-  // fontSize: 18,
-  // color: Colors.black,
-  // ),
-  // ),
-  // )
   // 获取对应的样式配置
   ThemeData get theme => <ThemeType, ThemeData>{
         ThemeType.light: ThemeData(
           brightness: Brightness.light,
+          typography: _typography,
         ),
         ThemeType.dark: ThemeData(
           brightness: Brightness.dark,
+          typography: _typography,
         ),
       }[this]!;
+
+  // 获取字体样式
+  Typography? get _typography => const Typography.raw(
+        title: TextStyle(
+          fontSize: 18,
+          color: Colors.black,
+        ),
+      );
 }
