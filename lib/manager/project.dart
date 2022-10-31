@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-
-import '../common/manage.dart';
+import 'package:flutter_platform_manage/common/manage.dart';
 
 /*
 * 项目管理

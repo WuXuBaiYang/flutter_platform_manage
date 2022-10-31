@@ -4,7 +4,7 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
-import 'package:flutter_platform_manage/pages/setting/setting.dart';
+import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
 
 /*

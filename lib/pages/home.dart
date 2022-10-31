@@ -4,7 +4,7 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/pages/project/index.dart';
 import 'package:flutter_platform_manage/pages/package_record.dart';
-import 'package:flutter_platform_manage/pages/setting/setting.dart';
+import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
 import 'package:window_manager/window_manager.dart';

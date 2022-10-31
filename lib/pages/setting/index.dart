@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/pages/setting/project_settings.dart';
+import 'package:flutter_platform_manage/pages/setting/settings/project.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 
 /*

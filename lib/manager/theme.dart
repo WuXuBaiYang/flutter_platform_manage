@@ -54,6 +54,7 @@ extension ThemeTypeExtension on ThemeType {
         ThemeType.light: '日间模式',
         ThemeType.dark: '夜间模式',
       }[this]!;
+
   // ThemeData(
   // typography: const Typography.raw(
   // title: TextStyle(
