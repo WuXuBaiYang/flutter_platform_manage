@@ -81,14 +81,18 @@ class AndroidPlatform extends BasePlatform {
     List<ProjectIcon> icons = [];
     // 遍历目录下符合条件的图标
     for (var resIt in Directory(_appResPath).listSync()) {
-      if (resIt.path.contains(paths.first)) {
-        for (var iconIt in Directory(resIt.path).listSync()) {
+      final path = resIt.path;
+      final start = path.lastIndexOf(r'-');
+      final type = start != -1 ? path.substring(start + 1) : '';
+      if (path.contains(paths.first)) {
+        for (var iconIt in Directory(path).listSync()) {
           if (iconIt.path.contains(paths.last)) {
             // 添加图片信息
             final file = File(iconIt.path);
             icons.add(ProjectIcon(
               size: await Utils.loadImageSize(file),
               src: file.path,
+              type: type,
             ));
             break;
           }
