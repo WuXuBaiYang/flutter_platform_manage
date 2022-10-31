@@ -7,6 +7,7 @@ import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -128,6 +129,16 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
     );
   }
 
+  // 图标所需最小文件尺寸对照表
+  final _minFileSizeMap = <PlatformType, Size>{
+    PlatformType.android: const Size.square(192),
+    PlatformType.ios: const Size.square(1024),
+    PlatformType.web: const Size.square(512),
+    PlatformType.linux: const Size.square(1024),
+    PlatformType.macos: const Size.square(1024),
+    PlatformType.windows: const Size.square(256),
+  };
+
   // 构建应用图标编辑项
   Widget buildAppLogo() {
     final info = widget.logic.platformInfo;
@@ -146,7 +157,20 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
             padding: EdgeInsets.only(top: 8),
             child: Icon(FluentIcons.settings),
           ),
-          onPressed: () {},
+          onPressed: () {
+            final info = widget.logic.platformInfo;
+            ProjectLogoDialog.show(
+              context,
+              iconsMap: {
+                info.type.name: info.projectIcons,
+              },
+              minFileSize: _minFileSizeMap[info.type]!,
+            ).then((v) {
+              if (v ?? false) {
+                Utils.showSnack(context, '图标修改成功');
+              }
+            });
+          },
         ),
       ),
     );
