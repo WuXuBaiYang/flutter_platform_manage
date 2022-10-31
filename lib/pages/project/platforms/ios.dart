@@ -121,10 +121,12 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
   // 构建权限管理头部
   Widget _buildPermissionManageHeader(
       FormFieldState<List<PermissionItemModel>> f, bool expanded) {
-    return ListTile(
-      leading: const Text('权限管理'),
-      trailing: Row(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
         children: [
+          const Text('权限管理'),
+          const Spacer(),
           IconButton(
             icon: Icon(expanded
                 ? FluentIcons.chevron_fold10
