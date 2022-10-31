@@ -49,16 +49,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<ThemeEvent>(
       initialData: ThemeEvent(
-        themeData: themeManage.currentTheme,
+        themeType: themeManage.currentType,
       ),
       stream: eventManage.on<ThemeEvent>(),
-      builder: (c, snap) => FluentApp(
-        debugShowCheckedModeBanner: debugMode,
-        navigatorKey: jRouter.navigateKey,
-        routes: RoutePath.routeMap,
-        theme: snap.data?.themeData,
-        home: const HomePage(),
-      ),
+      builder: (_, snap) {
+        final themeType = snap.data?.themeType;
+        return FluentApp(
+          debugShowCheckedModeBanner: debugMode,
+          navigatorKey: jRouter.navigateKey,
+          routes: RoutePath.routeMap,
+          theme: themeType?.theme,
+          home: const HomePage(),
+        );
+      },
     );
   }
 }

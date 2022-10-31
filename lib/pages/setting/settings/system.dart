@@ -1,4 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/manager/event.dart';
+import 'package:flutter_platform_manage/manager/theme.dart';
+import 'package:flutter_platform_manage/model/event/theme.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 
 /*
@@ -20,5 +23,47 @@ class SystemSettings extends StatefulWidget {
 */
 class _SystemSettingsState extends BaseSettingsState<SystemSettings> {
   @override
-  List<Widget> get loadSettingList => [];
+  List<Widget> get loadSettingList => [
+        _buildAppTheme(),
+      ];
+
+  // 构建应用主题颜色
+  Widget _buildAppTheme() {
+    return StreamBuilder<ThemeEvent>(
+      initialData: ThemeEvent(
+        themeType: themeManage.currentType,
+      ),
+      stream: eventManage.on<ThemeEvent>(),
+      builder: (_, snap) {
+        final themeType = snap.data?.themeType;
+        final isDayLight = themeType?.isDayLight ?? true;
+        return buildItem(
+          child: Button(
+            style: ButtonStyle(
+              padding: ButtonState.all(
+                const EdgeInsets.all(14),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(themeType?.nameCN ?? ''),
+                const Spacer(),
+                ToggleSwitch(
+                  checked: isDayLight,
+                  onChanged: (v) {
+                    final type = v ? ThemeType.light : ThemeType.dark;
+                    themeManage.switchTheme(type);
+                  },
+                ),
+              ],
+            ),
+            onPressed: () {
+              final type = !isDayLight ? ThemeType.light : ThemeType.dark;
+              themeManage.switchTheme(type);
+            },
+          ),
+        );
+      },
+    );
+  }
 }

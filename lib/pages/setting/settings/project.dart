@@ -39,7 +39,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
       builder: (_, snap) {
         if (snap.hasData) {
           return buildItem(
-            Expander(
+            child: Expander(
               trailing: IconButton(
                 icon: const Icon(FluentIcons.add),
                 onPressed: () {
@@ -124,7 +124,7 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
   // 构建应用源码说明文档
   Widget _buildAppSourceInfo() {
     return buildItem(
-      Button(
+      child: Button(
         style: ButtonStyle(
           padding: ButtonState.all(
             const EdgeInsets.all(14),

@@ -22,17 +22,20 @@ class ThemeManage extends BaseManage {
   // 获取主色
   Color get primaryColor => currentTheme.activeColor;
 
-  // 当前样式
-  ThemeData get currentTheme {
+  // 当前类型
+  ThemeType get currentType {
     final index = cacheManage.getInt(_defaultThemeCacheKey);
-    return ThemeType.values[index ?? 0].theme;
+    return ThemeType.values[index ?? 0];
   }
+
+  // 当前样式
+  ThemeData get currentTheme => currentType.theme;
 
   // 切换默认样式
   Future<bool> switchTheme(ThemeType type) async {
     final result = await cacheManage.setInt(_defaultThemeCacheKey, type.index);
     eventManage.fire(ThemeEvent(
-      themeData: type.theme,
+      themeType: type,
     ));
     return result;
   }
@@ -49,6 +52,9 @@ enum ThemeType {
 
 // 样式枚举扩展
 extension ThemeTypeExtension on ThemeType {
+  // 判断当前状态是否为日间模式
+  bool get isDayLight => this == ThemeType.light;
+
   // 样式中文名
   String get nameCN => <ThemeType, String>{
         ThemeType.light: '日间模式',
@@ -68,10 +74,10 @@ extension ThemeTypeExtension on ThemeType {
       }[this]!;
 
   // 获取字体样式
-  Typography? get _typography => const Typography.raw(
+  Typography? get _typography => Typography.raw(
         title: TextStyle(
           fontSize: 18,
-          color: Colors.black,
+          color: isDayLight ? Colors.black : Colors.white,
         ),
       );
 }

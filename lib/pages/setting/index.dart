@@ -34,6 +34,7 @@ class _SettingPageState extends State<SettingPage> {
             // 项目相关设置信息
             ProjectSettings(),
             // 系统相关设置
+            SizedBox(height: 8),
             SystemSettings(),
           ],
         ),
@@ -63,7 +64,7 @@ abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
   List<Widget> get loadSettingList;
 
   // 构建设置项基础结构
-  Widget buildItem(Widget child) {
+  Widget buildItem({required Widget child}) {
     return CardItem(child: child);
   }
 }
