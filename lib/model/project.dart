@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter_platform_manage/common/file_path.dart';
-import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';

@@ -1,9 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/manager/db_manage.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
-import 'package:flutter_platform_manage/widgets/flyout_message.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';

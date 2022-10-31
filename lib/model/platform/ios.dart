@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter_platform_manage/common/file_path.dart';
-import 'package:flutter_platform_manage/manager/permission_manage.dart';
+import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';

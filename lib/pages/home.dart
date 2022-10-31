@@ -2,8 +2,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
-import 'package:flutter_platform_manage/pages/project/list_page.dart';
-import 'package:flutter_platform_manage/pages/record/package_record.dart';
+import 'package:flutter_platform_manage/pages/project/index.dart';
+import 'package:flutter_platform_manage/pages/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/setting.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> with WindowListener {
         PaneItem(
           icon: const Icon(FluentIcons.project_management),
           title: const Text('项目管理'),
-          body: const ProjectListPage(),
+          body: const ProjectPage(),
         ),
         PaneItem(
           icon: const Icon(FluentIcons.packages),

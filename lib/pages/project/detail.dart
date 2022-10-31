@@ -1,8 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
-import 'package:flutter_platform_manage/manager/project_manage.dart';
-import 'package:flutter_platform_manage/manager/router_manage.dart';
+import 'package:flutter_platform_manage/manager/project.dart';
+import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/project/menu.dart';
@@ -17,12 +17,12 @@ import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'platforms/android_page.dart';
-import 'platforms/ios_page.dart';
-import 'platforms/linux_page.dart';
-import 'platforms/macos_page.dart';
-import 'platforms/web_page.dart';
-import 'platforms/win_page.dart';
+import 'platforms/android.dart';
+import 'platforms/ios.dart';
+import 'platforms/linux.dart';
+import 'platforms/macos.dart';
+import 'platforms/web.dart';
+import 'platforms/win.dart';
 
 /*
 * 项目详情页

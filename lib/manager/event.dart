@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_platform_manage/common/manage.dart';
-import 'package:flutter_platform_manage/model/event/base_event.dart';
+import 'package:flutter_platform_manage/model/event/event.dart';
 import 'package:flutter_platform_manage/utils/event_bus.dart';
 
 /*

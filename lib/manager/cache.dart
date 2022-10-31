@@ -1,23 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../common/manage.dart';
 
 /*
 * 缓存管理
 * @author wuxubaiyang
 * @Time 2022/3/29 10:29
 */
-class JCacheManage extends BaseManage {
+class CacheManage extends BaseManage {
   // 时效字段后缀
   final String _expirationSuffix = 'expiration';
 
-  static final JCacheManage _instance = JCacheManage._internal();
+  static final CacheManage _instance = CacheManage._internal();
 
-  factory JCacheManage() => _instance;
+  factory CacheManage() => _instance;
 
-  JCacheManage._internal();
+  CacheManage._internal();
 
   // sp存储方法
   late SharedPreferences _sp;
@@ -177,4 +177,4 @@ class JCacheManage extends BaseManage {
 }
 
 // 单例调用
-final jCache = JCacheManage();
+final cacheManage = CacheManage();

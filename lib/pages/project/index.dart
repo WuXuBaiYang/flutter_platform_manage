@@ -2,9 +2,9 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
-import 'package:flutter_platform_manage/manager/db_manage.dart';
-import 'package:flutter_platform_manage/manager/project_manage.dart';
-import 'package:flutter_platform_manage/manager/router_manage.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
+import 'package:flutter_platform_manage/manager/project.dart';
+import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
@@ -20,25 +20,25 @@ import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
-* 项目列表页
+* 项目页
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class ProjectListPage extends StatefulWidget {
-  const ProjectListPage({Key? key}) : super(key: key);
+class ProjectPage extends StatefulWidget {
+  const ProjectPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ProjectListPageState();
+  State<StatefulWidget> createState() => _ProjectPageState();
 }
 
 /*
-* 项目列表页-状态
+* 项目页-状态
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
+class _ProjectPageState extends State<ProjectPage> with WindowListener {
   // 逻辑管理
-  final _logic = _ProjectListPageLogic();
+  final _logic = _ProjectPageLogic();
 
   @override
   void initState() {
@@ -258,11 +258,11 @@ class _ProjectListPageState extends State<ProjectListPage> with WindowListener {
 }
 
 /*
-* 项目列表页-逻辑
+* 项目页-逻辑
 * @author wuxubaiyang
 * @Time 2022/10/27 14:33
 */
-class _ProjectListPageLogic extends BaseLogic {
+class _ProjectPageLogic extends BaseLogic {
   // 异步加载控制器
   final controller = CacheFutureBuilderController<List<ProjectModel>>();
 
