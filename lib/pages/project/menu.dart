@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
+import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
@@ -41,7 +41,7 @@ class ProjectMenu {
               label: const Text('修改版本号'),
               onPressed: () => ProjectVersionDialog.show(
                 context,
-                projectModel: projectModel,
+                initialProjectInfo: projectModel,
               ).then((v) {
                 if (null != v) controller.refreshValue();
               }),
@@ -51,7 +51,7 @@ class ProjectMenu {
               label: const Text('修改项目名称'),
               onPressed: () => ProjectReNameDialog.show(
                 context,
-                projectModel: projectModel,
+                initialProjectInfo: projectModel,
               ).then((v) {
                 if (null != v) controller.refreshValue();
               }),

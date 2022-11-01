@@ -21,17 +21,19 @@ class ValueListenableBuilder2<A, B> extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<A>(
-        valueListenable: first,
-        builder: (_, a, __) {
-          return ValueListenableBuilder<B>(
-            valueListenable: second,
-            builder: (context, b, __) {
-              return builder(context, a, b, child);
-            },
-          );
-        },
-      );
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<A>(
+      valueListenable: first,
+      builder: (_, a, __) {
+        return ValueListenableBuilder<B>(
+          valueListenable: second,
+          builder: (context, b, __) {
+            return builder(context, a, b, child);
+          },
+        );
+      },
+    );
+  }
 }
 
 /*
@@ -57,20 +59,22 @@ class ValueListenableBuilder3<A, B, C> extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<A>(
-        valueListenable: first,
-        builder: (_, a, __) {
-          return ValueListenableBuilder<B>(
-            valueListenable: second,
-            builder: (context, b, __) {
-              return ValueListenableBuilder<C>(
-                valueListenable: third,
-                builder: (context, c, __) {
-                  return builder(context, a, b, c, child);
-                },
-              );
-            },
-          );
-        },
-      );
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<A>(
+      valueListenable: first,
+      builder: (_, a, __) {
+        return ValueListenableBuilder<B>(
+          valueListenable: second,
+          builder: (context, b, __) {
+            return ValueListenableBuilder<C>(
+              valueListenable: third,
+              builder: (context, c, __) {
+                return builder(context, a, b, c, child);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 }

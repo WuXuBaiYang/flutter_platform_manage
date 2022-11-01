@@ -7,7 +7,7 @@ import 'package:flutter_platform_manage/manager/project.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/cache_future_builder.dart';
+import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
@@ -181,7 +181,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
             Navigator.pop(context);
             ProjectReNameDialog.show(
               context,
-              projectModel: item,
+              initialProjectInfo: item,
             ).then((v) {
               if (null != v) _logic.controller.refreshValue();
             });
@@ -197,7 +197,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
             Navigator.pop(context);
             ProjectVersionDialog.show(
               context,
-              projectModel: item,
+              initialProjectInfo: item,
             ).then((v) {
               if (null != v) _logic.controller.refreshValue();
             });
