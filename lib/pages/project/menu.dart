@@ -101,7 +101,7 @@ class ProjectMenu {
               label: const Text('编辑'),
               onPressed: () => ProjectImportDialog.show(
                 context,
-                project: projectModel.project,
+                initialProject: projectModel.project,
               ).then((v) {
                 if (null != v) controller.refreshValue();
               }),

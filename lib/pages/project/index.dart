@@ -243,7 +243,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
   void _showModifyProjectDialog(ProjectModel item) {
     ProjectImportDialog.show(
       context,
-      project: item.project,
+      initialProject: item.project,
     ).then((v) {
       if (null != v) _logic.controller.refreshValue();
     });

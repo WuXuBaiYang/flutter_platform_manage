@@ -26,33 +26,39 @@ class PlatformTagGroup extends StatelessWidget {
       spacing: tagSize.gapSize,
       runSpacing: tagSize.gapSize,
       children: platforms.map<Widget>((e) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset(
-                e.type.platformImage,
-                color: Colors.white,
-                width: tagSize.size,
-                height: tagSize.size,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                e.type.name,
-                style: TextStyle(
-                  fontSize: tagSize.size,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        );
+        return _buildTagItem(e);
       }).toList(),
+    );
+  }
+
+  // 构建标签子项
+  Widget _buildTagItem(BasePlatform platform) {
+    final type = platform.type;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            type.platformImage,
+            color: Colors.white,
+            width: tagSize.size,
+            height: tagSize.size,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            type.name,
+            style: TextStyle(
+              fontSize: tagSize.size,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

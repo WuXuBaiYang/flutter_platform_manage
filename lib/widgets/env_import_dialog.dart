@@ -132,8 +132,8 @@ class _EnvImportDialogLogic extends BaseLogic {
         errTextController.setValue('已存在相同环境');
         return;
       }
-      final env = await ScriptHandle.loadFlutterEnv(path);
       envPathController.text = path;
+      final env = await ScriptHandle.loadFlutterEnv(path);
       errTextController.setValue(null);
       envController.setValue(env);
     } catch (e) {
