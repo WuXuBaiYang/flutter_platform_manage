@@ -142,7 +142,7 @@ class _PlatformAndroidPageState
               PermissionImportDialog.show(
                 context,
                 platformType: PlatformType.android,
-                permissions: f.value,
+                initialPermissions: f.value,
               ).then((v) {
                 if (null != v) {
                   setState(() => widget.logic.platformInfo.permissions = v);

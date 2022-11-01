@@ -75,37 +75,38 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
     return ContentDialog(
       title: Row(
         children: [
-          Icon(widget.icon ?? FluentIcons.warning, color: Colors.red),
+          Icon(
+            widget.icon ?? FluentIcons.warning,
+            color: Colors.red,
+          ),
           const SizedBox(width: 8),
-          Text(widget.title ?? '操作警告', style: TextStyle(color: Colors.red)),
+          Text(
+            widget.title ?? '操作警告',
+            style: TextStyle(color: Colors.red),
+          ),
         ],
       ),
       content: Text(widget.message),
-      actions: actions,
+      actions: _actions,
     );
   }
 
   // 动态加载操作按钮集合
-  List<Widget> get actions {
-    var actions = <Widget>[
-      Button(
-        child: const Text('取消'),
-        onPressed: () => Navigator.maybePop(context),
-      ),
-      FilledButton(
-        style: ButtonStyle(
-          backgroundColor: ButtonState.all(Colors.red),
+  List<Widget> get _actions => [
+        Button(
+          child: const Text('取消'),
+          onPressed: () => Navigator.maybePop(context),
         ),
-        child: Text(widget.confirm ?? '确认'),
-        onPressed: () {
-          var result = widget.onConfirmTap();
-          Navigator.pop<T>(context, result);
-        },
-      ),
-    ];
-    if (null != widget.middle) {
-      actions.insert(1, widget.middle!);
-    }
-    return actions;
-  }
+        if (widget.middle != null) widget.middle!,
+        FilledButton(
+          style: ButtonStyle(
+            backgroundColor: ButtonState.all(Colors.red),
+          ),
+          child: Text(widget.confirm ?? '确认'),
+          onPressed: () {
+            var result = widget.onConfirmTap();
+            Navigator.pop<T>(context, result);
+          },
+        ),
+      ];
 }

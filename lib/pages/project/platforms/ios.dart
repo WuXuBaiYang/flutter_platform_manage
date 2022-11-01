@@ -140,7 +140,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
               PermissionImportDialog.show(
                 context,
                 platformType: PlatformType.ios,
-                permissions: f.value,
+                initialPermissions: f.value,
               ).then((v) {
                 if (null != v) {
                   setState(() => widget.logic.platformInfo.permissions = v);

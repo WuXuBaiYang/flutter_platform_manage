@@ -55,6 +55,8 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
                   header: 'flutter路径',
                   placeholder: '选择flutter根目录',
                   readOnly: true,
+                  minLines: 1,
+                  maxLines: 5,
                   suffix: Button(
                     onPressed: _logic.doPathPicker,
                     child: const Text('选择'),

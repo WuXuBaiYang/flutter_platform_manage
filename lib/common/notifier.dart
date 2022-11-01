@@ -60,6 +60,9 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
     return null;
   }
 
+  // 判断数据是否存在
+  bool contains(V item) => value.contains(item);
+
   // 添加数据
   void addValue(List<V> newValue, {bool notify = true}) {
     value.addAll(newValue);

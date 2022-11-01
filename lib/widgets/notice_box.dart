@@ -52,11 +52,14 @@ class NoticeBox extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          buildBoxImage(),
+          _buildBoxImage(),
           const SizedBox(height: 8),
           Text(
             message,
-            style: TextStyle(color: color, fontSize: 12),
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
@@ -64,7 +67,7 @@ class NoticeBox extends StatelessWidget {
   }
 
   // 构建盒子提示图片
-  Widget buildBoxImage() {
+  Widget _buildBoxImage() {
     var size = boxSize.size;
     return SvgPicture.asset(svgAssetsPath,
         color: color, width: size, height: size);
