@@ -187,4 +187,59 @@ class Utils {
     }
     return false;
   }
+
+  // 选择目录路径
+  static Future<String?> pickPath({
+    String? dialogTitle,
+    bool lockParentWindow = false,
+    String? initialDirectory,
+  }) async {
+    final result = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: dialogTitle,
+      lockParentWindow: lockParentWindow,
+      initialDirectory: initialDirectory,
+    );
+    return _handleFilePath(result);
+  }
+
+  // 选择文件路径
+  static Future<List<String?>> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    List<String>? allowedExtensions,
+    bool allowCompression = true,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+    bool lockParentWindow = false,
+  }) async {
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle: dialogTitle,
+      initialDirectory: initialDirectory,
+      allowedExtensions: allowedExtensions,
+      allowCompression: allowCompression,
+      allowMultiple: allowMultiple,
+      withData: withData,
+      withReadStream: withReadStream,
+      lockParentWindow: lockParentWindow,
+    );
+    final paths = <String?>[];
+    if (result != null && result.count != 0) {
+      for (var it in result.paths) {
+        paths.add(_handleFilePath(it));
+      }
+    }
+    return paths;
+  }
+
+  // 处理所选文件路径
+  static String? _handleFilePath(String? path) {
+    if (path == null || path.isEmpty) return path;
+    // 处理macos环境下的特殊情况
+    if (Platform.isMacOS) {
+      final i = path.indexOf(r'/User');
+      if (i != -1) return path.substring(i);
+    }
+    return path;
+  }
 }

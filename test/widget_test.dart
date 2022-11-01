@@ -17,4 +17,9 @@ void main() {
       }
     }
   });
+  test('测试路径替换', () {
+    var a = '/volaaa/ssxxx/User/xxx/qqq/flutter';
+    a = a.substring(a.indexOf(r'/User'));
+    print(a);
+  });
 }

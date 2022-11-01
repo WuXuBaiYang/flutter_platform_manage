@@ -38,27 +38,7 @@ class AppPage extends StatelessWidget {
     return NavigationView(
       appBar: NavigationAppBar(
         automaticallyImplyLeading: false,
-        title: DragToMoveArea(
-          child: Row(
-            children: [
-              Visibility(
-                visible: showBack,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: IconButton(
-                    icon: const Icon(FluentIcons.back),
-                    onPressed: () => Navigator.maybePop(context),
-                  ),
-                ),
-              ),
-              leading ?? const SizedBox(),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(title),
-              )
-            ],
-          ),
-        ),
+        title: _buildDragToMoveArea(context),
         actions: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [Spacer(), WindowButtons()],
@@ -66,6 +46,31 @@ class AppPage extends StatelessWidget {
       ),
       pane: pane,
       content: content,
+    );
+  }
+
+  // 构建头部拖动条
+  Widget _buildDragToMoveArea(BuildContext context) {
+    return DragToMoveArea(
+      child: Row(
+        children: [
+          Visibility(
+            visible: showBack,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: const Icon(FluentIcons.back),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ),
+          ),
+          leading ?? const SizedBox(),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(title),
+          )
+        ],
+      ),
     );
   }
 }
