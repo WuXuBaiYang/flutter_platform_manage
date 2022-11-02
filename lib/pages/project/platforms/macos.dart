@@ -8,11 +8,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformMacOSPage extends BasePlatformPage<_PlatformMacOSPageLogic> {
-  PlatformMacOSPage({
+class PlatformMacOSPage extends BasePlatformPage<MacOSPlatform> {
+  const PlatformMacOSPage({
     super.key,
-    required MacOSPlatform platformInfo,
-  }) : super(logic: _PlatformMacOSPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformMacOSPageState();
@@ -23,7 +23,12 @@ class PlatformMacOSPage extends BasePlatformPage<_PlatformMacOSPageLogic> {
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformMacOSPageState extends BasePlatformPageState<PlatformMacOSPage> {
+class _PlatformMacOSPageState
+    extends BasePlatformPageState<PlatformMacOSPage, _PlatformMacOSPageLogic> {
+  @override
+  _PlatformMacOSPageLogic initialLogic() =>
+      _PlatformMacOSPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [];

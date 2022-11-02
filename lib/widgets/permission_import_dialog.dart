@@ -197,6 +197,12 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
       onPressed: () => _logic.permissionSelected(checked, item),
     );
   }
+
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
+  }
 }
 
 /*

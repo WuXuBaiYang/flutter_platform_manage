@@ -7,12 +7,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformLinuxPage
-    extends BasePlatformPage<_PlatformLinuxPageLogic> {
-  PlatformLinuxPage({
+class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
+  const PlatformLinuxPage({
     super.key,
-    required LinuxPlatform platformInfo,
-  }) : super(logic: _PlatformLinuxPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformLinuxPageState();
@@ -23,7 +22,12 @@ class PlatformLinuxPage
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformLinuxPageState extends BasePlatformPageState<PlatformLinuxPage> {
+class _PlatformLinuxPageState
+    extends BasePlatformPageState<PlatformLinuxPage, _PlatformLinuxPageLogic> {
+  @override
+  _PlatformLinuxPageLogic initialLogic() =>
+      _PlatformLinuxPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [];

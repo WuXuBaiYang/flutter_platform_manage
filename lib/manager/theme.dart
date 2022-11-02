@@ -19,9 +19,6 @@ class ThemeManage extends BaseManage {
 
   ThemeManage._internal();
 
-  // 获取主色
-  Color get primaryColor => currentTheme.activeColor;
-
   // 当前类型
   ThemeType get currentType {
     final index = cacheManage.getInt(_defaultThemeCacheKey);

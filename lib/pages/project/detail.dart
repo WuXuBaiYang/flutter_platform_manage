@@ -116,7 +116,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: ProjectLogo(projectInfo: item),
+          leading: ProjectLogo(
+            projectIcon: item.projectIcon,
+          ),
           title: Text(
             !item.exist ? '项目信息丢失' : item.showTitle,
             style: TextStyle(

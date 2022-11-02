@@ -310,6 +310,12 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
       },
     );
   }
+
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
+  }
 }
 
 /*

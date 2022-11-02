@@ -1,10 +1,12 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,12 +30,15 @@ class ProjectMenu {
           primaryItems: [
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text('打开根目录'),
-              onPressed: () async {
-                final uri = Uri.parse('file:${projectModel.project.path}');
-                if (!await launchUrl(uri)) {
-                  Utils.showSnack(context, '目录启动失败');
-                }
+              label: const Text('替换图标'),
+              onPressed: () {
+                ProjectLogoDialog.show(
+                  context,
+                  iconsMap: projectModel.platformMap
+                      .map<PlatformType, List<ProjectIcon>>(
+                          (k, v) => MapEntry(k, v.projectIcons)),
+                  minFileSize: const Size.square(1024),
+                );
               },
             ),
             CommandBarButton(
@@ -58,21 +63,17 @@ class ProjectMenu {
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text('修改应用名称'),
-              onPressed: () {
-                Utils.showSnack(context, '开发中');
+              label: const Text('打开根目录'),
+              onPressed: () async {
+                final uri = Uri.parse('file:${projectModel.project.path}');
+                if (!await launchUrl(uri)) {
+                  Utils.showSnack(context, '目录启动失败');
+                }
               },
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text('应用打包'),
-              onPressed: () {
-                Utils.showSnack(context, '开发中');
-              },
-            ),
-            CommandBarButton(
-              icon: const Icon(FluentIcons.access_logo),
-              label: const Text('替换图标'),
               onPressed: () {
                 Utils.showSnack(context, '开发中');
               },
@@ -86,14 +87,8 @@ class ProjectMenu {
               icon: const Icon(FluentIcons.refresh),
               label: const Text('刷新'),
               onPressed: () {
-                ImportantOptionDialog.show(
-                  context,
-                  message: '未保存内容会在刷新后丢失',
-                  onConfirmTap: () {
-                    controller.refreshValue();
-                    Utils.showSnack(context, '项目信息已刷新');
-                  },
-                );
+                controller.refreshValue();
+                Utils.showSnack(context, '项目信息已刷新');
               },
             ),
             CommandBarButton(

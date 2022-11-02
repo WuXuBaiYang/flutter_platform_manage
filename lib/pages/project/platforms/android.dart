@@ -15,11 +15,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformAndroidPage extends BasePlatformPage<_PlatformAndroidPageLogic> {
-  PlatformAndroidPage({
+class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
+  const PlatformAndroidPage({
     super.key,
-    required AndroidPlatform platformInfo,
-  }) : super(logic: _PlatformAndroidPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformAndroidPageState();
@@ -30,8 +30,12 @@ class PlatformAndroidPage extends BasePlatformPage<_PlatformAndroidPageLogic> {
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformAndroidPageState
-    extends BasePlatformPageState<PlatformAndroidPage> {
+class _PlatformAndroidPageState extends BasePlatformPageState<
+    PlatformAndroidPage, _PlatformAndroidPageLogic> {
+  @override
+  _PlatformAndroidPageLogic initialLogic() =>
+      _PlatformAndroidPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [
@@ -44,7 +48,7 @@ class _PlatformAndroidPageState
 
   // 构建应用名称编辑项
   Widget _buildAppName() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '应用名称（安装之后的名称）',
@@ -71,7 +75,7 @@ class _PlatformAndroidPageState
 
   // 构建应用包名编辑项
   Widget _buildPackageName() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '应用包名',
@@ -98,9 +102,9 @@ class _PlatformAndroidPageState
 
   // 构建权限管理项
   Widget _buildPermissionManage() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return ValueListenableBuilder<bool>(
-      valueListenable: widget.logic.permissionExpand,
+      valueListenable: logic.permissionExpand,
       builder: (_, expanded, __) {
         return buildItem(
           times: expanded ? 6 : 4,
@@ -133,7 +137,7 @@ class _PlatformAndroidPageState
             icon: Icon(expanded
                 ? FluentIcons.chevron_fold10
                 : FluentIcons.chevron_unfold10),
-            onPressed: () => widget.logic.permissionExpand.setValue(!expanded),
+            onPressed: () => logic.permissionExpand.setValue(!expanded),
           ),
           const SizedBox(width: 8),
           Button(
@@ -145,7 +149,7 @@ class _PlatformAndroidPageState
                 initialPermissions: f.value,
               ).then((v) {
                 if (null != v) {
-                  setState(() => widget.logic.platformInfo.permissions = v);
+                  setState(() => logic.platformInfo.permissions = v);
                 }
               });
             },

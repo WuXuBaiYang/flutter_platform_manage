@@ -8,11 +8,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformWinPage extends BasePlatformPage<_PlatformWinPageLogic> {
+class PlatformWinPage extends BasePlatformPage<WindowsPlatform> {
   PlatformWinPage({
     super.key,
-    required WindowsPlatform platformInfo,
-  }) : super(logic: _PlatformWinPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformWinPageState();
@@ -23,7 +23,12 @@ class PlatformWinPage extends BasePlatformPage<_PlatformWinPageLogic> {
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformWinPageState extends BasePlatformPageState<PlatformWinPage> {
+class _PlatformWinPageState
+    extends BasePlatformPageState<PlatformWinPage, _PlatformWinPageLogic> {
+  @override
+  _PlatformWinPageLogic initialLogic() =>
+      _PlatformWinPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [];

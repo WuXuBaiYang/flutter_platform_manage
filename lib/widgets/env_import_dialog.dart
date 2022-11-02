@@ -86,6 +86,12 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
       },
     );
   }
+
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
+  }
 }
 
 /*

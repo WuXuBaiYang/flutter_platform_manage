@@ -15,11 +15,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformIosPage extends BasePlatformPage<_PlatformIosPageLogic> {
-  PlatformIosPage({
+class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
+  const PlatformIosPage({
     super.key,
-    required IOSPlatform platformInfo,
-  }) : super(logic: _PlatformIosPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformIosPageState();
@@ -30,7 +30,12 @@ class PlatformIosPage extends BasePlatformPage<_PlatformIosPageLogic> {
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
+class _PlatformIosPageState
+    extends BasePlatformPageState<PlatformIosPage, _PlatformIosPageLogic> {
+  @override
+  _PlatformIosPageLogic initialLogic() =>
+      _PlatformIosPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [
@@ -43,7 +48,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建应用名编辑项
   Widget _buildBundleName() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '应用名称（BundleName）',
@@ -73,7 +78,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建展示应用名编辑项
   Widget _buildBundleDisplayName() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return buildItem(
       child: InfoLabel(
         label: '展示应用名称（BundleDisplayName）',
@@ -97,9 +102,9 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
 
   // 构建权限管理项
   Widget _buildPermissionManage() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     return ValueListenableBuilder<bool>(
-      valueListenable: widget.logic.permissionExpand,
+      valueListenable: logic.permissionExpand,
       builder: (_, expanded, __) {
         return buildItem(
           times: expanded ? 6 : 4,
@@ -131,7 +136,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
             icon: Icon(expanded
                 ? FluentIcons.chevron_fold10
                 : FluentIcons.chevron_unfold10),
-            onPressed: () => widget.logic.permissionExpand.setValue(!expanded),
+            onPressed: () => logic.permissionExpand.setValue(!expanded),
           ),
           const SizedBox(width: 8),
           Button(
@@ -143,7 +148,7 @@ class _PlatformIosPageState extends BasePlatformPageState<PlatformIosPage> {
                 initialPermissions: f.value,
               ).then((v) {
                 if (null != v) {
-                  setState(() => widget.logic.platformInfo.permissions = v);
+                  setState(() => logic.platformInfo.permissions = v);
                 }
               });
             },

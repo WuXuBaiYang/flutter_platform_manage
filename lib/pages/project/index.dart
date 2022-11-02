@@ -145,7 +145,9 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
   // 构建项目列表子项内容
   Widget _buildProjectGridItemContent(ProjectModel item) {
     return ListTile(
-      leading: ProjectLogo(projectInfo: item),
+      leading: ProjectLogo(
+        projectIcon: item.projectIcon,
+      ),
       title: Text(
         item.showTitle,
         style: TextStyle(

@@ -8,6 +8,7 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
+import 'package:flutter_platform_manage/widgets/state.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -15,14 +16,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 * @author wuxubaiyang
 * @Time 2022-07-29 16:09:36
 */
-abstract class BasePlatformPage<T extends BasePlatformPageLogic>
-    extends StatefulWidget {
-  // 逻辑管理
-  final T logic;
+abstract class BasePlatformPage<T extends BasePlatform> extends StatefulWidget {
+  final T platformInfo;
 
   const BasePlatformPage({
     Key? key,
-    required this.logic,
+    required this.platformInfo,
   }) : super(key: key);
 }
 
@@ -31,8 +30,8 @@ abstract class BasePlatformPage<T extends BasePlatformPageLogic>
 * @author wuxubaiyang
 * @Time 2022-07-26 17:54:08
 */
-abstract class BasePlatformPageState<T extends BasePlatformPage>
-    extends State<T> {
+abstract class BasePlatformPageState<T extends BasePlatformPage,
+    C extends BasePlatformPageLogic> extends LogicState<T, C> {
   @override
   Widget build(BuildContext context) {
     final itemList = loadItemList(context);
@@ -58,7 +57,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
       padding: 0,
       title: Text(
         Utils.toBeginningOfSentenceCase(
-          '${widget.logic.platformName}平台',
+          '${logic.platformName}平台',
         ),
       ),
       commandBar: CommandBarCard(
@@ -68,7 +67,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
             CommandBarButton(
               icon: const Icon(FluentIcons.save),
               label: const Text('保存'),
-              onPressed: () => widget.logic.submit().then((v) {
+              onPressed: () => logic.submit().then((v) {
                 Utils.showSnack(context, v ? '保存成功' : '保存失败');
               }),
             )
@@ -82,16 +81,16 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
   Widget _buildForm(List<Widget> itemList) {
     return Form(
       autovalidateMode: AutovalidateMode.always,
-      key: widget.logic.formKey,
+      key: logic.formKey,
       onWillPop: () async {
-        if (widget.logic.hasChange()) {
+        if (logic.hasChange()) {
           ImportantOptionDialog.show(
             context,
-            title: '${widget.logic.platformName}平台未保存',
+            title: '${logic.platformName}平台未保存',
             message: '继续退出将丢失已编辑的信息',
             middle: Button(
               child: const Text('保存'),
-              onPressed: () => widget.logic.submit().then((v) {
+              onPressed: () => logic.submit().then((v) {
                 Navigator.pop(context);
                 if (v) Navigator.pop(context);
               }),
@@ -141,7 +140,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
 
   // 构建应用图标编辑项
   Widget buildAppLogo() {
-    final info = widget.logic.platformInfo;
+    final info = logic.platformInfo;
     final icon = info.singleIcon;
     return buildItem(
       child: CardItem(
@@ -158,11 +157,11 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
             child: Icon(FluentIcons.settings),
           ),
           onPressed: () {
-            final info = widget.logic.platformInfo;
+            final info = logic.platformInfo;
             ProjectLogoDialog.show(
               context,
               iconsMap: {
-                info.type.name: info.projectIcons,
+                info.type: info.projectIcons,
               },
               minFileSize: _minFileSizeMap[info.type]!,
             ).then((v) {
@@ -174,12 +173,6 @@ abstract class BasePlatformPageState<T extends BasePlatformPage>
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    widget.logic.dispose();
-    super.dispose();
   }
 }
 

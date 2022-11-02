@@ -129,6 +129,12 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
+  }
 }
 
 /*

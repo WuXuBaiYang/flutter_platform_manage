@@ -121,6 +121,12 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
+  }
 }
 
 /*

@@ -7,11 +7,11 @@ import 'platform.dart';
 * @author wuxubaiyang
 * @Time 2022-07-22 17:48:47
 */
-class PlatformWebPage extends BasePlatformPage<_PlatformWebPageLogic> {
-  PlatformWebPage({
+class PlatformWebPage extends BasePlatformPage<WebPlatform> {
+  const PlatformWebPage({
     super.key,
-    required WebPlatform platformInfo,
-  }) : super(logic: _PlatformWebPageLogic(platformInfo));
+    required super.platformInfo,
+  });
 
   @override
   State<StatefulWidget> createState() => _PlatformWebPageState();
@@ -22,7 +22,12 @@ class PlatformWebPage extends BasePlatformPage<_PlatformWebPageLogic> {
 * @author wuxubaiyang
 * @Time 2022-07-22 17:49:51
 */
-class _PlatformWebPageState extends BasePlatformPageState<PlatformWebPage> {
+class _PlatformWebPageState
+    extends BasePlatformPageState<PlatformWebPage, _PlatformWebPageLogic> {
+  @override
+  _PlatformWebPageLogic initialLogic() =>
+      _PlatformWebPageLogic(widget.platformInfo);
+
   @override
   List<Widget> loadItemList(BuildContext context) {
     return [];
