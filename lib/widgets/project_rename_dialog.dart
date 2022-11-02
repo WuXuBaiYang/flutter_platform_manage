@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
 * 修改项目名弹窗
@@ -41,9 +42,11 @@ class ProjectReNameDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
-  // 逻辑管理
-  late final _logic = _ProjectReNameDialogLogic(widget.initialProjectInfo);
+class _ProjectReNameDialogState
+    extends LogicState<ProjectReNameDialog, _ProjectReNameDialogLogic> {
+  @override
+  _ProjectReNameDialogLogic initLogic() =>
+      _ProjectReNameDialogLogic(widget.initialProjectInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           IconButton(
             icon: const Icon(FluentIcons.info),
             onPressed: () {
-              final projectPath = _logic.projectInfo.project.path;
+              final projectPath = logic.projectInfo.project.path;
               Utils.showSnackWithFilePath(
                 context,
                 '$projectPath/${ProjectFilePath.pubspec}',
@@ -66,7 +69,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
       content: Padding(
         padding: const EdgeInsets.only(top: 15),
         child: Form(
-          key: _logic.formKey,
+          key: logic.formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: _buildProjectName(),
         ),
@@ -77,7 +80,7 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          onPressed: () => _logic.submit(context),
+          onPressed: () => logic.submit(context),
           child: const Text('修改'),
         ),
       ],
@@ -94,13 +97,13 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
       child: StatefulBuilder(
         builder: (_, state) {
           return TextFormBox(
-            controller: _logic.nameController,
+            controller: logic.nameController,
             autofocus: true,
             suffix: Visibility(
-              visible: _logic.nameController.text.isNotEmpty,
+              visible: logic.nameController.text.isNotEmpty,
               child: IconButton(
                 icon: const Icon(FluentIcons.cancel),
-                onPressed: () => state(() => _logic.nameController.clear()),
+                onPressed: () => state(() => logic.nameController.clear()),
               ),
             ),
             onChanged: (v) => state(() {}),
@@ -109,8 +112,8 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
               return null;
             },
             onSaved: (v) {
-              if (null != v && _logic.projectInfo.name != v) {
-                _logic.projectInfo.modifyProjectName(v, autoCommit: true);
+              if (null != v && logic.projectInfo.name != v) {
+                logic.projectInfo.modifyProjectName(v, autoCommit: true);
               }
             },
             inputFormatters: [
@@ -120,12 +123,6 @@ class _ProjectReNameDialogState extends State<ProjectReNameDialog> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

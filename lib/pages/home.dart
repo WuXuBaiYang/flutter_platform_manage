@@ -6,6 +6,7 @@ import 'package:flutter_platform_manage/pages/project/index.dart';
 import 'package:flutter_platform_manage/pages/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -26,9 +27,10 @@ class HomePage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/5/12 12:49
 */
-class _HomePageState extends State<HomePage> with WindowListener {
-  // 逻辑管理
-  final _logic = _HomePageLogic();
+class _HomePageState extends LogicState<HomePage, _HomePageLogic>
+    with WindowListener {
+  @override
+  _HomePageLogic initLogic() => _HomePageLogic();
 
   @override
   void initState() {
@@ -39,14 +41,14 @@ class _HomePageState extends State<HomePage> with WindowListener {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: _logic.navigationIndex,
+      valueListenable: logic.navigationIndex,
       builder: (_, value, child) {
         return AppPage(
           title: Common.appName,
           showBack: false,
           pane: NavigationPane(
             selected: value,
-            onChanged: (v) => _logic.navigationIndex.setValue(v),
+            onChanged: (v) => logic.navigationIndex.setValue(v),
             size: const NavigationPaneSize(
               openMinWidth: 120,
               openMaxWidth: 160,
@@ -99,7 +101,6 @@ class _HomePageState extends State<HomePage> with WindowListener {
   @override
   void dispose() {
     windowManager.removeListener(this);
-    _logic.dispose();
     super.dispose();
   }
 }

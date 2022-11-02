@@ -25,7 +25,7 @@ class PlatformLinuxPage extends BasePlatformPage<LinuxPlatform> {
 class _PlatformLinuxPageState
     extends BasePlatformPageState<PlatformLinuxPage, _PlatformLinuxPageLogic> {
   @override
-  _PlatformLinuxPageLogic initialLogic() =>
+  _PlatformLinuxPageLogic initLogic() =>
       _PlatformLinuxPageLogic(widget.platformInfo);
 
   @override

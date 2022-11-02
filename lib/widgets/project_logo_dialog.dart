@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -13,27 +14,27 @@ import 'package:flutter_svg/flutter_svg.dart';
 */
 class ProjectLogoDialog extends StatefulWidget {
   // 项目图标与平台表
-  final Map<PlatformType, List<ProjectIcon>> iconsMap;
+  final Map<PlatformType, List<ProjectIcon>> initialIconsMap;
 
   // 所选图标最小尺寸
   final Size minFileSize;
 
   const ProjectLogoDialog({
     super.key,
-    required this.iconsMap,
+    required this.initialIconsMap,
     required this.minFileSize,
   });
 
   // 显示项目图标展示弹窗
   static Future<bool?> show(
     BuildContext context, {
-    required Map<PlatformType, List<ProjectIcon>> iconsMap,
+    required Map<PlatformType, List<ProjectIcon>> initialIconsMap,
     required Size minFileSize,
   }) {
     return showDialog<bool>(
       context: context,
       builder: (_) => ProjectLogoDialog(
-        iconsMap: iconsMap,
+        initialIconsMap: initialIconsMap,
         minFileSize: minFileSize,
       ),
     );
@@ -48,9 +49,11 @@ class ProjectLogoDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/10/31 11:05
 */
-class _ProjectLogoDialogState extends State<ProjectLogoDialog> {
-  // 逻辑管理
-  late final _logic = _ProjectLogoDialogLogic(widget.iconsMap);
+class _ProjectLogoDialogState
+    extends LogicState<ProjectLogoDialog, _ProjectLogoDialogLogic> {
+  @override
+  _ProjectLogoDialogLogic initLogic() =>
+      _ProjectLogoDialogLogic(widget.initialIconsMap);
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +63,16 @@ class _ProjectLogoDialogState extends State<ProjectLogoDialog> {
         maxHeight: 600,
       ),
       content: ValueListenableBuilder<int>(
-        valueListenable: _logic.indexController,
+        valueListenable: logic.indexController,
         builder: (_, index, __) {
           return TabView(
             currentIndex: index,
             showScrollButtons: false,
             tabWidthBehavior: TabWidthBehavior.sizeToContent,
             closeButtonVisibility: CloseButtonVisibilityMode.never,
-            onChanged: (i) => _logic.indexController.setValue(i),
-            tabs: _logic.iconsMap.keys.map<Tab>((e) {
-              final icons = _logic.iconsMap[e] ?? [];
+            onChanged: (i) => logic.indexController.setValue(i),
+            tabs: logic.iconsMap.keys.map<Tab>((e) {
+              final icons = logic.iconsMap[e] ?? [];
               return Tab(
                 text: Text(e.name),
                 icon: SvgPicture.asset(
@@ -105,7 +108,7 @@ class _ProjectLogoDialogState extends State<ProjectLogoDialog> {
 
   // 构建平台图标集合子项
   Widget _buildPlatformLogosItem(ProjectIcon e) {
-    var text = '${_logic.handleSize(e.size)}\n${e.type}';
+    var text = '${logic.handleSize(e.size)}\n${e.type}';
     if (e.desc.isNotEmpty) {
       text = '$text · ${e.desc}';
     }
@@ -127,12 +130,6 @@ class _ProjectLogoDialogState extends State<ProjectLogoDialog> {
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

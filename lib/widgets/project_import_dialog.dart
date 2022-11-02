@@ -10,6 +10,7 @@ import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'value_listenable_builder.dart';
 
@@ -50,10 +51,8 @@ class ProjectImportDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectImportDialogState extends State<ProjectImportDialog> {
-  // 逻辑管理
-  late final _logic = _ProjectImportDialogLogic(widget.initialProject);
-
+class _ProjectImportDialogState
+    extends LogicState<ProjectImportDialog, _ProjectImportDialogLogic> {
   // 步骤视图集合
   late final Map<String, Widget Function()> _stepsMap = {
     '选择项目': () => _buildProjectSelect(),
@@ -61,9 +60,13 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   };
 
   @override
+  _ProjectImportDialogLogic initLogic() =>
+      _ProjectImportDialogLogic(widget.initialProject);
+
+  @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: _logic.currentStepController,
+      valueListenable: logic.currentStepController,
       builder: (_, currentStep, __) {
         return ContentDialog(
           constraints: const BoxConstraints(
@@ -85,8 +88,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
                       content: Text(it),
                       onChanged: (v) {
                         if (i >= currentStep) return;
-                        _logic.currentStepController.setValue(i);
-                        _logic.projectInfoController.setValue(null);
+                        logic.currentStepController.setValue(i);
+                        logic.projectInfoController.setValue(null);
                       },
                     );
                   }),
@@ -104,7 +107,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           ),
           actions: [
             Button(
-              onPressed: _logic.previewStep(),
+              onPressed: logic.previewStep(),
               child: const Text('上一步'),
             ),
             Button(
@@ -112,7 +115,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
               onPressed: () => Navigator.maybePop(context),
             ),
             FilledButton(
-              onPressed: () => _logic.nextStep(context),
+              onPressed: () => logic.nextStep(context),
               child: Text(
                 currentStep < _stepsMap.length - 1 ? '下一步' : '导入',
               ),
@@ -125,9 +128,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
 
   // 构建步骤一，项目选择
   Widget _buildProjectSelect() {
-    final project = _logic.project;
+    final project = logic.project;
     return Form(
-      key: _logic.projectSelectKey,
+      key: logic.projectSelectKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -153,7 +156,7 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   // 构建项目路径信息
   Widget _buildProjectSelectPath(Project project) {
     return TextFormBox(
-      controller: _logic.projectPathController,
+      controller: logic.projectPathController,
       header: '项目路径',
       placeholder: '粘贴或选择项目根目录',
       onSaved: (v) {
@@ -178,9 +181,9 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
           Utils.pickPath(
                   dialogTitle: '选择项目路径',
                   lockParentWindow: true,
-                  initialDirectory: _logic.projectPathController.text)
+                  initialDirectory: logic.projectPathController.text)
               .then((v) {
-            if (null != v) _logic.projectPathController.text = v;
+            if (null != v) logic.projectPathController.text = v;
           });
         },
       ),
@@ -247,8 +250,8 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
   // 构建步骤二，项目信息查看
   Widget _buildProjectInfo() {
     return ValueListenableBuilder2<ProjectModel?, String?>(
-      first: _logic.projectInfoController,
-      second: _logic.errTextController,
+      first: logic.projectInfoController,
+      second: logic.errTextController,
       builder: (_, projectInfo, errText, __) {
         if (projectInfo == null) return const SizedBox.shrink();
         final env = projectInfo.environment;
@@ -309,12 +312,6 @@ class _ProjectImportDialogState extends State<ProjectImportDialog> {
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

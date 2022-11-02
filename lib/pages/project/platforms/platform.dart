@@ -7,8 +7,8 @@ import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
-import 'package:flutter_platform_manage/widgets/state.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -160,7 +160,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
             final info = logic.platformInfo;
             ProjectLogoDialog.show(
               context,
-              iconsMap: {
+              initialIconsMap: {
                 info.type: info.projectIcons,
               },
               minFileSize: _minFileSizeMap[info.type]!,

@@ -26,7 +26,7 @@ class PlatformMacOSPage extends BasePlatformPage<MacOSPlatform> {
 class _PlatformMacOSPageState
     extends BasePlatformPageState<PlatformMacOSPage, _PlatformMacOSPageLogic> {
   @override
-  _PlatformMacOSPageLogic initialLogic() =>
+  _PlatformMacOSPageLogic initLogic() =>
       _PlatformMacOSPageLogic(widget.platformInfo);
 
   @override

@@ -33,7 +33,7 @@ class PlatformIosPage extends BasePlatformPage<IOSPlatform> {
 class _PlatformIosPageState
     extends BasePlatformPageState<PlatformIosPage, _PlatformIosPageLogic> {
   @override
-  _PlatformIosPageLogic initialLogic() =>
+  _PlatformIosPageLogic initLogic() =>
       _PlatformIosPageLogic(widget.platformInfo);
 
   @override

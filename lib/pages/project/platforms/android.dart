@@ -33,7 +33,7 @@ class PlatformAndroidPage extends BasePlatformPage<AndroidPlatform> {
 class _PlatformAndroidPageState extends BasePlatformPageState<
     PlatformAndroidPage, _PlatformAndroidPageLogic> {
   @override
-  _PlatformAndroidPageLogic initialLogic() =>
+  _PlatformAndroidPageLogic initLogic() =>
       _PlatformAndroidPageLogic(widget.platformInfo);
 
   @override

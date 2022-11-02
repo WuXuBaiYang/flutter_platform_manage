@@ -4,5 +4,7 @@
 * @Time 2022/10/20 10:03
 */
 abstract class BaseLogic {
+  void init() {}
+
   void dispose() {}
 }

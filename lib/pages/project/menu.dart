@@ -34,7 +34,7 @@ class ProjectMenu {
               onPressed: () {
                 ProjectLogoDialog.show(
                   context,
-                  iconsMap: projectModel.platformMap
+                  initialIconsMap: projectModel.platformMap
                       .map<PlatformType, List<ProjectIcon>>(
                           (k, v) => MapEntry(k, v.projectIcons)),
                   minFileSize: const Size.square(1024),

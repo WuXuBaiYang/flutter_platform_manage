@@ -25,7 +25,7 @@ class PlatformWebPage extends BasePlatformPage<WebPlatform> {
 class _PlatformWebPageState
     extends BasePlatformPageState<PlatformWebPage, _PlatformWebPageLogic> {
   @override
-  _PlatformWebPageLogic initialLogic() =>
+  _PlatformWebPageLogic initLogic() =>
       _PlatformWebPageLogic(widget.platformInfo);
 
   @override

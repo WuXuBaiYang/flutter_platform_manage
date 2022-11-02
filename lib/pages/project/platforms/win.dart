@@ -26,7 +26,7 @@ class PlatformWinPage extends BasePlatformPage<WindowsPlatform> {
 class _PlatformWinPageState
     extends BasePlatformPageState<PlatformWinPage, _PlatformWinPageLogic> {
   @override
-  _PlatformWinPageLogic initialLogic() =>
+  _PlatformWinPageLogic initLogic() =>
       _PlatformWinPageLogic(widget.platformInfo);
 
   @override

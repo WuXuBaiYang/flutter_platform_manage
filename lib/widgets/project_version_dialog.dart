@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
 * 修改项目版本号弹窗
@@ -41,9 +42,11 @@ class ProjectVersionDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
-  // 逻辑管理
-  late final _logic = _ProjectVersionDialogLogic(widget.initialProjectInfo);
+class _ProjectVersionDialogState
+    extends LogicState<ProjectVersionDialog, _ProjectVersionDialogLogic> {
+  @override
+  _ProjectVersionDialogLogic initLogic() =>
+      _ProjectVersionDialogLogic(widget.initialProjectInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
           IconButton(
               icon: const Icon(FluentIcons.info),
               onPressed: () {
-                final projectPath = _logic.projectInfo.project.path;
+                final projectPath = logic.projectInfo.project.path;
                 Utils.showSnackWithFilePath(
                   context,
                   '$projectPath/${ProjectFilePath.pubspec}',
@@ -65,7 +68,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
       content: Padding(
         padding: const EdgeInsets.only(top: 15),
         child: Form(
-          key: _logic.formKey,
+          key: logic.formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: _buildProjectVersion(context),
         ),
@@ -76,7 +79,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          onPressed: () => _logic.submit(context),
+          onPressed: () => logic.submit(context),
           child: const Text('修改'),
         ),
       ],
@@ -91,7 +94,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
     return InfoLabel(
       label: '版本号 "${_versionRegExp.pattern}"',
       child: TextFormBox(
-        controller: _logic.versionController,
+        controller: logic.versionController,
         autofocus: true,
         autovalidateMode: AutovalidateMode.always,
         suffix: Row(
@@ -100,7 +103,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
               message: '自增版本号',
               child: IconButton(
                 icon: const Icon(FluentIcons.add_multiple),
-                onPressed: () => _logic.autoIncrement(context),
+                onPressed: () => logic.autoIncrement(context),
               ),
             ),
             Tooltip(
@@ -108,7 +111,7 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
               child: IconButton(
                 icon: const Icon(FluentIcons.reset),
                 onPressed: () =>
-                    _logic.updateInput(widget.initialProjectInfo.version),
+                    logic.updateInput(widget.initialProjectInfo.version),
               ),
             ),
           ],
@@ -119,8 +122,8 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
           return null;
         },
         onSaved: (v) {
-          if (null != v && _logic.projectInfo.version != v) {
-            _logic.projectInfo.modifyProjectVersion(v, autoCommit: true);
+          if (null != v && logic.projectInfo.version != v) {
+            logic.projectInfo.modifyProjectVersion(v, autoCommit: true);
           }
         },
         inputFormatters: [
@@ -128,12 +131,6 @@ class _ProjectVersionDialogState extends State<ProjectVersionDialog> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

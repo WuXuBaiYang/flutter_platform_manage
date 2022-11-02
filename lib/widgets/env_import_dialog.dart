@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'value_listenable_builder.dart';
 
 /*
@@ -32,15 +33,16 @@ class EnvImportDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _EnvImportDialogState extends State<EnvImportDialog> {
-  // 逻辑管理
-  final _logic = _EnvImportDialogLogic();
+class _EnvImportDialogState
+    extends LogicState<EnvImportDialog, _EnvImportDialogLogic> {
+  @override
+  _EnvImportDialogLogic initLogic() => _EnvImportDialogLogic();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder2<Environment?, String?>(
-      first: _logic.envController,
-      second: _logic.errTextController,
+      first: logic.envController,
+      second: logic.errTextController,
       builder: (_, env, errText, __) {
         return ContentDialog(
           content: Column(
@@ -51,14 +53,14 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
                 padding: EdgeInsets.zero,
                 error: null != errText ? Text(errText) : null,
                 child: TextBox(
-                  controller: _logic.envPathController,
+                  controller: logic.envPathController,
                   header: 'flutter路径',
                   placeholder: '选择flutter根目录',
                   readOnly: true,
                   minLines: 1,
                   maxLines: 5,
                   suffix: Button(
-                    onPressed: _logic.doPathPicker,
+                    onPressed: logic.doPathPicker,
                     child: const Text('选择'),
                   ),
                 ),
@@ -78,19 +80,13 @@ class _EnvImportDialogState extends State<EnvImportDialog> {
               onPressed: () => Navigator.maybePop(context),
             ),
             FilledButton(
-              onPressed: _logic.onImportEnv(context, env),
+              onPressed: logic.onImportEnv(context, env),
               child: const Text('导入'),
             ),
           ],
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

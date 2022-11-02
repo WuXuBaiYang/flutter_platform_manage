@@ -9,6 +9,7 @@ import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
@@ -36,9 +37,10 @@ class ProjectPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class _ProjectPageState extends State<ProjectPage> with WindowListener {
-  // 逻辑管理
-  final _logic = _ProjectPageLogic();
+class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
+    with WindowListener {
+  @override
+  _ProjectPageLogic initLogic() => _ProjectPageLogic();
 
   @override
   void initState() {
@@ -54,7 +56,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
         commandBar: _buildCommandBar(),
       ),
       content: CacheFutureBuilder<List<ProjectModel>>(
-        controller: _logic.controller,
+        controller: logic.controller,
         future: () => projectManage.loadAll(simple: true),
         builder: (_, snap) {
           final value = snap.data;
@@ -82,7 +84,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
             label: const Text('添加'),
             onPressed: () {
               ProjectImportDialog.show(context).then((v) {
-                if (null != v) _logic.controller.refreshValue();
+                if (null != v) logic.controller.refreshValue();
               });
             },
           ),
@@ -90,7 +92,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
             icon: const Icon(FluentIcons.refresh),
             label: const Text('刷新'),
             onPressed: () {
-              _logic.controller.refreshValue();
+              logic.controller.refreshValue();
               Utils.showSnack(context, '项目信息已刷新');
             },
           ),
@@ -102,11 +104,11 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
   // 构建项目列表
   Widget _buildProjectGrid(List<ProjectModel> projectList) {
     return ReorderableBuilder(
-      scrollController: _logic.scrollController,
+      scrollController: logic.scrollController,
       onReorder: (entities) =>
-          _logic.updateProjectListOrder(projectList, entities),
+          logic.updateProjectListOrder(projectList, entities),
       builder: (children) => GridView(
-        key: _logic.gridViewKey,
+        key: logic.gridViewKey,
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
           mainAxisExtent: 90,
@@ -166,7 +168,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
         if (!item.exist) return _showModifyProjectDialog(item);
         jRouter.pushNamed(RoutePath.projectDetail, parameters: {
           'key': item.project.primaryKey,
-        })?.then((_) => _logic.controller.refreshValue());
+        })?.then((_) => logic.controller.refreshValue());
       },
     );
   }
@@ -185,7 +187,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
               context,
               initialProjectInfo: item,
             ).then((v) {
-              if (null != v) _logic.controller.refreshValue();
+              if (null != v) logic.controller.refreshValue();
             });
           },
         ),
@@ -201,7 +203,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
               context,
               initialProjectInfo: item,
             ).then((v) {
-              if (null != v) _logic.controller.refreshValue();
+              if (null != v) logic.controller.refreshValue();
             });
           },
         ),
@@ -234,7 +236,7 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
               confirm: '删除',
               onConfirmTap: () {
                 dbManage.delete(item.project);
-                _logic.controller.refreshValue();
+                logic.controller.refreshValue();
               },
             );
           },
@@ -247,14 +249,13 @@ class _ProjectPageState extends State<ProjectPage> with WindowListener {
       context,
       initialProject: item.project,
     ).then((v) {
-      if (null != v) _logic.controller.refreshValue();
+      if (null != v) logic.controller.refreshValue();
     });
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
-    _logic.dispose();
     super.dispose();
   }
 }

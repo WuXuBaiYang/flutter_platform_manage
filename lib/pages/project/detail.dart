@@ -10,6 +10,7 @@ import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
@@ -44,10 +45,11 @@ typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 * @author wuxubaiyang
 * @Time 2022-07-22 11:38:37
 */
-class _ProjectDetailPageState extends State<ProjectDetailPage>
+class _ProjectDetailPageState
+    extends LogicState<ProjectDetailPage, _ProjectDetailPageLogic>
     with WindowListener {
-  // 逻辑管理
-  final _logic = _ProjectDetailPageLogic();
+  @override
+  _ProjectDetailPageLogic initLogic() => _ProjectDetailPageLogic();
 
   @override
   void initState() {
@@ -61,8 +63,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
       title: '项目详情',
       content: ScaffoldPage.withPadding(
         content: CacheFutureBuilder<ProjectModel>(
-          controller: _logic.controller,
-          future: () => _logic.loadProjectInfo(context),
+          controller: logic.controller,
+          future: () => logic.loadProjectInfo(context),
           builder: (_, snap) {
             if (snap.hasData) {
               final item = snap.data!;
@@ -102,8 +104,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
             direction: Axis.vertical,
           ),
           Expanded(
-            child: ProjectMenu.getProjectCommands(
-                context, item, _logic.controller),
+            child:
+                ProjectMenu.getProjectCommands(context, item, logic.controller),
           ),
         ],
       ),
@@ -150,10 +152,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   // 构建平台信息切页
   Widget _buildPlatformView(ProjectModel item) {
     return ValueListenableBuilder<int>(
-      valueListenable: _logic.bottomBarIndex,
+      valueListenable: logic.bottomBarIndex,
       builder: (_, v, child) {
         return IndexedStack(
-          index: _logic.bottomBarIndex.value,
+          index: logic.bottomBarIndex.value,
           children: List.generate(PlatformType.values.length, (i) {
             final t = PlatformType.values[i];
             final p = item.platformMap[t];
@@ -165,7 +167,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
                   CommandBarButton(
                     icon: const Icon(FluentIcons.add),
                     label: const Text('创建平台'),
-                    onPressed: () => _logic.createPlatform(context, item, t),
+                    onPressed: () => logic.createPlatform(context, item, t),
                   ),
                 ],
               ),
@@ -181,11 +183,11 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
     const iconSize = 24.0;
     final style = BottomNavigationTheme.of(context);
     return ValueListenableBuilder<int>(
-        valueListenable: _logic.bottomBarIndex,
+        valueListenable: logic.bottomBarIndex,
         builder: (_, v, child) {
           return BottomNavigation(
             index: v,
-            onChanged: (i) => _logic.bottomBarIndex.setValue(i),
+            onChanged: (i) => logic.bottomBarIndex.setValue(i),
             items: List.generate(PlatformType.values.length, (i) {
               final type = PlatformType.values[i];
               return BottomNavigationItem(
@@ -205,7 +207,6 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   @override
   void dispose() {
     windowManager.removeListener(this);
-    _logic.dispose();
     super.dispose();
   }
 }

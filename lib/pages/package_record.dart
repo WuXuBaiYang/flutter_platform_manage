@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
 * 打包记录页
@@ -18,21 +19,16 @@ class PackageRecordPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class _PackageRecordPageState extends State<PackageRecordPage> {
-  // 逻辑管理
-  final _logic = _PackageRecordPageLogic();
+class _PackageRecordPageState
+    extends LogicState<PackageRecordPage, _PackageRecordPageLogic> {
+  @override
+  _PackageRecordPageLogic initLogic() => _PackageRecordPageLogic();
 
   @override
   Widget build(BuildContext context) {
     return const ScaffoldPage(
       content: Center(child: Text('功能开发中')),
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

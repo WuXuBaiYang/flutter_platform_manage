@@ -6,6 +6,7 @@ import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/debouncer.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
@@ -50,9 +51,10 @@ class PermissionImportDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022-08-01 17:11:57
 */
-class _PermissionImportDialogState extends State<PermissionImportDialog> {
-  // 逻辑管理
-  late final _PermissionImportDialogLogic _logic =
+class _PermissionImportDialogState
+    extends LogicState<PermissionImportDialog, _PermissionImportDialogLogic> {
+  @override
+  _PermissionImportDialogLogic initLogic() =>
       _PermissionImportDialogLogic(widget.initialPermissions);
 
   @override
@@ -76,7 +78,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
         FilledButton(
           child: const Text('选择'),
           onPressed: () =>
-              Navigator.pop(context, _logic.permissionListController.value),
+              Navigator.pop(context, logic.permissionListController.value),
         ),
       ],
     );
@@ -90,7 +92,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
           label: '权限列表过滤',
           child: TextBox(
             autofocus: true,
-            controller: _logic.searchController,
+            controller: logic.searchController,
             placeholder: '根据名称/描述/值进行过滤',
             onChanged: (v) {
               deBouncer(() => setState(() {}));
@@ -98,11 +100,10 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             },
             onEditingComplete: () => setState(() {}),
             suffix: Visibility(
-              visible: _logic.searchController.text.isNotEmpty,
+              visible: logic.searchController.text.isNotEmpty,
               child: IconButton(
                 icon: const Icon(FluentIcons.cancel),
-                onPressed: () =>
-                    setState(() => _logic.searchController.clear()),
+                onPressed: () => setState(() => logic.searchController.clear()),
               ),
             ),
             outsideSuffix: _buildFilterComboBox(),
@@ -115,7 +116,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
   // 构建过滤下拉框
   Widget _buildFilterComboBox() {
     return ValueListenableBuilder<PermissionFilter>(
-      valueListenable: _logic.filterController,
+      valueListenable: logic.filterController,
       builder: (_, filter, __) {
         return Container(
           padding: const EdgeInsets.only(left: 6),
@@ -124,7 +125,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             value: filter,
             onChanged: (v) {
               if (null != v) {
-                _logic.filterController.setValue(v);
+                logic.filterController.setValue(v);
               }
             },
             items: List.generate(PermissionFilter.values.length, (i) {
@@ -143,10 +144,10 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
   // 构建权限列表
   Widget _buildPermissionList() {
     return ValueListenableBuilder(
-      valueListenable: _logic.filterController,
+      valueListenable: logic.filterController,
       builder: (_, __, ___) {
         return FutureBuilder<List<PermissionItemModel>>(
-          future: _logic.loadPermissionsItems(widget.platformType),
+          future: logic.loadPermissionsItems(widget.platformType),
           builder: (_, snap) {
             if (snap.hasError) {
               return const Center(
@@ -156,7 +157,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
             if (snap.hasData) {
               final list = snap.data!;
               return ValueListenableBuilder(
-                valueListenable: _logic.permissionListController,
+                valueListenable: logic.permissionListController,
                 builder: (_, __, ___) {
                   return ListView.separated(
                     shrinkWrap: true,
@@ -180,7 +181,7 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
 
   // 构建权限列表子项
   Widget _buildPermissionListItem(PermissionItemModel item) {
-    final checked = _logic.hasPermission(item);
+    final checked = logic.hasPermission(item);
     return ListTile(
       title: Text(
         item.name,
@@ -192,16 +193,10 @@ class _PermissionImportDialogState extends State<PermissionImportDialog> {
       ),
       trailing: Checkbox(
         checked: checked,
-        onChanged: (v) => _logic.permissionSelected(checked, item),
+        onChanged: (v) => logic.permissionSelected(checked, item),
       ),
-      onPressed: () => _logic.permissionSelected(checked, item),
+      onPressed: () => logic.permissionSelected(checked, item),
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 
