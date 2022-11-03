@@ -31,7 +31,9 @@ class _PlatformWinPageState
 
   @override
   List<Widget> loadItemList(BuildContext context) {
-    return [];
+    return [
+      buildAppLogo(),
+    ];
   }
 }
 

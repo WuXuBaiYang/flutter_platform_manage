@@ -28,4 +28,7 @@ class ProjectFilePath {
   // ios/Runner/Assets.xcassets/AppIcon.appiconset
   static const String iosAssetsAppIcon =
       'Runner/Assets.xcassets/AppIcon.appiconset';
+
+  // web/manifest.json
+  static const String webManifest = 'manifest.json';
 }

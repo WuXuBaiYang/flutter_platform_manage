@@ -30,7 +30,9 @@ class _PlatformWebPageState
 
   @override
   List<Widget> loadItemList(BuildContext context) {
-    return [];
+    return [
+      buildAppLogo(),
+    ];
   }
 }
 
