@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * macos平台信息
@@ -12,6 +16,14 @@ class MacOSPlatform extends BasePlatform {
   MacOSPlatform({
     required String platformPath,
   }) : super(type: PlatformType.macos, platformPath: platformPath);
+
+  // info.plist文件绝对路径
+  String get infoPlistFilePath =>
+      '$platformPath/${ProjectFilePath.macosInfoPlist}';
+
+  // appIcon.appIconSet目录路径
+  String get appIconAssetsPath =>
+      '$platformPath/${ProjectFilePath.macosAssetsAppIcon}';
 
   @override
   Future<bool> update(bool simple) async {
@@ -29,7 +41,30 @@ class MacOSPlatform extends BasePlatform {
 
   // 加载项目图标
   Future<List<ProjectIcon>> _loadIcons() async {
-    return [];
+    List<ProjectIcon> result = [];
+    try {
+      // 读取配置文件信息
+      final f = File('$appIconAssetsPath/Contents.json');
+      final config = jsonDecode(f.readAsStringSync());
+      for (var it in config['images'] ?? []) {
+        final fileName = it['filename'] ?? '';
+        final size = (it['size'] ?? '').split('x');
+        var w = 0.0, h = 0.0;
+        if (size.length == 2) {
+          w = double.tryParse(size.first) ?? 0.0;
+          h = double.tryParse(size.last) ?? 0.0;
+        }
+        result.add(ProjectIcon(
+          size: Size(w, h),
+          src: fileName.isNotEmpty ? '$appIconAssetsPath/$fileName' : '',
+          type: it['scale'] ?? '',
+          desc: it['idiom'] ?? '',
+        ));
+      }
+    } catch (e) {
+      LogTool.e('macos图片加载异常：', error: e);
+    }
+    return result;
   }
 
   @override
