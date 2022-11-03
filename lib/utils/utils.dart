@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * 通用工具方法
@@ -111,15 +110,6 @@ class Utils {
       }
     }
     return input.toUpperCase();
-  }
-
-  // 修改图片尺寸并返回
-  static Future<ByteData?> resizeImage(Uint8List rawImage,
-      {int? width, int? height}) async {
-    final codec = await ui.instantiateImageCodec(rawImage,
-        targetWidth: width, targetHeight: height);
-    final resizedImage = (await codec.getNextFrame()).image;
-    return resizedImage.toByteData(format: ui.ImageByteFormat.png);
   }
 
   // 获取图片参数信息

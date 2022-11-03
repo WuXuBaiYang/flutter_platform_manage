@@ -1,5 +1,7 @@
+import 'dart:core';
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/platform/android.dart';
 import 'package:flutter_platform_manage/model/platform/ios.dart';
@@ -8,8 +10,8 @@ import 'package:flutter_platform_manage/model/platform/macos.dart';
 import 'package:flutter_platform_manage/model/platform/web.dart';
 import 'package:flutter_platform_manage/model/platform/windows.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/image.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
 
 /*
 * 平台基类
@@ -44,21 +46,20 @@ abstract class BasePlatform {
   }
 
   // 修改平台图标
-  Future<bool> modifyIcons(File source) async {
+  Future<bool> modifyIcons(
+    File source, {
+    ImageEncodeType encodeType = ImageEncodeType.png,
+  }) async {
     try {
-      final rawImage = await source.readAsBytes();
+      final handle = ImageHandle();
       for (var it in projectIcons) {
-        final size = it.size;
-        final path = it.src;
-        var bytes = await Utils.resizeImage(rawImage,
-            height: size.height.toInt(), width: size.width.toInt());
-        if (null == bytes) return false;
-        if (path.isEmpty) return false;
-        final target = File(path);
-        if (!target.existsSync()) {
-          target.createSync(recursive: true);
-        }
-        await target.writeAsBytes(bytes.buffer.asInt8List());
+        final result = await handle.resizeImageAndSave(
+          source,
+          target: it.src,
+          size: it.size,
+          encodeType: encodeType,
+        );
+        if (!result) return false;
       }
     } catch (e) {
       LogTool.e('${type.name}平台编辑图标失败：', error: e);

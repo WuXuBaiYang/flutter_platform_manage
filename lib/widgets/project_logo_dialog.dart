@@ -88,9 +88,10 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => logic.replaceLogos().then((v) {
+                  ? () => Utils.showLoading<bool>(context,
+                      loadFuture: logic.replaceLogos().then((v) {
                         if (!v) Utils.showSnack(context, '图标替换失败');
-                      })
+                      }))
                   : null,
               child: const Text('替换'),
             );
@@ -101,10 +102,11 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => logic.replaceLogos().then((v) {
-                        if (!v) return Utils.showSnack(context, '图标替换失败');
+                  ? () => Utils.showLoading<bool>(context,
+                      loadFuture: logic.replaceLogos().then((v) {
+                        if (!v) Utils.showSnack(context, '图标替换失败');
                         Navigator.pop(context);
-                      })
+                      }))
                   : null,
               child: const Text('替换并返回'),
             );
@@ -242,9 +244,8 @@ class _ProjectLogoDialogLogic extends BaseLogic {
       final source = selectIconFile.value;
       if (source == null) return false;
       for (var it in platforms) {
-        if (!await it.modifyIcons(source)) {
-          return false;
-        }
+        final result = await it.modifyIcons(source);
+        if (!result) return false;
       }
     } catch (e) {
       LogTool.e('平台编辑图标失败：', error: e);

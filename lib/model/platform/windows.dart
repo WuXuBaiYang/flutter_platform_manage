@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/image.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * windows平台信息
@@ -12,6 +15,9 @@ class WindowsPlatform extends BasePlatform {
   WindowsPlatform({
     required String platformPath,
   }) : super(type: PlatformType.windows, platformPath: platformPath);
+
+  // 默认图标路径
+  String get iconFilePath => '$platformPath/runner/resources/app_icon.ico';
 
   @override
   Future<bool> update(bool simple) async {
@@ -29,7 +35,26 @@ class WindowsPlatform extends BasePlatform {
 
   // 加载项目图标
   Future<List<ProjectIcon>> _loadIcons() async {
-    return [];
+    List<ProjectIcon> result = [];
+    try {
+      // 添加favicon图标
+      if (File(iconFilePath).existsSync()) {
+        result.add(ProjectIcon(
+          size: const Size.square(256),
+          src: iconFilePath,
+          type: 'image/ico',
+        ));
+      }
+    } catch (e) {
+      LogTool.e('windows图片加载异常：', error: e);
+    }
+    return result;
+  }
+
+  @override
+  Future<bool> modifyIcons(File source,
+      {ImageEncodeType encodeType = ImageEncodeType.ico}) {
+    return super.modifyIcons(source, encodeType: encodeType);
   }
 
   @override
