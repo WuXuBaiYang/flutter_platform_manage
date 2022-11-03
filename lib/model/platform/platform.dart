@@ -46,13 +46,25 @@ abstract class BasePlatform {
   // 修改平台图标
   Future<bool> modifyIcons(File source) async {
     try {
-      final targetMap =
-          projectIcons.asMap().map((_, v) => MapEntry(v.src, v.size));
-      return await Utils.compressImageSize(source, targetMap);
+      final rawImage = await source.readAsBytes();
+      for (var it in projectIcons) {
+        final size = it.size;
+        final path = it.src;
+        var bytes = await Utils.resizeImage(rawImage,
+            height: size.height.toInt(), width: size.width.toInt());
+        if (null == bytes) return false;
+        if (path.isEmpty) return false;
+        final target = File(path);
+        if (!target.existsSync()) {
+          target.createSync(recursive: true);
+        }
+        await target.writeAsBytes(bytes.buffer.asInt8List());
+      }
     } catch (e) {
       LogTool.e('${type.name}平台编辑图标失败：', error: e);
+      return false;
     }
-    return false;
+    return true;
   }
 
   // 修改平台应用名（展示名称）

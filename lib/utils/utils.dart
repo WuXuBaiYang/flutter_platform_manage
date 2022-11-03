@@ -146,46 +146,21 @@ class Utils {
   static Future<File?> pickProjectLogo(
       {Size minSize = const Size.square(1024)}) async {
     // 选择图标文件
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: '请选择 ${minSize.width}*${minSize.height}px 以上的正方形png图片',
+    final result = await pickFiles(
+      dialogTitle: '请选择 ${minSize.width}*${minSize.height}px 以上的png图片',
       allowCompression: false,
       lockParentWindow: true,
-      type: FileType.image,
+      allowedExtensions: ['png'],
     );
-    if (null != result && result.count > 0) {
-      final f = File(result.paths.first ?? '');
+    if (result.isNotEmpty) {
+      final f = File(result.first ?? '');
       final imgSize = await Utils.loadImageSize(f);
-      if (imgSize.aspectRatio != 1.0 || imgSize < minSize) {
-        throw Exception('图标必须是大于等于 ${minSize.width}*${minSize.height}px 的正方形');
+      if (imgSize < minSize) {
+        throw Exception('图标必须是大于等于 ${minSize.width}*${minSize.height}px 的图片');
       }
       return f;
     }
     return null;
-  }
-
-  // 将一张图片的尺寸压缩为不同尺寸并写入本地
-  static Future<bool> compressImageSize(
-      File sourceImage, Map<String, Size> targetMap) async {
-    try {
-      final rawImage = await sourceImage.readAsBytes();
-      for (var entry in targetMap.entries) {
-        final size = entry.value;
-        var bytes = await Utils.resizeImage(rawImage,
-            height: size.width.toInt(), width: size.height.toInt());
-        if (null == bytes) continue;
-        final path = entry.key;
-        if (path.isEmpty) continue;
-        final target = File(path);
-        if (!target.existsSync()) {
-          target.createSync(recursive: true);
-        }
-        await target.writeAsBytes(bytes.buffer.asInt8List());
-      }
-      return true;
-    } catch (e) {
-      LogTool.e('图片压缩失败：', error: e);
-    }
-    return false;
   }
 
   // 选择目录路径
@@ -222,6 +197,7 @@ class Utils {
       withData: withData,
       withReadStream: withReadStream,
       lockParentWindow: lockParentWindow,
+      type: allowedExtensions != null ? FileType.custom : FileType.any,
     );
     final paths = <String?>[];
     if (result != null && result.count != 0) {

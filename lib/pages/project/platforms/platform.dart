@@ -8,6 +8,7 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -145,10 +146,9 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
     return buildItem(
       child: CardItem(
         child: ListTile(
-          leading: Image.file(
-            File(icon?.src ?? ''),
-            width: 35,
-            height: 35,
+          leading: ProjectLogo(
+            projectIcon: icon,
+            logoSize: ProjectLogoSize.small,
           ),
           title: const Text('图标管理'),
           subtitle: Text('x${info.projectIcons.length}'),
@@ -160,9 +160,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
             final info = logic.platformInfo;
             ProjectLogoDialog.show(
               context,
-              initialIconsMap: {
-                info.type: info.projectIcons,
-              },
+              initialPlatforms: [info],
               minFileSize: _minFileSizeMap[info.type]!,
             ).then((v) {
               if (v ?? false) {

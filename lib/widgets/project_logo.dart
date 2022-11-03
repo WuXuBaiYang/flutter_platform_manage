@@ -1,5 +1,8 @@
 import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/manager/event.dart';
+import 'package:flutter_platform_manage/model/event/project_logo.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 
 /*
@@ -31,11 +34,16 @@ class ProjectLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final filePath = projectIcon?.src;
     if (filePath != null) {
-      return Image.file(
-        File(filePath),
-        width: size.width,
-        height: size.height,
-        fit: BoxFit.cover,
+      return StreamBuilder(
+        stream: eventManage.on<ProjectLogoChangeEvent>(),
+        builder: (_, snap) {
+          return Image(
+            image: _FileImageProvider(File(filePath)),
+            width: size.width,
+            height: size.height,
+            fit: BoxFit.cover,
+          );
+        },
       );
     }
     return FlutterLogo(
@@ -45,17 +53,35 @@ class ProjectLogo extends StatelessWidget {
 }
 
 /*
-* 图标尺寸
+* 图标图片文件代理
 * @author wuxubaiyang
-* @Time 2022-07-22 17:16:06
+* @Time 2022-07-30 15:31:59
 */
+class _FileImageProvider extends FileImage {
+  // 图片尺寸
+  final int fileSize;
+
+  _FileImageProvider(File file, {double scale = 1.0})
+      : fileSize = file.lengthSync(),
+        super(file, scale: scale);
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final _FileImageProvider typedOther = other;
+    return file.path == typedOther.file.path &&
+        scale == typedOther.scale &&
+        fileSize == typedOther.fileSize;
+  }
+
+  @override
+  int get hashCode => Object.hash(file.path, scale);
+}
+
+// 图标尺寸
 enum ProjectLogoSize { small, middle, large }
 
-/*
-* 图标尺寸方法扩展
-* @author wuxubaiyang
-* @Time 2022-07-22 17:16:26
-*/
+// 图标尺寸方法扩展
 extension ProjectlogoSizeExtension on ProjectLogoSize {
   // 获取图标尺寸
   Size get size => const {
