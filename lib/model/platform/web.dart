@@ -47,6 +47,7 @@ class WebPlatform extends BasePlatform {
           size: const Size.square(16),
           src: faviconFilePath,
           type: 'image/png',
+          fileType: 'png',
         ));
       }
       // 添加其他图标
@@ -64,6 +65,7 @@ class WebPlatform extends BasePlatform {
           size: Size(w, h),
           src: '$platformPath/$src',
           type: it['type'],
+          fileType: 'png',
         ));
       }
     } catch (e) {

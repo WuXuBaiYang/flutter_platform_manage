@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
-import 'package:flutter_platform_manage/utils/image.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
@@ -43,18 +41,13 @@ class WindowsPlatform extends BasePlatform {
           size: const Size.square(256),
           src: iconFilePath,
           type: 'image/ico',
+          fileType: 'ico',
         ));
       }
     } catch (e) {
       LogTool.e('windows图片加载异常：', error: e);
     }
     return result;
-  }
-
-  @override
-  Future<bool> modifyIcons(File source,
-      {ImageEncodeType encodeType = ImageEncodeType.ico}) {
-    return super.modifyIcons(source, encodeType: encodeType);
   }
 
   @override

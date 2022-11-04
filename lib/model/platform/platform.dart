@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/model/platform/android.dart';
 import 'package:flutter_platform_manage/model/platform/ios.dart';
@@ -10,8 +9,6 @@ import 'package:flutter_platform_manage/model/platform/macos.dart';
 import 'package:flutter_platform_manage/model/platform/web.dart';
 import 'package:flutter_platform_manage/model/platform/windows.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
-import 'package:flutter_platform_manage/utils/image.dart';
-import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * 平台基类
@@ -39,33 +36,22 @@ abstract class BasePlatform {
   // 提交信息变动
   Future<bool> commit();
 
+  // 图标展示目标尺寸
+  final _targetIconSize = const Size.square(50);
+
   // 获取单一平台图标
   ProjectIcon? get singleIcon {
     if (projectIcons.isEmpty) return null;
-    return projectIcons.first;
-  }
-
-  // 修改平台图标
-  Future<bool> modifyIcons(
-    File source, {
-    ImageEncodeType encodeType = ImageEncodeType.png,
-  }) async {
-    try {
-      final handle = ImageHandle();
-      for (var it in projectIcons) {
-        final result = await handle.resizeImageAndSave(
-          source,
-          target: it.src,
-          size: it.size,
-          encodeType: encodeType,
-        );
-        if (!result) return false;
+    ProjectIcon? icon;
+    for (var it in projectIcons) {
+      if (it.size >= _targetIconSize) {
+        return it;
       }
-    } catch (e) {
-      LogTool.e('${type.name}平台编辑图标失败：', error: e);
-      return false;
+      if (it.size > (icon?.size ?? Size.zero)) {
+        icon = it;
+      }
     }
-    return true;
+    return icon;
   }
 
   // 修改平台应用名（展示名称）
@@ -91,12 +77,16 @@ class ProjectIcon {
   // 资源类型
   final String type;
 
+  // 文件类型
+  final String fileType;
+
   // 资源描述
   final String desc;
 
   ProjectIcon({
     required this.size,
     required this.src,
+    required this.fileType,
     this.type = '',
     this.desc = '',
   });

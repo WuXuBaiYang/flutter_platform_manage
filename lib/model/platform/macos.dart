@@ -59,6 +59,7 @@ class MacOSPlatform extends BasePlatform {
           src: fileName.isNotEmpty ? '$appIconAssetsPath/$fileName' : '',
           type: it['scale'] ?? '',
           desc: it['idiom'] ?? '',
+          fileType: 'png',
         ));
       }
     } catch (e) {

@@ -11,6 +11,7 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image/image.dart' as handle;
 
 /*
 * 项目图标弹窗
@@ -88,7 +89,7 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => Utils.showLoading<bool>(context,
+                  ? () => Utils.showLoading(context,
                       loadFuture: logic.replaceLogos().then((v) {
                         if (!v) Utils.showSnack(context, '图标替换失败');
                       }))
@@ -102,7 +103,7 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => Utils.showLoading<bool>(context,
+                  ? () => Utils.showLoading(context,
                       loadFuture: logic.replaceLogos().then((v) {
                         if (!v) Utils.showSnack(context, '图标替换失败');
                         Navigator.pop(context);
@@ -243,9 +244,30 @@ class _ProjectLogoDialogLogic extends BaseLogic {
     try {
       final source = selectIconFile.value;
       if (source == null) return false;
-      for (var it in platforms) {
-        final result = await it.modifyIcons(source);
-        if (!result) return false;
+      final imageSource = handle.decodeImage(
+        await source.readAsBytes(),
+      );
+      if (imageSource == null) return false;
+      final temp = <String>[];
+      for (var platform in platforms) {
+        for (var icon in platform.projectIcons) {
+          final targetPath = icon.src;
+          if (!temp.contains(targetPath)) {
+            temp.add(targetPath);
+            final size = icon.size;
+            final w = size.width.toInt(), h = size.height.toInt();
+            var target = handle.copyResize(imageSource, width: w, height: h);
+            final f = File(targetPath);
+            if (!await f.exists()) {
+              await f.create(recursive: true);
+            }
+            if (icon.fileType == 'png') {
+              await f.writeAsBytes(handle.encodePng(target));
+            } else if (icon.fileType == 'ico') {
+              await f.writeAsBytes(handle.encodeIco(target));
+            }
+          }
+        }
       }
     } catch (e) {
       LogTool.e('平台编辑图标失败：', error: e);

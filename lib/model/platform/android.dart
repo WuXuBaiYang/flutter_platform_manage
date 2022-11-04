@@ -93,6 +93,7 @@ class AndroidPlatform extends BasePlatform {
               size: await Utils.loadImageSize(file),
               src: file.path,
               type: type,
+              fileType: 'png',
             ));
             break;
           }
