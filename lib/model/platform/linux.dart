@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file_handle.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 
 /*
 * linux平台信息
@@ -10,8 +11,8 @@ import 'package:flutter_platform_manage/utils/file_handle.dart';
 */
 class LinuxPlatform extends BasePlatform {
   LinuxPlatform({
-    required String platformPath,
-  }) : super(type: PlatformType.linux, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.linux);
 
   @override
   Future<bool> update(bool simple) async {
@@ -30,9 +31,10 @@ class LinuxPlatform extends BasePlatform {
     try {
       ///待实现
     } catch (e) {
+      LogTool.e('linux平台信息提交失败：', error: e);
       return false;
     }
-    return handle.commit();
+    return true;
   }
 
   @override

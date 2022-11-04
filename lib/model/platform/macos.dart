@@ -14,8 +14,8 @@ import 'package:flutter_platform_manage/utils/log.dart';
 */
 class MacOSPlatform extends BasePlatform {
   MacOSPlatform({
-    required String platformPath,
-  }) : super(type: PlatformType.macos, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.macos);
 
   // info.plist文件绝对路径
   String get infoPlistFilePath =>
@@ -74,9 +74,10 @@ class MacOSPlatform extends BasePlatform {
     try {
       ///待实现
     } catch (e) {
+      LogTool.e('macos平台信息提交失败：', error: e);
       return false;
     }
-    return handle.commit();
+    return true;
   }
 
   @override

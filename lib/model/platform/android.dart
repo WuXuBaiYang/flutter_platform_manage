@@ -15,31 +15,27 @@ import 'package:xml/xml.dart';
 */
 class AndroidPlatform extends BasePlatform {
   // 应用名
-  String label;
+  String label = '';
 
   // 包名
-  String package;
+  String package = '';
 
   // 图标对象
-  String _iconPath;
+  String _iconPath = '';
 
   // 权限集合
-  List<PermissionItemModel> permissions;
+  List<PermissionItemModel> permissions = [];
 
   AndroidPlatform({
-    required String platformPath,
-    this.label = '',
-    this.package = '',
-    this.permissions = const [],
-  })  : _iconPath = '',
-        super(type: PlatformType.android, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.android);
 
   // androidManifest.xml文件绝对路径
-  String get _manifestFile =>
+  String get _manifestFilePath =>
       '$platformPath/${ProjectFilePath.androidManifest}';
 
   // app/buildGradle 文件绝对路径
-  String get _appBuildGradleFile =>
+  String get _appBuildGradleFilePath =>
       '$platformPath/${ProjectFilePath.androidAppBuildGradle}';
 
   // app/src/main/res 资源路径
@@ -47,7 +43,7 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   Future<bool> update(bool simple) async {
-    final handle = FileHandleXML.from(_manifestFile);
+    final handle = FileHandleXML.from(_manifestFilePath);
     try {
       // 处理androidManifest.xml文件
       // 获取图标路径
@@ -107,7 +103,7 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
-      if (!await FileHandleXML.from(_manifestFile).fileWrite((handle) async {
+      if (!await FileHandleXML.from(_manifestFilePath).fileWrite((handle) async {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名
@@ -123,7 +119,7 @@ class AndroidPlatform extends BasePlatform {
             }).toList());
       })) return false;
       // 处理app/build.gradle文件
-      if (!await FileHandleXML.from(_appBuildGradleFile)
+      if (!await FileHandleXML.from(_appBuildGradleFilePath)
           .fileWrite((handle) async {
         // 修改包名
         await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
@@ -139,7 +135,7 @@ class AndroidPlatform extends BasePlatform {
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
-    handle ??= FileHandleXML.from(_manifestFile);
+    handle ??= FileHandleXML.from(_manifestFilePath);
     if (handle is! FileHandleXML) return false;
     // 修改label
     await handle.setElAtt('application', attName: 'android:label', value: name);

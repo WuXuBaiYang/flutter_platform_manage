@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';

@@ -13,6 +13,25 @@ import 'package:flutter/services.dart';
 * @Time 5/18/2022 10:58 AM
 */
 class Utils {
+  // 解析颜色
+  static Color? parseHexColor(String hexColor) {
+    if (hexColor.isEmpty) return null;
+    hexColor = hexColor.replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF$hexColor";
+    }
+    if (hexColor.length == 8) {
+      return Color(int.parse("0x$hexColor"));
+    }
+    return null;
+  }
+
+  // 将色值转换为hex格式字符串
+  static String toHexColor(Color color) {
+    final radixStr = color.value.toRadixString(16);
+    return '#${radixStr.substring(2, 8)}';
+  }
+
   // 生成id
   static String genID({int? seed}) {
     final time = DateTime.now().millisecondsSinceEpoch;

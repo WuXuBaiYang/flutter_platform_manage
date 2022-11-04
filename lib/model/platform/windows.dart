@@ -11,8 +11,8 @@ import 'package:flutter_platform_manage/utils/log.dart';
 */
 class WindowsPlatform extends BasePlatform {
   WindowsPlatform({
-    required String platformPath,
-  }) : super(type: PlatformType.windows, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.windows);
 
   // 默认图标路径
   String get iconFilePath => '$platformPath/runner/resources/app_icon.ico';
@@ -56,9 +56,10 @@ class WindowsPlatform extends BasePlatform {
     try {
       ///待实现
     } catch (e) {
+      LogTool.e('windows平台信息提交失败：', error: e);
       return false;
     }
-    return handle.commit();
+    return true;
   }
 
   @override
