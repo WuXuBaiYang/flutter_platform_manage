@@ -131,10 +131,14 @@ class _ProjectLogoDialogState
                   height: 45,
                 )
               : Icon(
-                  FluentIcons.file_image,
+                  FluentIcons.image_search,
                   size: 45,
                   color: Colors.grey[90],
                 ),
+          trailing: const Padding(
+            padding: EdgeInsets.only(top: 12),
+            child: Icon(FluentIcons.settings),
+          ),
           title: Text('选择图标文件（${logic.handleSize(widget.minFileSize)}）'),
           subtitle: Text(selectFile?.path ?? '未选择'),
           onPressed: () {
