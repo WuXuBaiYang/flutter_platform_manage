@@ -324,20 +324,20 @@ class _ProjectImportDialogLogic extends BaseLogic {
   // 记录当前所在步骤
   final currentStepController = ValueChangeNotifier<int>(0);
 
-  // 项目信息
-  final Project project;
-
   // 项目包装信息
   final projectInfoController = ValueChangeNotifier<ProjectModel?>(null);
 
   // 项目路径选择控制器
   final TextEditingController projectPathController;
 
+  // 异常提示
+  final errTextController = ValueChangeNotifier<String?>(null);
+
   // 项目选择表单的key
   final projectSelectKey = GlobalKey<FormState>();
 
-  // 异常提示
-  final errTextController = ValueChangeNotifier<String?>(null);
+  // 项目信息
+  final Project project;
 
   _ProjectImportDialogLogic(this.project)
       : projectPathController = TextEditingController(text: project.path);
@@ -387,5 +387,14 @@ class _ProjectImportDialogLogic extends BaseLogic {
     } catch (e) {
       errTextController.setValue('项目导入失败');
     }
+  }
+
+  @override
+  void dispose() {
+    currentStepController.dispose();
+    projectInfoController.dispose();
+    projectPathController.dispose();
+    errTextController.dispose();
+    super.dispose();
   }
 }

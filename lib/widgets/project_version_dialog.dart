@@ -140,11 +140,11 @@ class _ProjectVersionDialogState
 * @Time 2022/11/1 17:15
 */
 class _ProjectVersionDialogLogic extends BaseLogic {
-  // 表单key
-  final formKey = GlobalKey<FormState>();
-
   // 版本号输入框控制器
   final TextEditingController versionController;
+
+  // 表单key
+  final formKey = GlobalKey<FormState>();
 
   // 项目信息
   final ProjectModel projectInfo;
@@ -192,5 +192,11 @@ class _ProjectVersionDialogLogic extends BaseLogic {
       state.save();
       Navigator.maybePop(context, projectInfo);
     }
+  }
+
+  @override
+  void dispose() {
+    versionController.dispose();
+    super.dispose();
   }
 }

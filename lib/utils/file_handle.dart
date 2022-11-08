@@ -360,10 +360,10 @@ class FileHandleJSON<T extends Iterable> extends FileHandle {
       _jsonData ??= jsonDecode(await fileContent);
 
   // 获取Map格式的json
-  Future<Map> get jsonDataMap async => jsonData as Map;
+  Future<Map> get jsonDataMap async => await jsonData as Map;
 
   // 获取list格式的json
-  Future<List> get jsonDataList async => jsonData as List;
+  Future<List> get jsonDataList async => await jsonData as List;
 
   // 获取map结构中的值
   Future<V?> findInMap<V>(String key) async {

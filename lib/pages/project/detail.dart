@@ -250,4 +250,11 @@ class _ProjectDetailPageLogic extends BaseLogic {
     if (null == value) throw Exception('项目信息不存在');
     return Future.value(value);
   }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    bottomBarIndex.dispose();
+    super.dispose();
+  }
 }

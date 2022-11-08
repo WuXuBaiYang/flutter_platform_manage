@@ -113,4 +113,10 @@ class _HomePageState extends LogicState<HomePage, _HomePageLogic>
 class _HomePageLogic extends BaseLogic {
   // 导航当前下标
   final navigationIndex = ValueChangeNotifier(0);
+
+  @override
+  void dispose() {
+    navigationIndex.dispose();
+    super.dispose();
+  }
 }

@@ -225,4 +225,10 @@ class _PlatformAndroidPageLogic extends BasePlatformPageLogic<AndroidPlatform> {
   final permissionExpand = ValueChangeNotifier<bool>(false);
 
   _PlatformAndroidPageLogic(super.platformInfo);
+
+  @override
+  void dispose() {
+    permissionExpand.dispose();
+    super.dispose();
+  }
 }

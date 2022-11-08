@@ -40,12 +40,12 @@ class _EnvImportDialogState
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder2<Environment?, String?>(
-      first: logic.envController,
-      second: logic.errTextController,
-      builder: (_, env, errText, __) {
-        return ContentDialog(
-          content: Column(
+    return ContentDialog(
+      content: ValueListenableBuilder2<Environment?, String?>(
+        first: logic.envController,
+        second: logic.errTextController,
+        builder: (_, env, errText, __) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -73,19 +73,19 @@ class _EnvImportDialogState
                       ? const Center(child: ProgressRing())
                       : const SizedBox()),
             ],
-          ),
-          actions: [
-            Button(
-              child: const Text('取消'),
-              onPressed: () => Navigator.maybePop(context),
-            ),
-            FilledButton(
-              onPressed: logic.onImportEnv(context, env),
-              child: const Text('导入'),
-            ),
-          ],
-        );
-      },
+          );
+        },
+      ),
+      actions: [
+        Button(
+          child: const Text('取消'),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+        FilledButton(
+          onPressed: logic.onImportEnv(context),
+          child: const Text('导入'),
+        ),
+      ],
     );
   }
 }
@@ -106,7 +106,8 @@ class _EnvImportDialogLogic extends BaseLogic {
   final errTextController = ValueChangeNotifier<String?>('');
 
   // 导入环境配置
-  VoidCallback? onImportEnv(BuildContext context, Environment? env) {
+  VoidCallback? onImportEnv(BuildContext context) {
+    final env = envController.value;
     if (env == null) return null;
     return () {
       try {
@@ -143,5 +144,13 @@ class _EnvImportDialogLogic extends BaseLogic {
       errTextController.setValue('环境信息读取失败');
       envController.setValue(null);
     }
+  }
+
+  @override
+  void dispose() {
+    envPathController.dispose();
+    envController.dispose();
+    errTextController.dispose();
+    super.dispose();
   }
 }

@@ -231,4 +231,10 @@ class _PlatformIosPageLogic extends BasePlatformPageLogic<IOSPlatform> {
   final permissionExpand = ValueChangeNotifier<bool>(false);
 
   _PlatformIosPageLogic(super.platformInfo);
+
+  @override
+  void dispose() {
+    permissionExpand.dispose();
+    super.dispose();
+  }
 }

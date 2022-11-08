@@ -132,11 +132,11 @@ class _ProjectReNameDialogState
 * @Time 2022/11/1 16:51
 */
 class _ProjectReNameDialogLogic extends BaseLogic {
-  // 表单key
-  final formKey = GlobalKey<FormState>();
-
   // 输入框控制器
   final TextEditingController nameController;
+
+  // 表单key
+  final formKey = GlobalKey<FormState>();
 
   // 项目对象
   final ProjectModel projectInfo;
@@ -151,5 +151,11 @@ class _ProjectReNameDialogLogic extends BaseLogic {
       state.save();
       Navigator.maybePop(context, projectInfo);
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
   }
 }

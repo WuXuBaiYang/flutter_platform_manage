@@ -226,14 +226,14 @@ class _ProjectLogoDialogState
 * @Time 2022/11/2 9:11
 */
 class _ProjectLogoDialogLogic extends BaseLogic {
-  // 项目图标与平台表
-  final List<BasePlatform> platforms;
-
   // 平台下标
   final indexController = ValueChangeNotifier<int>(0);
 
   // 所选图标数据
   final selectIconFile = ValueChangeNotifier<File?>(null);
+
+  // 项目图标与平台表
+  final List<BasePlatform> platforms;
 
   _ProjectLogoDialogLogic(this.platforms);
 
@@ -279,5 +279,12 @@ class _ProjectLogoDialogLogic extends BaseLogic {
     }
     eventManage.fire(ProjectLogoChangeEvent());
     return true;
+  }
+
+  @override
+  void dispose() {
+    indexController.dispose();
+    selectIconFile.dispose();
+    super.dispose();
   }
 }

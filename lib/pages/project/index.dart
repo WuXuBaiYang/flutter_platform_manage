@@ -131,14 +131,22 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
       key: ObjectKey(item.project.primaryKey),
       menuItems: _getProjectGirdItemMenuItems(item),
       child: Center(
-        child: Card(
-          child: !item.exist
-              ? Center(
-                  child: Text(
-                  '项目信息丢失,点击重新编辑',
-                  style: TextStyle(color: Colors.red),
-                ))
-              : _buildProjectGridItemContent(item),
+        child: GestureDetector(
+          child: Card(
+            child: !item.exist
+                ? Center(
+                    child: Text(
+                    '项目信息丢失,点击重新编辑',
+                    style: TextStyle(color: Colors.red),
+                  ))
+                : _buildProjectGridItemContent(item),
+          ),
+          onTap: () {
+            if (!item.exist) return _showModifyProjectDialog(item);
+            jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+              'key': item.project.primaryKey,
+            })?.then((_) => logic.controller.refreshValue());
+          },
         ),
       ),
     );
@@ -146,30 +154,37 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
 
   // 构建项目列表子项内容
   Widget _buildProjectGridItemContent(ProjectModel item) {
-    return ListTile(
-      leading: ProjectLogo(
-        projectIcon: item.projectIcon,
-      ),
-      title: Text(
-        item.showTitle,
-        style: TextStyle(
-          color: !item.exist ? Colors.red : null,
+    return Row(
+      children: [
+        ProjectLogo(
+          projectIcon: item.projectIcon,
         ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-      subtitle: Text(
-        'v${!item.exist ? item.project.alias : item.version}'
-        ' · Flutter ${item.environment?.flutter}',
-        overflow: TextOverflow.ellipsis,
-        maxLines: 2,
-      ),
-      onPressed: () {
-        if (!item.exist) return _showModifyProjectDialog(item);
-        jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-          'key': item.project.primaryKey,
-        })?.then((_) => logic.controller.refreshValue());
-      },
+        const SizedBox(width: 14),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.showTitle,
+              style: TextStyle(
+                color: !item.exist ? Colors.red : null,
+                fontSize: 18,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            Text(
+              'v${!item.exist ? item.project.alias : item.version}'
+              ' · Flutter ${item.environment?.flutter}',
+              style: TextStyle(
+                color: Colors.grey[120],
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -287,5 +302,12 @@ class _ProjectPageLogic extends BaseLogic {
         projectList[i].project.order = i;
       }
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    scrollController.dispose();
+    super.dispose();
   }
 }
