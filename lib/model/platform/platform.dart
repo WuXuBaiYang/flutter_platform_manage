@@ -97,8 +97,8 @@ enum PlatformType {
   android,
   ios,
   web,
-  windows,
   macos,
+  windows,
   linux,
 }
 

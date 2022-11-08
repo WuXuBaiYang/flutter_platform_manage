@@ -40,19 +40,17 @@ class IOSPlatform extends BasePlatform {
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();
-      if (!simple) {
-        // 处理info.plist文件
-        // 获取包名
-        bundleName = await handle.getValue('CFBundleName', def: '');
-        // 获取打包展示名称
-        bundleDisplayName =
-            await handle.getValue('CFBundleDisplayName', def: '');
-        // 获取权限集合
-        permissions = await permissionManage.findAllPermissions(
-          await handle.getKeyList(includeKey: 'NS'),
-          platform: PlatformType.ios,
-        );
-      }
+      if (simple) return true;
+      // 处理info.plist文件
+      // 获取包名
+      bundleName = await handle.getValue('CFBundleName', def: '');
+      // 获取打包展示名称
+      bundleDisplayName = await handle.getValue('CFBundleDisplayName', def: '');
+      // 获取权限集合
+      permissions = await permissionManage.findAllPermissions(
+        await handle.getKeyList(includeKey: 'NS'),
+        platform: PlatformType.ios,
+      );
     } catch (e) {
       return false;
     }

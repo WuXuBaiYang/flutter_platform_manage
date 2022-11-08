@@ -32,6 +32,12 @@ class ProjectFilePath {
   // macos/Runner/info.plist
   static const String macosInfoPlist = 'Runner/info.plist';
 
+  // DebugProfile.entitlements
+  static const String debugProfilePlist = 'Runner/DebugProfile.entitlements';
+
+  // Release.entitlements
+  static const String releasePlist = 'Runner/Release.entitlements';
+
   // macos/Runner/Assets.xcassets/AppIcon.appiconset
   static const String macosAssetsAppIcon =
       'Runner/Assets.xcassets/AppIcon.appiconset';

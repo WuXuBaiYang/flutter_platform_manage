@@ -15,7 +15,7 @@ class WindowsPlatform extends BasePlatform {
   }) : super(type: PlatformType.windows);
 
   // 默认图标路径
-  String get iconFilePath => '$platformPath/runner/resources/app_icon.ico';
+  String get _iconFilePath => '$platformPath/runner/resources/app_icon.ico';
 
   @override
   Future<bool> update(bool simple) async {
@@ -23,7 +23,7 @@ class WindowsPlatform extends BasePlatform {
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();
-
+      if (simple) return true;
       ///待实现
     } catch (e) {
       return false;
@@ -36,10 +36,10 @@ class WindowsPlatform extends BasePlatform {
     List<ProjectIcon> result = [];
     try {
       // 添加favicon图标
-      if (File(iconFilePath).existsSync()) {
+      if (File(_iconFilePath).existsSync()) {
         result.add(ProjectIcon(
           size: const Size.square(256),
-          src: iconFilePath,
+          src: _iconFilePath,
           type: 'image/ico',
           fileType: 'ico',
         ));

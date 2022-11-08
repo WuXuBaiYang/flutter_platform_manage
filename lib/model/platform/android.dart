@@ -52,17 +52,16 @@ class AndroidPlatform extends BasePlatform {
               .replaceAll(r'@', '');
       // 加载图标
       projectIcons = await _loadIcons();
-      if (!simple) {
-        // 获取label
-        label = await handle.singleAtt('application', attName: 'android:label');
-        // 获取包名
-        package = await handle.singleAtt('manifest', attName: 'package');
-        // 获取权限集合
-        permissions = await permissionManage.findAllPermissions(
-          await handle.attList('uses-permission', attName: 'android:name'),
-          platform: PlatformType.android,
-        );
-      }
+      if (simple) return true;
+      // 获取label
+      label = await handle.singleAtt('application', attName: 'android:label');
+      // 获取包名
+      package = await handle.singleAtt('manifest', attName: 'package');
+      // 获取权限集合
+      permissions = await permissionManage.findAllPermissions(
+        await handle.attList('uses-permission', attName: 'android:name'),
+        platform: PlatformType.android,
+      );
     } catch (e) {
       return false;
     }

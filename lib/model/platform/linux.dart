@@ -18,6 +18,7 @@ class LinuxPlatform extends BasePlatform {
   Future<bool> update(bool simple) async {
     final handle = FileHandle.from('');
     try {
+      if (simple) return true;
       ///待实现
     } catch (e) {
       return false;

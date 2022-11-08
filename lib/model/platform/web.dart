@@ -54,6 +54,7 @@ class WebPlatform extends BasePlatform {
       final jsonData = await handle.jsonDataMap;
       // 获取项目图标
       projectIcons = await _loadIcons(jsonData['icons'] ?? []);
+      if (simple) return true;
       // 获取项目名称
       name = jsonData['name'] ?? '';
       // 获取缩略项目名称

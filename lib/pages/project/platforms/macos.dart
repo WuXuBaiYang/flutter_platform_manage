@@ -33,7 +33,89 @@ class _PlatformMacOSPageState
   List<Widget> loadItemList(BuildContext context) {
     return [
       buildAppLogo(),
+      _buildSandboxDebug(),
+      _buildSandboxRelease(),
     ];
+  }
+
+  // 构建沙盒模式-开发
+  Widget _buildSandboxDebug() {
+    final info = logic.platformInfo;
+    return buildItem(
+      child: FormField<bool>(
+        initialValue: info.sandBoxDebug,
+        validator: (v) {
+          if (null == v) {
+            return '不能为空';
+          }
+          return null;
+        },
+        onSaved: (v) {
+          if (null == v) return;
+          info.sandBoxDebug = v;
+        },
+        builder: (f) {
+          return GestureDetector(
+            child: Card(
+              child: Row(
+                children: [
+                  const Text('沙盒模式-开发'),
+                  const Spacer(),
+                  ToggleSwitch(
+                    checked: f.value ?? false,
+                    onChanged: (v) => f.didChange(v),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              final v = f.value ?? false;
+              f.didChange(!v);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  // 构建沙盒模式-发布
+  Widget _buildSandboxRelease() {
+    final info = logic.platformInfo;
+    return buildItem(
+      child: FormField<bool>(
+        initialValue: info.sandBoxRelease,
+        validator: (v) {
+          if (null == v) {
+            return '不能为空';
+          }
+          return null;
+        },
+        onSaved: (v) {
+          if (null == v) return;
+          info.sandBoxRelease = v;
+        },
+        builder: (f) {
+          return GestureDetector(
+            child: Card(
+              child: Row(
+                children: [
+                  const Text('沙盒模式-发布'),
+                  const Spacer(),
+                  ToggleSwitch(
+                    checked: f.value ?? false,
+                    onChanged: (v) => f.didChange(v),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              final v = f.value ?? false;
+              f.didChange(!v);
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
