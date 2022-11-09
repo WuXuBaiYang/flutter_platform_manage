@@ -115,7 +115,9 @@ class _ProjectImportDialogState
             FilledButton(
               onPressed: () => logic.nextStep(context),
               child: Text(
-                currentStep < _stepsMap.length - 1 ? '下一步' : '导入',
+                currentStep < _stepsMap.length - 1
+                    ? '下一步'
+                    : (logic.isEdited ? '修改' : '导入'),
               ),
             ),
           ],
@@ -160,7 +162,7 @@ class _ProjectImportDialogState
         if (!File(path).existsSync()) {
           return '项目不存在（缺少pubspec.yaml文件）';
         }
-        if (project.id < 0 && dbManage.hasProjectSync(v)) {
+        if (!logic.isEdited && dbManage.hasProjectSync(v)) {
           return '项目已存在';
         }
         return null;
@@ -338,6 +340,9 @@ class _ProjectImportDialogLogic extends BaseLogic {
   _ProjectImportDialogLogic(this.project)
       : projectPathController = TextEditingController(text: project.path);
 
+  // 是否为编辑状态
+  bool get isEdited => project.id > 0;
+
   // 上一步
   VoidCallback? previewStep() {
     final currentStep = currentStepController.value;
@@ -362,7 +367,6 @@ class _ProjectImportDialogLogic extends BaseLogic {
       final state = projectSelectKey.currentState;
       if (state == null || !state.validate()) return;
       state.save();
-      await dbManage.updateProject(project);
       final projectInfo = ProjectModel(project: project);
       await projectInfo.update(simple: true);
       // 跳转到第二步
