@@ -364,3 +364,6 @@ build/
 /linux/flutter/generated_plugins.cmake
 macos/Podfile
 macos/Podfile.lock
+
+jtech.db.isar
+jtech.db.isar-lck

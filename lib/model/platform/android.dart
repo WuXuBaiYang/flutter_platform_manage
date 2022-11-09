@@ -42,7 +42,7 @@ class AndroidPlatform extends BasePlatform {
   String get _appResPath => '$platformPath/${ProjectFilePath.androidRes}';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandleXML.from(_manifestFilePath);
     try {
       // 处理androidManifest.xml文件
@@ -102,7 +102,8 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
-      if (!await FileHandleXML.from(_manifestFilePath).fileWrite((handle) async {
+      if (!await FileHandleXML.from(_manifestFilePath)
+          .fileWrite((handle) async {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名

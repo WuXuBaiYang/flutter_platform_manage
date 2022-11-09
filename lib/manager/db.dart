@@ -1,12 +1,7 @@
 import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
-import 'package:flutter_platform_manage/model/db/setting.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:realm/realm.dart';
-
-// 事件事务回调
-typedef DBTransaction = void Function(Realm realm);
+import 'package:isar/isar.dart';
 
 /*
 * 数据库管理
@@ -20,97 +15,108 @@ class DBManage extends BaseManage {
 
   DBManage._internal();
 
-  // realm对象持有
-  late Realm realm;
+  // isar对象持有
+  late Isar _isar;
 
   @override
   Future<void> init() async {
-    final config = Configuration.local(
+    _isar = await Isar.open(
       [
-        Project.schema,
-        Environment.schema,
-        Setting.schema,
+        ProjectSchema,
+        EnvironmentSchema,
       ],
-      schemaVersion: 0,
-      path: 'jtech.db',
+      directory: '.',
+      name: 'jtech.db',
     );
-    realm = Realm(config);
   }
 
-  // 以事务方式写入数据
-  void write(DBTransaction transaction) =>
-      realm.write(() => transaction(realm));
+  // 添加/更新环境信息
+  Future<Id> updateEnvironment(
+    Environment env, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.environments.put(env),
+        silent: silent,
+      );
 
-  // 删除数据
-  void delete<T extends RealmObject>(T item) => write((realm) {
-        realm.delete<T>(item);
-      });
-
-  // 删除多条数据
-  void deleteMany<T extends RealmObject>(Iterable<T> items) => write((realm) {
-        realm.deleteMany(items);
-      });
-
-  // 查询数据
-  T? find<T extends RealmObject>(Object primaryKey) =>
-      realm.find<T>(primaryKey);
-
-  // 获取所有数据
-  RealmResults<T> all<T extends RealmObject>() => realm.all<T>();
-
-  // 监听目标数据变化
-  Stream<RealmResultsChanges<T>> changes<T extends RealmObject>({
-    Map<String, List<Object>> queryMap = const {},
-  }) {
-    var results = realm.all<T>();
-    //遍历查询表
-    queryMap.forEach((key, value) {
-      results.query(key, value);
-    });
-    return results.changes;
-  }
-
-  // 写入环境信息
-  void addEnvironment(Environment env, {bool update = false}) {
-    return write((realm) {
-      realm.add<Environment>(env, update: update);
-    });
-  }
-
-  // 加载第一条环境信息
-  Environment? loadFirstEnvironment({String? environmentKey}) {
-    var result = loadAllEnvironments();
-    if (result.isEmpty) return null;
-    for (var it in result) {
-      if (it.primaryKey == environmentKey) {
-        return it;
-      }
-    }
-    return result.first;
-  }
-
-  // 加载所有环境信息
-  RealmResults<Environment> loadAllEnvironments() => all<Environment>();
-
-  // 加载指定环境信息
-  Environment? loadEnvironmentByKey(String primaryKey) =>
-      find<Environment>(primaryKey);
+  // 移除环境信息
+  Future<bool> deleteEnvironment(
+    int id, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.environments.delete(id),
+        silent: silent,
+      );
 
   // 判断是否存在相同环境
-  bool hasEnvironment(String path) =>
-      all<Environment>().query(r'path == $0', [path]).isNotEmpty;
+  bool hasEnvironmentSync(String path) =>
+      _isar.environments.filter().pathEqualTo(path).isNotEmptySync();
 
-  // 获取系统设置
-  Future<Setting> loadSetting() async {
-    var results = all<Setting>();
-    if (results.isEmpty) {
-      write((realm) {
-        realm.add(Setting(Utils.genID()));
-      });
-      return loadSetting();
-    }
-    return results.first;
-  }
+  // 加载环境信息
+  Environment? loadEnvironment(int id) => _isar.environments.getSync(id);
+
+  // 加载所有环境信息
+  List<Environment> loadAllEnvironments() =>
+      _isar.environments.where().findAllSync();
+
+  // 监听环境信息变化并返回全部环境信息
+  Stream<List<Environment>> watchAllEnvironmentByLazy({
+    bool fireImmediately = false,
+  }) =>
+      _isar.environments
+          .watchLazy(fireImmediately: fireImmediately)
+          .map((_) => loadAllEnvironments());
+
+  // 添加/更新项目信息
+  Future<Id> updateProject(
+    Project project, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.projects.put(project),
+        silent: silent,
+      );
+
+  // 添加/更新多个项目信息
+  Future<List<Id>> updateProjects(
+    List<Project> projects, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.projects.putAll(projects),
+        silent: silent,
+      );
+
+  // 移除项目信息
+  Future<bool> deleteProject(
+    int id, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.projects.delete(id),
+        silent: silent,
+      );
+
+  // 判断是否存在相同项目
+  bool hasProjectSync(String path) =>
+      _isar.projects.filter().pathEqualTo(path).isNotEmptySync();
+
+  // 加载项目信息
+  Project? loadProject(int id) => _isar.projects.getSync(id);
+
+  // 加载所有项目信息
+  List<Project> loadAllProjects() =>
+      _isar.projects.where().sortByOrder().findAllSync();
+
+  // 监听项目信息变化并返回全部项目信息
+  Stream<List<Project>> watchAllProjectByLazy({
+    bool fireImmediately = false,
+  }) =>
+      _isar.projects
+          .watchLazy(fireImmediately: fireImmediately)
+          .map((_) => loadAllProjects());
 }
 
 //单例调用

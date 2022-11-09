@@ -1,4 +1,4 @@
-import 'package:realm/realm.dart';
+import 'package:isar/isar.dart';
 
 part 'environment.g.dart';
 
@@ -7,21 +7,34 @@ part 'environment.g.dart';
 * @author wuxubaiyang
 * @Time 5/12/2022 14:58
 */
-@RealmModel()
-class _Environment {
+@collection
+class Environment {
   // 主键key
-  @PrimaryKey()
-  late String primaryKey;
+  Id id = Isar.autoIncrement;
 
   // 根路径
-  late String path;
+  String path = '';
 
   // flutter版本号
-  late String flutter;
+  String flutter = '';
 
   // 通道
-  late String channel;
+  String channel = '';
 
   // dart版本号
-  late String dart;
+  String dart = '';
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final Environment typedOther = other;
+    return id == typedOther.id &&
+        path == typedOther.path &&
+        flutter == typedOther.flutter &&
+        channel == typedOther.channel &&
+        dart == typedOther.dart;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, path, flutter, channel, dart);
 }

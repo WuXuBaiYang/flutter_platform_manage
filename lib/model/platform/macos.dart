@@ -40,7 +40,7 @@ class MacOSPlatform extends BasePlatform {
       '$platformPath/${ProjectFilePath.macosAssetsAppIcon}';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple=false}) async {
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();

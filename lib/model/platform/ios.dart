@@ -35,7 +35,7 @@ class IOSPlatform extends BasePlatform {
       '$platformPath/${ProjectFilePath.iosAssetsAppIcon}';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple=false}) async {
     final handle = FileHandlePList.from(_infoPlistFilePath);
     try {
       // 加载项目图标

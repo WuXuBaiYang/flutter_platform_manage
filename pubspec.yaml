@@ -39,9 +39,6 @@ dependencies:
   # 加密算法
   crypto: ^3.0.2
 
-  # 数据库
-  realm: ^0.6.0+beta
-
   # sp数据管理
   shared_preferences: ^2.0.15
 
@@ -81,6 +78,10 @@ dependencies:
   # 颜色选择器
   flutter_colorpicker: ^1.0.3
 
+  # nosql数据库
+  isar: ^3.0.2
+  isar_flutter_libs: ^3.0.2
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
@@ -95,6 +96,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
+  build_runner: ^2.3.2
+
+  # nosql数据库代码生成
+  isar_generator: ^3.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

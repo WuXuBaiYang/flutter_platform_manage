@@ -1,9 +1,10 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:isar/isar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
@@ -25,7 +26,11 @@ class ProjectSettings extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022-07-25 17:22:43
 */
-class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
+class _ProjectSettingsState
+    extends BaseSettingsState<ProjectSettings, _ProjectSettingsLogic> {
+  @override
+  _ProjectSettingsLogic initLogic() => _ProjectSettingsLogic();
+
   @override
   List<Widget> get loadSettingList => [
         _buildEnvironmentInfo(),
@@ -34,25 +39,35 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
 
   // 构建环境列表设置项
   Widget _buildEnvironmentInfo() {
-    return FutureBuilder<List<Environment>>(
-      future: Future.value(dbManage.loadAllEnvironments().toList()),
+    return buildItem(
+      child: Expander(
+        trailing: IconButton(
+          icon: const Icon(FluentIcons.add),
+          onPressed: () => EnvImportDialog.show(context),
+        ),
+        header: const Text('Flutter环境列表'),
+        content: _buildEnvironmentList(),
+      ),
+    );
+  }
+
+  // 构建环境列表
+  Widget _buildEnvironmentList() {
+    return StreamBuilder<List<Environment>>(
+      stream: dbManage.watchAllEnvironmentByLazy(
+        fireImmediately: true,
+      ),
       builder: (_, snap) {
         if (snap.hasData) {
-          return buildItem(
-            child: Expander(
-              trailing: IconButton(
-                icon: const Icon(FluentIcons.add),
-                onPressed: () {
-                  EnvImportDialog.show(context).then((value) {
-                    if (null != value) {
-                      setState(() {});
-                    }
-                  });
-                },
-              ),
-              header: const Text('Flutter环境列表'),
-              content: _buildEnvironmentList(snap.data!),
-            ),
+          final envList = snap.data ?? [];
+          return ListView.separated(
+            shrinkWrap: true,
+            itemCount: envList.length,
+            separatorBuilder: (_, i) => const Divider(),
+            itemBuilder: (_, i) {
+              final item = envList[i];
+              return _buildEnvironmentListItem(item);
+            },
           );
         }
         return const Center(
@@ -62,40 +77,26 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
     );
   }
 
-  // 构建环境列表
-  Widget _buildEnvironmentList(List<Environment> data) {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: data.length,
-      separatorBuilder: (_, i) => const Divider(),
-      itemBuilder: (_, i) {
-        final item = data[i];
-        return ListTile(
-          title: Text('Flutter · ${item.flutter} · ${item.channel}'),
-          subtitle: Text('Dart · ${item.dart}'),
-          trailing: Row(
-            children: [
-              IconButton(
-                icon: const Icon(FluentIcons.refresh),
-                onPressed: () {
-                  Utils.showLoading(
-                    context,
-                    loadFuture:
-                        ScriptHandle.loadFlutterEnv(item.path).then((env) {
-                      env.primaryKey = item.primaryKey;
-                      dbManage.addEnvironment(env, update: true);
-                    }),
-                  ).then((_) => setState(() {}));
-                },
-              ),
-              IconButton(
-                icon: const Icon(FluentIcons.info),
-                onPressed: () => _showEnvironmentItemInfo(item),
-              ),
-            ],
+  // 构建环境列表子项
+  Widget _buildEnvironmentListItem(Environment item) {
+    return ListTile(
+      title: Text('Flutter · ${item.flutter} · ${item.channel}'),
+      subtitle: Text('Dart · ${item.dart}'),
+      trailing: Row(
+        children: [
+          IconButton(
+            icon: const Icon(FluentIcons.refresh),
+            onPressed: () => Utils.showLoading<Environment>(
+              context,
+              loadFuture: ScriptHandle.loadFlutterEnv(item.path, oldEnv: item),
+            ).then(logic.updateEnv),
           ),
-        );
-      },
+          IconButton(
+            icon: const Icon(FluentIcons.info),
+            onPressed: () => _showEnvironmentItemInfo(item),
+          ),
+        ],
+      ),
     );
   }
 
@@ -134,13 +135,29 @@ class _ProjectSettingsState extends BaseSettingsState<ProjectSettings> {
           '查看本项目源码以及说明文档',
           textAlign: TextAlign.start,
         ),
-        onPressed: () async {
-          final uri = Uri.parse(Common.appSourceUrl);
-          if (!await launchUrl(uri)) {
-            Utils.showSnack(context, '网址打开失败');
-          }
-        },
+        onPressed: () => logic.openAppSource(context).then((v) {
+          if (!v) Utils.showSnack(context, '网址打开失败');
+        }),
       ),
     );
+  }
+}
+
+/*
+* 项目相关设置-逻辑
+* @author wuxubaiyang
+* @Time 2022/11/9 12:55
+*/
+class _ProjectSettingsLogic extends BaseSettingsLogic {
+  // 更新环境信息
+  Future<Id?> updateEnv(Environment? env) async {
+    if (env == null) return null;
+    return dbManage.updateEnvironment(env);
+  }
+
+  // 打开项目源码
+  Future<bool> openAppSource(BuildContext context) {
+    final uri = Uri.parse(Common.appSourceUrl);
+    return launchUrl(uri);
   }
 }

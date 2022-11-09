@@ -31,7 +31,7 @@ abstract class BasePlatform {
   }) : projectIcons = const [];
 
   // 更新信息
-  Future<bool> update(bool simple);
+  Future<bool> update({bool simple=false});
 
   // 提交信息变动
   Future<bool> commit();

@@ -1,6 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
-import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
@@ -107,7 +106,8 @@ class ProjectMenu {
                 message: '是否删除该项目 ${projectModel.showTitle}',
                 confirm: '删除',
                 onConfirmTap: () {
-                  dbManage.delete(projectModel.project);
+                  final id = projectModel.project.id;
+                  dbManage.deleteProject(id);
                   Navigator.maybePop(context);
                 },
               ),

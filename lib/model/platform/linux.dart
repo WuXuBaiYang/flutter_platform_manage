@@ -15,7 +15,7 @@ class LinuxPlatform extends BasePlatform {
   }) : super(type: PlatformType.linux);
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple=false}) async {
     final handle = FileHandle.from('');
     try {
       if (simple) return true;

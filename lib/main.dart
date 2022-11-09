@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/cache.dart';
@@ -10,9 +11,6 @@ import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/event/theme.dart';
 import 'package:flutter_platform_manage/pages/home.dart';
 import 'package:window_manager/window_manager.dart';
-
-// 记录debug状态
-const bool debugMode = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +53,7 @@ class MyApp extends StatelessWidget {
       builder: (_, snap) {
         final themeType = snap.data?.themeType;
         return FluentApp(
-          debugShowCheckedModeBanner: debugMode,
+          debugShowCheckedModeBanner: kDebugMode,
           navigatorKey: jRouter.navigateKey,
           routes: RoutePath.routeMap,
           theme: themeType?.theme,

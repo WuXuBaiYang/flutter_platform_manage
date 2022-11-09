@@ -5,7 +5,6 @@ import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:process_run/shell.dart';
 
 /*
@@ -15,7 +14,10 @@ import 'package:process_run/shell.dart';
 */
 class ScriptHandle {
   // 查看flutter版本号信息
-  static Future<Environment> loadFlutterEnv(String path) async {
+  static Future<Environment> loadFlutterEnv(
+    String path, {
+    Environment? oldEnv,
+  }) async {
     final outText = await runShell(
       '$path/${ProjectFilePath.flutter} --version',
     );
@@ -30,7 +32,11 @@ class ScriptHandle {
         dart = it.replaceAll(dart, '').trim();
       }
     }
-    return Environment(Utils.genID(), path, version, channel, dart);
+    return oldEnv ??= Environment()
+      ..path = path
+      ..flutter = version
+      ..channel = channel
+      ..dart = dart;
   }
 
   // 创建平台信息

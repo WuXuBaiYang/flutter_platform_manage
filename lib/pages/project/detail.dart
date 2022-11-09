@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
-import 'package:flutter_platform_manage/manager/project.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
@@ -17,7 +17,6 @@ import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:window_manager/window_manager.dart';
-
 import 'platforms/android.dart';
 import 'platforms/ios.dart';
 import 'platforms/linux.dart';
@@ -244,11 +243,13 @@ class _ProjectDetailPageLogic extends BaseLogic {
 
   // 更新当前项目信息
   Future<ProjectModel> loadProjectInfo(BuildContext context) async {
-    final key = jRouter.find<String>(context, 'key');
-    if (null == key || key.isEmpty) throw Exception('项目key不能为空');
-    final value = await projectManage.getProjectInfo(key);
+    final id = jRouter.find<int>(context, 'id');
+    if (null == id) throw Exception('项目id不能为空');
+    final value = dbManage.loadProject(id);
     if (null == value) throw Exception('项目信息不存在');
-    return Future.value(value);
+    final project = ProjectModel(project: value);
+    await project.update();
+    return project;
   }
 
   @override

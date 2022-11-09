@@ -1,7 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/pages/setting/settings/project.dart';
 import 'package:flutter_platform_manage/pages/setting/settings/system.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
+import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
 * 设置页
@@ -48,7 +50,8 @@ class _SettingPageState extends State<SettingPage> {
 * @author wuxubaiyang
 * @Time 2022-07-26 09:17:26
 */
-abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
+abstract class BaseSettingsState<T extends StatefulWidget,
+    C extends BaseSettingsLogic> extends LogicState<T, C> {
   @override
   Widget build(BuildContext context) {
     final settingList = loadSettingList;
@@ -68,3 +71,10 @@ abstract class BaseSettingsState<T extends StatefulWidget> extends State<T> {
     return CardItem(child: child);
   }
 }
+
+/*
+* 设置基类-逻辑
+* @author wuxubaiyang
+* @Time 2022/10/27 15:35
+*/
+abstract class BaseSettingsLogic extends BaseLogic {}

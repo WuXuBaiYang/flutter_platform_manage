@@ -48,7 +48,7 @@ class WebPlatform extends BasePlatform {
   String get _faviconFilePath => '$platformPath/favicon.png';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple=false}) async {
     final handle = FileHandleJSON.from(_manifestFilePath);
     try {
       final jsonData = await handle.jsonDataMap;

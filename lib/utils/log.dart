@@ -1,4 +1,4 @@
-import 'package:flutter_platform_manage/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 /*
@@ -95,7 +95,7 @@ class LogTool {
     dynamic error,
     StackTrace? stackTrace,
   }) {
-    if (!debugMode) return;
+    if (!kDebugMode) return;
     _logger ??= Logger();
     return _logger?.log(level, message, error, stackTrace);
   }

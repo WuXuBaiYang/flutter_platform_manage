@@ -40,12 +40,12 @@ class _EnvImportDialogState
 
   @override
   Widget build(BuildContext context) {
-    return ContentDialog(
-      content: ValueListenableBuilder2<Environment?, String?>(
-        first: logic.envController,
-        second: logic.errTextController,
-        builder: (_, env, errText, __) {
-          return Column(
+    return ValueListenableBuilder2<Environment?, String?>(
+      first: logic.envController,
+      second: logic.errTextController,
+      builder: (_, env, errText, __) {
+        return ContentDialog(
+          content: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -73,19 +73,19 @@ class _EnvImportDialogState
                       ? const Center(child: ProgressRing())
                       : const SizedBox()),
             ],
-          );
-        },
-      ),
-      actions: [
-        Button(
-          child: const Text('取消'),
-          onPressed: () => Navigator.maybePop(context),
-        ),
-        FilledButton(
-          onPressed: logic.onImportEnv(context),
-          child: const Text('导入'),
-        ),
-      ],
+          ),
+          actions: [
+            Button(
+              child: const Text('取消'),
+              onPressed: () => Navigator.maybePop(context),
+            ),
+            FilledButton(
+              onPressed: logic.onImportEnv(context),
+              child: const Text('导入'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -110,12 +110,10 @@ class _EnvImportDialogLogic extends BaseLogic {
     final env = envController.value;
     if (env == null) return null;
     return () {
-      try {
-        dbManage.addEnvironment(env);
-        Navigator.maybePop(context, env);
-      } catch (e) {
-        errTextController.setValue('环境添加失败');
-      }
+      dbManage
+          .updateEnvironment(env)
+          .then((_) => Navigator.maybePop(context, env))
+          .catchError((e) => errTextController.setValue('环境添加失败'));
     };
   }
 
@@ -131,7 +129,7 @@ class _EnvImportDialogLogic extends BaseLogic {
       envPathController.text = '';
       errTextController.setValue(null);
       envController.setValue(null);
-      if (dbManage.hasEnvironment(path)) {
+      if (dbManage.hasEnvironmentSync(path)) {
         errTextController.setValue('已存在相同环境');
         return;
       }

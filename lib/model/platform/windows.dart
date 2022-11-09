@@ -18,12 +18,13 @@ class WindowsPlatform extends BasePlatform {
   String get _iconFilePath => '$platformPath/runner/resources/app_icon.ico';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandle.from('');
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();
       if (simple) return true;
+
       ///待实现
     } catch (e) {
       return false;
