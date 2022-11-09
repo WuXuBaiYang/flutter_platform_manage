@@ -9,7 +9,7 @@ part 'environment.g.dart';
 */
 @collection
 class Environment {
-  // 主键key
+  // 主键id
   Id id = Isar.autoIncrement;
 
   // 根路径

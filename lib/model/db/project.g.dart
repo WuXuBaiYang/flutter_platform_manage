@@ -27,13 +27,18 @@ const ProjectSchema = CollectionSchema(
       name: r'envId',
       type: IsarType.long,
     ),
-    r'order': PropertySchema(
+    r'hashCode': PropertySchema(
       id: 2,
+      name: r'hashCode',
+      type: IsarType.long,
+    ),
+    r'order': PropertySchema(
+      id: 3,
       name: r'order',
       type: IsarType.long,
     ),
     r'path': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'path',
       type: IsarType.string,
     )
@@ -71,8 +76,9 @@ void _projectSerialize(
 ) {
   writer.writeString(offsets[0], object.alias);
   writer.writeLong(offsets[1], object.envId);
-  writer.writeLong(offsets[2], object.order);
-  writer.writeString(offsets[3], object.path);
+  writer.writeLong(offsets[2], object.hashCode);
+  writer.writeLong(offsets[3], object.order);
+  writer.writeString(offsets[4], object.path);
 }
 
 Project _projectDeserialize(
@@ -85,8 +91,8 @@ Project _projectDeserialize(
   object.alias = reader.readString(offsets[0]);
   object.envId = reader.readLong(offsets[1]);
   object.id = id;
-  object.order = reader.readLong(offsets[2]);
-  object.path = reader.readString(offsets[3]);
+  object.order = reader.readLong(offsets[3]);
+  object.path = reader.readString(offsets[4]);
   return object;
 }
 
@@ -104,6 +110,8 @@ P _projectDeserializeProp<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -382,6 +390,59 @@ extension ProjectQueryFilter
     });
   }
 
+  QueryBuilder<Project, Project, QAfterFilterCondition> hashCodeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hashCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Project, Project, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -649,6 +710,18 @@ extension ProjectQuerySortBy on QueryBuilder<Project, Project, QSortBy> {
     });
   }
 
+  QueryBuilder<Project, Project, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterSortBy> sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<Project, Project, QAfterSortBy> sortByOrder() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'order', Sort.asc);
@@ -697,6 +770,18 @@ extension ProjectQuerySortThenBy
   QueryBuilder<Project, Project, QAfterSortBy> thenByEnvIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'envId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Project, Project, QAfterSortBy> thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
     });
   }
 
@@ -752,6 +837,12 @@ extension ProjectQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Project, Project, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
   QueryBuilder<Project, Project, QDistinct> distinctByOrder() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'order');
@@ -783,6 +874,12 @@ extension ProjectQueryProperty
   QueryBuilder<Project, int, QQueryOperations> envIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'envId');
+    });
+  }
+
+  QueryBuilder<Project, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 

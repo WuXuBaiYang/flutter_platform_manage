@@ -32,8 +32,13 @@ const EnvironmentSchema = CollectionSchema(
       name: r'flutter',
       type: IsarType.string,
     ),
-    r'path': PropertySchema(
+    r'hashCode': PropertySchema(
       id: 3,
+      name: r'hashCode',
+      type: IsarType.long,
+    ),
+    r'path': PropertySchema(
+      id: 4,
       name: r'path',
       type: IsarType.string,
     )
@@ -74,7 +79,8 @@ void _environmentSerialize(
   writer.writeString(offsets[0], object.channel);
   writer.writeString(offsets[1], object.dart);
   writer.writeString(offsets[2], object.flutter);
-  writer.writeString(offsets[3], object.path);
+  writer.writeLong(offsets[3], object.hashCode);
+  writer.writeString(offsets[4], object.path);
 }
 
 Environment _environmentDeserialize(
@@ -88,7 +94,7 @@ Environment _environmentDeserialize(
   object.dart = reader.readString(offsets[1]);
   object.flutter = reader.readString(offsets[2]);
   object.id = id;
-  object.path = reader.readString(offsets[3]);
+  object.path = reader.readString(offsets[4]);
   return object;
 }
 
@@ -106,6 +112,8 @@ P _environmentDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -604,6 +612,61 @@ extension EnvironmentQueryFilter
     });
   }
 
+  QueryBuilder<Environment, Environment, QAfterFilterCondition> hashCodeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Environment, Environment, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Environment, Environment, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Environment, Environment, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hashCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Environment, Environment, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -833,6 +896,18 @@ extension EnvironmentQuerySortBy
     });
   }
 
+  QueryBuilder<Environment, Environment, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Environment, Environment, QAfterSortBy> sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<Environment, Environment, QAfterSortBy> sortByPath() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'path', Sort.asc);
@@ -884,6 +959,18 @@ extension EnvironmentQuerySortThenBy
     });
   }
 
+  QueryBuilder<Environment, Environment, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Environment, Environment, QAfterSortBy> thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<Environment, Environment, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -932,6 +1019,12 @@ extension EnvironmentQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Environment, Environment, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
   QueryBuilder<Environment, Environment, QDistinct> distinctByPath(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -963,6 +1056,12 @@ extension EnvironmentQueryProperty
   QueryBuilder<Environment, String, QQueryOperations> flutterProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'flutter');
+    });
+  }
+
+  QueryBuilder<Environment, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 

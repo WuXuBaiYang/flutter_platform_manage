@@ -9,7 +9,7 @@ part 'project.g.dart';
 */
 @collection
 class Project {
-  // 主键key
+  // 主键id
   Id id = Isar.autoIncrement;
 
   // 项目的本地存储路径

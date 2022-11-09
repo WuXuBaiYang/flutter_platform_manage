@@ -1,5 +1,6 @@
 import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
+import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:isar/isar.dart';
 
@@ -24,6 +25,7 @@ class DBManage extends BaseManage {
       [
         ProjectSchema,
         EnvironmentSchema,
+        PackageSchema,
       ],
       directory: '.',
       name: 'jtech.db',
