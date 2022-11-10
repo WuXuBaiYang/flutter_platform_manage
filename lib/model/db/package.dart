@@ -17,14 +17,14 @@ class Package {
 
   // 状态
   @enumerated
-  PackageStatus status = PackageStatus.ready;
+  PackageStatus status = PackageStatus.stop;
 
   // 完成时间
-  int? completeTime;
+  DateTime? completeTime;
 
   // 输入路径
   String? outputPath;
 }
 
 // 打包状态枚举
-enum PackageStatus { ready, packing, fail, completed }
+enum PackageStatus { packing, prepare, stop, fail, completed }

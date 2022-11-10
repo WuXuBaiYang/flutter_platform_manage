@@ -54,7 +54,7 @@ class _ProjectSettingsState
   // 构建环境列表
   Widget _buildEnvironmentList() {
     return StreamBuilder<List<Environment>>(
-      stream: dbManage.watchAllEnvironmentByLazy(
+      stream: dbManage.watchEnvironmentByLazy(
         fireImmediately: true,
       ),
       builder: (_, snap) {

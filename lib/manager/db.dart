@@ -64,7 +64,7 @@ class DBManage extends BaseManage {
       _isar.environments.where().findAllSync();
 
   // 监听环境信息变化并返回全部环境信息
-  Stream<List<Environment>> watchAllEnvironmentByLazy({
+  Stream<List<Environment>> watchEnvironmentByLazy({
     bool fireImmediately = false,
   }) =>
       _isar.environments
@@ -113,12 +113,106 @@ class DBManage extends BaseManage {
       _isar.projects.where().sortByOrder().findAllSync();
 
   // 监听项目信息变化并返回全部项目信息
-  Stream<List<Project>> watchAllProjectByLazy({
+  Stream<List<Project>> watchProjectByLazy({
     bool fireImmediately = false,
   }) =>
       _isar.projects
           .watchLazy(fireImmediately: fireImmediately)
           .map((_) => loadAllProjects());
+
+  // 添加打包任务(一个项目相同平台同时只能有一个打包任务，非完成状态)
+  Future<Id?> addPackage(
+    Package package, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () async {
+          // 检查该项目是否已存在并且是非完成状态
+          final hasTask = await _isar.packages
+              .filter()
+              .projectIdEqualTo(package.projectId)
+              .and()
+              .platformEqualTo(package.platform)
+              .and()
+              .not()
+              .statusEqualTo(PackageStatus.completed)
+              .isNotEmpty();
+          if (hasTask) return null;
+          return _isar.packages.put(package);
+        },
+        silent: silent,
+      );
+
+  // 移除多个打包任务/记录
+  Future<int> deletePackages(
+    List<Id> ids, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () => _isar.packages.deleteAll(ids),
+        silent: silent,
+      );
+
+  // 修改打包状态（已完成任务无法再改变）
+  Future<Id?> updatePackageStatus(
+    Id id,
+    PackageStatus status, {
+    bool silent = false,
+  }) =>
+      _isar.writeTxn(
+        () async {
+          // 判断id是否存在，并且状态为非完成
+          final package = await _isar.packages
+              .filter()
+              .idEqualTo(id)
+              .and()
+              .not()
+              .statusEqualTo(PackageStatus.completed)
+              .findFirst();
+          if (package == null) return null;
+          package.status = status;
+          return _isar.packages.put(package);
+        },
+        silent: silent,
+      );
+
+  // 监听打包状态变化并返回对应打包列表
+  Stream<List<Package>> watchPackageByLazy({
+    bool fireImmediately = false,
+    required List<PackageStatus> status,
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) =>
+      _isar.packages
+          .filter()
+          .group((q) => q.anyOf(status, (q, PackageStatus e) {
+                return q.statusEqualTo(e);
+              }))
+          .watchLazy(fireImmediately: fireImmediately)
+          .map((_) => loadPackages(
+                status: status,
+                pageIndex: pageIndex,
+                pageSize: pageSize,
+              ));
+
+  // 分页加载打包记录
+  List<Package> loadPackages({
+    required List<PackageStatus> status,
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    final offset = pageIndex > 0 ? (pageIndex - 1) * pageSize : 0;
+    return _isar.packages
+        .where()
+        .filter()
+        .group((q) => q.anyOf(status, (q, PackageStatus e) {
+              return q.statusEqualTo(e);
+            }))
+        .sortByStatus()
+        .offset(offset)
+        .limit(pageSize)
+        .findAllSync();
+  }
 }
 
 //单例调用

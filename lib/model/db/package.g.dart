@@ -20,7 +20,7 @@ const PackageSchema = CollectionSchema(
     r'completeTime': PropertySchema(
       id: 0,
       name: r'completeTime',
-      type: IsarType.long,
+      type: IsarType.dateTime,
     ),
     r'outputPath': PropertySchema(
       id: 1,
@@ -80,7 +80,7 @@ void _packageSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.completeTime);
+  writer.writeDateTime(offsets[0], object.completeTime);
   writer.writeString(offsets[1], object.outputPath);
   writer.writeByte(offsets[2], object.platform.index);
   writer.writeLong(offsets[3], object.projectId);
@@ -94,7 +94,7 @@ Package _packageDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Package();
-  object.completeTime = reader.readLongOrNull(offsets[0]);
+  object.completeTime = reader.readDateTimeOrNull(offsets[0]);
   object.id = id;
   object.outputPath = reader.readStringOrNull(offsets[1]);
   object.platform =
@@ -103,7 +103,7 @@ Package _packageDeserialize(
   object.projectId = reader.readLong(offsets[3]);
   object.status =
       _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
-          PackageStatus.ready;
+          PackageStatus.packing;
   return object;
 }
 
@@ -115,7 +115,7 @@ P _packageDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
@@ -125,7 +125,7 @@ P _packageDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 4:
       return (_PackagestatusValueEnumMap[reader.readByteOrNull(offset)] ??
-          PackageStatus.ready) as P;
+          PackageStatus.packing) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -148,16 +148,18 @@ const _PackageplatformValueEnumMap = {
   5: PlatformType.linux,
 };
 const _PackagestatusEnumValueMap = {
-  'ready': 0,
-  'packing': 1,
-  'fail': 2,
-  'completed': 3,
+  'packing': 0,
+  'prepare': 1,
+  'stop': 2,
+  'fail': 3,
+  'completed': 4,
 };
 const _PackagestatusValueEnumMap = {
-  0: PackageStatus.ready,
-  1: PackageStatus.packing,
-  2: PackageStatus.fail,
-  3: PackageStatus.completed,
+  0: PackageStatus.packing,
+  1: PackageStatus.prepare,
+  2: PackageStatus.stop,
+  3: PackageStatus.fail,
+  4: PackageStatus.completed,
 };
 
 Id _packageGetId(Package object) {
@@ -267,7 +269,7 @@ extension PackageQueryFilter
   }
 
   QueryBuilder<Package, Package, QAfterFilterCondition> completeTimeEqualTo(
-      int? value) {
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'completeTime',
@@ -277,7 +279,7 @@ extension PackageQueryFilter
   }
 
   QueryBuilder<Package, Package, QAfterFilterCondition> completeTimeGreaterThan(
-    int? value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -290,7 +292,7 @@ extension PackageQueryFilter
   }
 
   QueryBuilder<Package, Package, QAfterFilterCondition> completeTimeLessThan(
-    int? value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -303,8 +305,8 @@ extension PackageQueryFilter
   }
 
   QueryBuilder<Package, Package, QAfterFilterCondition> completeTimeBetween(
-    int? lower,
-    int? upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -862,7 +864,7 @@ extension PackageQueryProperty
     });
   }
 
-  QueryBuilder<Package, int?, QQueryOperations> completeTimeProperty() {
+  QueryBuilder<Package, DateTime?, QQueryOperations> completeTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'completeTime');
     });

@@ -2,8 +2,9 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
+import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/pages/project/index.dart';
-import 'package:flutter_platform_manage/pages/package_record.dart';
+import 'package:flutter_platform_manage/pages/package/record.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
@@ -77,8 +78,8 @@ class _HomePageState extends LogicState<HomePage, _HomePageLogic>
         ),
         PaneItem(
           icon: const Icon(FluentIcons.packages),
-          title: const Text('打包记录'),
-          body: const PackageRecordPage(),
+          title: const Text('打包管理'),
+          body: const PackagePage(),
         )
       ];
 

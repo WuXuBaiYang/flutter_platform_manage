@@ -55,7 +55,7 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
         commandBar: _buildCommandBar(),
       ),
       content: StreamBuilder<List<Project>>(
-        stream: dbManage.watchAllProjectByLazy(
+        stream: dbManage.watchProjectByLazy(
           fireImmediately: true,
         ),
         builder: (_, snap) {
