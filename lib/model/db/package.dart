@@ -20,6 +20,7 @@ class Package {
   PackageStatus status = PackageStatus.stop;
 
   // 完成时间
+  @Index(type: IndexType.value)
   DateTime? completeTime;
 
   // 输入路径

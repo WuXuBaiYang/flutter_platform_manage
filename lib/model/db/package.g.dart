@@ -50,7 +50,21 @@ const PackageSchema = CollectionSchema(
   deserialize: _packageDeserialize,
   deserializeProp: _packageDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'completeTime': IndexSchema(
+      id: -3126106724588762207,
+      name: r'completeTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'completeTime',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _packageGetId,
@@ -180,6 +194,14 @@ extension PackageQueryWhereSort on QueryBuilder<Package, Package, QWhere> {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<Package, Package, QAfterWhere> anyCompleteTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'completeTime'),
+      );
+    });
+  }
 }
 
 extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
@@ -243,6 +265,116 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'completeTime',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'completeTime',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeEqualTo(
+      DateTime? completeTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'completeTime',
+        value: [completeTime],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeNotEqualTo(
+      DateTime? completeTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'completeTime',
+              lower: [],
+              upper: [completeTime],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'completeTime',
+              lower: [completeTime],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'completeTime',
+              lower: [completeTime],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'completeTime',
+              lower: [],
+              upper: [completeTime],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeGreaterThan(
+    DateTime? completeTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'completeTime',
+        lower: [completeTime],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeLessThan(
+    DateTime? completeTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'completeTime',
+        lower: [],
+        upper: [completeTime],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> completeTimeBetween(
+    DateTime? lowerCompleteTime,
+    DateTime? upperCompleteTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'completeTime',
+        lower: [lowerCompleteTime],
+        includeLower: includeLower,
+        upper: [upperCompleteTime],
         includeUpper: includeUpper,
       ));
     });

@@ -16,8 +16,8 @@ class ValueChangeNotifier<V> extends ChangeNotifier
   V get value => _value;
 
   // 赋值并刷新
-  bool setValue(V newValue) {
-    if (newValue == _value) return false;
+  bool setValue(V newValue, {bool update = false}) {
+    if (!update && newValue == _value) return false;
     _value = newValue;
     notifyListeners();
     return true;

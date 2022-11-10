@@ -22,4 +22,7 @@ void main() {
     a = a.substring(a.indexOf(r'/User'));
     print(a);
   });
+  test('测试除法', () {
+    print((7 / 3).ceil());
+  });
 }

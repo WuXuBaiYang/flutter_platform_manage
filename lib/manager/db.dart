@@ -64,7 +64,7 @@ class DBManage extends BaseManage {
       _isar.environments.where().findAllSync();
 
   // 监听环境信息变化并返回全部环境信息
-  Stream<List<Environment>> watchEnvironmentByLazy({
+  Stream<List<Environment>> watchEnvironmentList({
     bool fireImmediately = false,
   }) =>
       _isar.environments
@@ -113,7 +113,7 @@ class DBManage extends BaseManage {
       _isar.projects.where().sortByOrder().findAllSync();
 
   // 监听项目信息变化并返回全部项目信息
-  Stream<List<Project>> watchProjectByLazy({
+  Stream<List<Project>> watchProjectList({
     bool fireImmediately = false,
   }) =>
       _isar.projects
@@ -176,42 +176,64 @@ class DBManage extends BaseManage {
         silent: silent,
       );
 
-  // 监听打包状态变化并返回对应打包列表
-  Stream<List<Package>> watchPackageByLazy({
+  // 监听打包任务列表变化
+  Stream<List<Package>> watchPackageTaskList({
     bool fireImmediately = false,
-    required List<PackageStatus> status,
-    int pageIndex = 1,
-    int pageSize = 15,
   }) =>
       _isar.packages
           .filter()
-          .group((q) => q.anyOf(status, (q, PackageStatus e) {
-                return q.statusEqualTo(e);
-              }))
+          .group((q) => q.not().statusEqualTo(PackageStatus.completed))
           .watchLazy(fireImmediately: fireImmediately)
-          .map((_) => loadPackages(
-                status: status,
-                pageIndex: pageIndex,
-                pageSize: pageSize,
-              ));
+          .map((_) => _isar.packages
+              .filter()
+              .group((q) => q.not().statusEqualTo(PackageStatus.completed))
+              .sortByStatus()
+              .findAllSync());
 
-  // 分页加载打包记录
-  List<Package> loadPackages({
-    required List<PackageStatus> status,
+  // 监听打包历史记录的列表变化
+  Stream<void> watchPackageRecordList({
+    bool fireImmediately = false,
+  }) =>
+      _isar.packages
+          .filter()
+          .group((q) => q.statusEqualTo(PackageStatus.completed))
+          .watchLazy(fireImmediately: fireImmediately);
+
+  // 分页获取打包历史记录列表
+  List<Package> loadPackageRecordList({
     int pageIndex = 1,
     int pageSize = 15,
+    Sort sort = Sort.asc,
+    DateTime? startTime,
+    DateTime? endTime,
+    Id? projectId,
   }) {
     final offset = pageIndex > 0 ? (pageIndex - 1) * pageSize : 0;
     return _isar.packages
-        .where()
+        .where(sort: sort)
         .filter()
-        .group((q) => q.anyOf(status, (q, PackageStatus e) {
-              return q.statusEqualTo(e);
-            }))
-        .sortByStatus()
+        .group((q) {
+          startTime ??= DateTime(0);
+          endTime ??= DateTime.now();
+          if (projectId != null) {
+            q = q.projectIdEqualTo(projectId).and();
+          }
+          return q.completeTimeBetween(startTime, endTime);
+        })
         .offset(offset)
         .limit(pageSize)
         .findAllSync();
+  }
+
+  // 获取打包记录分页页数
+  int getPackageRecordPages({
+    int pageSize = 15,
+  }) {
+    final count = _isar.packages
+        .filter()
+        .statusEqualTo(PackageStatus.completed)
+        .countSync();
+    return (count / pageSize).ceil();
   }
 }
 

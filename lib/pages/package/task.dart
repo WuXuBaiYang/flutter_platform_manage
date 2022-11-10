@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
@@ -26,11 +27,9 @@ class _PackageTaskPageState
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: TextButton(
-        child: Text('点击'),
-        onPressed: () {},
-      ),
+    return Container(
+      color: themeManage.currentTheme.scaffoldBackgroundColor,
+      child: Center(child: Text('功能开发中')),
     );
   }
 }

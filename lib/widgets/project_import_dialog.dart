@@ -220,7 +220,7 @@ class _ProjectImportDialogState
   // 构建项目环境选择子项
   Widget _buildProjectSelectEnvItem(FormFieldState<Environment> f) {
     return StreamBuilder<List<Environment>>(
-      stream: dbManage.watchEnvironmentByLazy(
+      stream: dbManage.watchEnvironmentList(
         fireImmediately: true,
       ),
       builder: (_, snap) {
