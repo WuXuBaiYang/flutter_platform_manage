@@ -70,28 +70,28 @@ class _HomePageState extends LogicState<HomePage, _HomePageLogic>
   }
 
   // 导航项
-  List<NavigationPaneItem> get _navigationItems => [
-        PaneItem(
-          icon: const Icon(FluentIcons.project_management),
-          title: const Text('项目管理'),
-          body: const ProjectPage(),
-        ),
-        PaneItem(
-          icon: const Icon(FluentIcons.packages),
-          title: const Text('打包管理'),
-          body: const PackagePage(),
-        )
-      ];
+  final List<NavigationPaneItem> _navigationItems = [
+    PaneItem(
+      icon: const Icon(FluentIcons.project_management),
+      title: const Text('项目管理'),
+      body: const ProjectPage(),
+    ),
+    PaneItem(
+      icon: const Icon(FluentIcons.packages),
+      title: const Text('打包管理'),
+      body: const PackagePage(),
+    )
+  ];
 
   // 导航底部项
-  List<NavigationPaneItem> get _navigationFooterItems => [
-        PaneItemSeparator(),
-        PaneItem(
-          icon: const Icon(FluentIcons.settings),
-          title: const Text('设置'),
-          body: const SettingPage(),
-        ),
-      ];
+  final List<NavigationPaneItem> _navigationFooterItems = [
+    PaneItemSeparator(),
+    PaneItem(
+      icon: const Icon(FluentIcons.settings),
+      title: const Text('设置'),
+      body: const SettingPage(),
+    ),
+  ];
 
   @override
   void onWindowClose() {

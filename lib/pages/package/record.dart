@@ -4,7 +4,12 @@ import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
+import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
+import 'package:flutter_platform_manage/widgets/date_rang_picker_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/utils/date.dart';
+import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:isar/isar.dart';
 
 /*
@@ -35,16 +40,21 @@ class _PackageRecordPageState
       color: themeManage.currentTheme.scaffoldBackgroundColor,
       child: ScaffoldPage(
         header: PageHeader(
-          title: Text('共 0 条记录'),
-          commandBar: _buildCommandBar(),
+          commandBar: _buildCommandBar(context),
         ),
-        content: _buildRecordList(),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(child: _buildRecordList()),
+            _buildPageIndicator(),
+          ],
+        ),
       ),
     );
   }
 
   // 构建操作菜单
-  Widget _buildCommandBar() {
+  Widget _buildCommandBar(BuildContext context) {
     return CommandBarCard(
       child: ValueListenableBuilder<_OptionParams>(
         valueListenable: logic.optionController,
@@ -56,7 +66,28 @@ class _PackageRecordPageState
                 label: Text(option.sortStatus),
                 icon: Icon(option.sortStatusIcon),
                 onPressed: logic.switchSort,
-              )
+              ),
+              const CommandBarSeparator(),
+              CommandBarButton(
+                label: Text(option.timeTitle),
+                icon: const Icon(FluentIcons.date_time),
+                onPressed: () => _showDateRangPicker(
+                  context,
+                  start: option.startTime,
+                  end: option.endTime,
+                ),
+              ),
+              const CommandBarSeparator(),
+              CommandBarButton(
+                icon: _buildProjectSelect(option.projectId),
+                onPressed: null,
+              ),
+              const CommandBarSeparator(),
+              CommandBarButton(
+                label: const Text('重置'),
+                icon: const Icon(FluentIcons.reset),
+                onPressed: logic.resetFilter,
+              ),
             ],
           );
         },
@@ -66,12 +97,93 @@ class _PackageRecordPageState
 
   // 构建记录列表
   Widget _buildRecordList() {
-    return ValueListenableBuilder<List<Package>>(
-      valueListenable: logic.recordListController,
-      builder: (_, recordList, __) {
-        return SizedBox();
+    return Padding(
+      padding: const EdgeInsets.all(14),
+      child: ValueListenableBuilder<List<Package>>(
+        valueListenable: logic.recordListController,
+        builder: (_, recordList, __) {
+          return ListView.separated(
+            itemBuilder: (_, i) => Text('第$i行'),
+            separatorBuilder: (_, i) => Divider(),
+            itemCount: 100,
+          );
+        },
+      ),
+    );
+  }
+
+  // 构建分页指示器
+  Widget _buildPageIndicator() {
+    return Padding(
+      padding: EdgeInsets.all(14),
+      child: Text('分页指示器'),
+    );
+  }
+
+  // 构建项目选择组件
+  Widget _buildProjectSelect(int? projectId) {
+    projectId ??= -1;
+    const resetChild = ComboBoxItem(
+      value: -1,
+      child: Text('全部项目'),
+    );
+    return CacheFutureBuilder<List<ProjectModel>>(
+      future: dbManage.loadAllProjectInfos,
+      builder: (_, snap) {
+        final projects = snap.data ?? [];
+        return ComboBox<int>(
+          value: projectId,
+          items: projects.map(_buildProjectSelectItem).toList()
+            ..add(resetChild),
+          onChanged: (v) {
+            if (v != null && v <= 0) v = null;
+            logic.selectProject(v);
+          },
+        );
       },
     );
+  }
+
+  // 构建项目选择子项
+  ComboBoxItem<int> _buildProjectSelectItem(ProjectModel e) {
+    return ComboBoxItem(
+      value: e.project.id,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ProjectLogo.custom(
+            projectIcon: e.projectIcon,
+            size: const Size.square(15),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            e.showTitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 展示日期区间选择
+  Future<void> _showDateRangPicker(
+    BuildContext context, {
+    required DateTime? start,
+    required DateTime? end,
+  }) {
+    final initialDate = JDateRangPicker(
+      start: start,
+      end: end,
+    );
+    return JDateRangPickerDialog.show(
+      context,
+      initialDate: initialDate,
+    ).then((result) {
+      if (result != null) {
+        logic.selectDate(result.start, result.end);
+      }
+    });
   }
 }
 
@@ -92,13 +204,12 @@ class _PackageRecordPageLogic extends BaseLogic {
     optionController.addListener(() {
       final option = optionController.value;
       recordListController.setValue(dbManage.loadPackageRecordList(
-        pageIndex: option.pageIndex,
-        pageSize: option.pageSize,
-        sort: option.sort,
-        startTime: option.startTime,
-        endTime: option.endTime,
-        projectId: option.projectId,
-      ));
+          pageIndex: option.pageIndex,
+          pageSize: option.pageSize,
+          sort: option.sort,
+          startTime: option.startTime,
+          endTime: option.endTime,
+          projectId: option.projectId));
     });
   }
 
@@ -113,7 +224,7 @@ class _PackageRecordPageLogic extends BaseLogic {
   }
 
   // 页面切换
-  void switchPage(int page) {
+  void setPage(int page) {
     final option = optionController.value;
     optionController.setValue(
       option..pageIndex = page,
@@ -121,11 +232,24 @@ class _PackageRecordPageLogic extends BaseLogic {
     );
   }
 
-  // 设置设置项目过滤
-  void selectProject(Id? projectId) {
+  // 单页数据量设置
+  void setPageSize(int size) {
     final option = optionController.value;
     optionController.setValue(
-      option..projectId = projectId,
+      option
+        ..pageSize = size
+        ..resetPage(),
+      update: true,
+    );
+  }
+
+  // 设置设置项目过滤
+  void selectProject(int? projectId) {
+    final option = optionController.value;
+    optionController.setValue(
+      option
+        ..projectId = projectId
+        ..resetPage(),
       update: true,
     );
   }
@@ -136,9 +260,22 @@ class _PackageRecordPageLogic extends BaseLogic {
     optionController.setValue(
       option
         ..startTime = startTime
-        ..endTime = endTime,
+        ..endTime = endTime
+        ..resetPage(),
       update: true,
     );
+  }
+
+  // 重置过滤器
+  void resetFilter() {
+    optionController.setValue(_OptionParams());
+  }
+
+  @override
+  void dispose() {
+    optionController.dispose();
+    recordListController.dispose();
+    super.dispose();
   }
 }
 
@@ -164,7 +301,7 @@ class _OptionParams {
   DateTime? endTime;
 
   // 项目id
-  Id? projectId;
+  int? projectId;
 
   // 获取排序的状态
   String get sortStatus => sort == Sort.asc ? '正序' : '逆序';
@@ -172,4 +309,14 @@ class _OptionParams {
   // 获取排序状态图标
   IconData get sortStatusIcon =>
       sort == Sort.asc ? FluentIcons.sort_up : FluentIcons.sort_down;
+
+  // 获取时间范围缩写
+  String get timeTitle {
+    var st = startTime?.format(DatePattern.fullDate) ?? '开始';
+    final et = endTime?.format(DatePattern.fullDate) ?? '至今';
+    return '$st - $et';
+  }
+
+  // 重置页码
+  void resetPage() => pageIndex = 1;
 }

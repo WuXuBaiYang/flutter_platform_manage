@@ -2,6 +2,7 @@ import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/model/project.dart';
 import 'package:isar/isar.dart';
 
 /*
@@ -112,13 +113,22 @@ class DBManage extends BaseManage {
   List<Project> loadAllProjects() =>
       _isar.projects.where().sortByOrder().findAllSync();
 
+  // 获取所有项目信息并读取本地文件信息
+  Future<List<ProjectModel>> loadAllProjectInfos() async {
+    final list = <ProjectModel>[];
+    for (var it in dbManage.loadAllProjects()) {
+      final project = ProjectModel(project: it);
+      await project.update(simple: true);
+      list.add(project);
+    }
+    return list;
+  }
+
   // 监听项目信息变化并返回全部项目信息
-  Stream<List<Project>> watchProjectList({
+  Stream<void> watchProjectList({
     bool fireImmediately = false,
   }) =>
-      _isar.projects
-          .watchLazy(fireImmediately: fireImmediately)
-          .map((_) => loadAllProjects());
+      _isar.projects.watchLazy(fireImmediately: fireImmediately);
 
   // 添加打包任务(一个项目相同平台同时只能有一个打包任务，非完成状态)
   Future<Id?> addPackage(

@@ -1,5 +1,4 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
@@ -66,4 +65,10 @@ class _PackagePageState extends LogicState<PackagePage, _PackagePageLogic> {
 class _PackagePageLogic extends BaseLogic {
   // 分页下标管理
   final pageIndexController = ValueChangeNotifier<int>(0);
+
+  @override
+  void dispose() {
+    pageIndexController.dispose();
+    super.dispose();
+  }
 }

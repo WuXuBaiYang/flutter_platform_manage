@@ -1,6 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
+import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
@@ -29,7 +31,34 @@ class _PackageTaskPageState
   Widget build(BuildContext context) {
     return Container(
       color: themeManage.currentTheme.scaffoldBackgroundColor,
-      child: Center(child: Text('功能开发中')),
+      child: ScaffoldPage(
+        header: PageHeader(
+          commandBar: _buildCommandBar(),
+        ),
+        content: _buildTaskList(),
+      ),
+    );
+  }
+
+  // 构建操作菜单
+  Widget _buildCommandBar() {
+    return CommandBarCard(
+      child: CommandBar(
+        overflowBehavior: CommandBarOverflowBehavior.noWrap,
+        primaryItems: [],
+      ),
+    );
+  }
+
+  // 构建任务列表
+  Widget _buildTaskList() {
+    return StreamBuilder<List<Package>>(
+      stream: dbManage.watchPackageTaskList(
+        fireImmediately: true,
+      ),
+      builder: (_, taskList) {
+        return SizedBox();
+      },
     );
   }
 }

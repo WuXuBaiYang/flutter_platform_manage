@@ -4,7 +4,6 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
-import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
@@ -54,32 +53,22 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
         title: const Text('项目列表'),
         commandBar: _buildCommandBar(),
       ),
-      content: StreamBuilder<List<Project>>(
+      content: StreamBuilder(
         stream: dbManage.watchProjectList(
           fireImmediately: true,
         ),
-        builder: (_, snap) {
-          final value = snap.data;
-          if (null != value && value.isNotEmpty) {
-            return _buildProjectGrid(value);
-          }
-          return Center(
-            child: NoticeBox.empty(
-              message: '点击右上角添加一个项目',
-            ),
-          );
-        },
+        builder: (_, snap) => _buildProjectGrid(),
       ),
     );
   }
 
   // 构建项目列表
-  Widget _buildProjectGrid(List<Project> projects) {
+  Widget _buildProjectGrid() {
     return FutureBuilder<List<ProjectModel>>(
-      future: logic.loadProjectInfo(projects),
+      future: dbManage.loadAllProjectInfos(),
       builder: (_, snap) {
         final list = snap.data ?? [];
-        if (snap.hasData) {
+        if (snap.hasData && list.isNotEmpty) {
           return ReorderableBuilder(
             scrollController: logic.scrollController,
             onReorder: (entities) =>
@@ -100,8 +89,10 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
             ),
           );
         }
-        return const Center(
-          child: ProgressRing(),
+        return Center(
+          child: NoticeBox.empty(
+            message: '点击右上角添加一个项目',
+          ),
         );
       },
     );
@@ -259,6 +250,7 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
             label: const Text('添加'),
             onPressed: () => ProjectImportDialog.show(context),
           ),
+          const CommandBarSeparator(),
           CommandBarButton(
             icon: const Icon(FluentIcons.refresh),
             label: const Text('刷新'),
@@ -303,17 +295,6 @@ class _ProjectPageLogic extends BaseLogic {
     dbManage.updateProjects(projectList.map((e) {
       return e.project..order = i++;
     }).toList());
-  }
-
-  // 加载项目信息
-  Future<List<ProjectModel>> loadProjectInfo(List<Project> projects) async {
-    final temp = <ProjectModel>[];
-    for (var it in projects) {
-      final e = ProjectModel(project: it);
-      await e.update(simple: true);
-      temp.add(e);
-    }
-    return temp;
   }
 
   @override

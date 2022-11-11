@@ -30,6 +30,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
+
+  # 国际化
+  intl: ^0.17.0
+
   # ui库
   fluent_ui: ^4.0.3
 
