@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
@@ -101,10 +102,16 @@ class _DateRangPickerDialogState
           child: const Text('清空'),
         ),
         FilledButton(
-          onPressed: () => Navigator.maybePop(
-            context,
-            logic.datePickerResult,
-          ),
+          onPressed: () {
+            if (!logic.checkDate()) {
+              Utils.showSnack(context, '结束时间必须大于开始时间');
+              return;
+            }
+            Navigator.maybePop(
+              context,
+              logic.datePickerResult,
+            );
+          },
           child: const Text('确认'),
         ),
       ];
@@ -131,6 +138,13 @@ class _DateRangPickerDialogLogic extends BaseLogic {
         start: startTimeController.value,
         end: endTimeController.value,
       );
+
+  // 检查日期选择有效性
+  bool checkDate() {
+    final start = startTimeController.value, end = endTimeController.value;
+    if (start != null && end != null) return start.isBefore(end);
+    return true;
+  }
 }
 
 /*

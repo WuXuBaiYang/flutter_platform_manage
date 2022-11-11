@@ -43,7 +43,7 @@ class NoticeBox extends StatelessWidget {
     Key? key,
     required this.message,
     this.boxSize = NoticeBoxSize.middle,
-  })  : color = const Color(0xffe81123).withOpacity(0.3),
+  })  : color = Common.warningColor.withOpacity(0.3),
         svgAssetsPath = Common.warningBoxImage,
         super(key: key);
 

@@ -4,7 +4,6 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/pages/project/index.dart';
-import 'package:flutter_platform_manage/pages/package/record.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';

@@ -2,6 +2,7 @@ import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:isar/isar.dart';
 
@@ -31,6 +32,10 @@ class DBManage extends BaseManage {
       directory: '.',
       name: 'jtech.db',
     );
+
+    /// 测试代码
+    // _testInsertPackageCompleteInfo(_isar);
+    // _testUpdatePackageCompleteInfo(_isar);
   }
 
   // 添加/更新环境信息
@@ -219,20 +224,17 @@ class DBManage extends BaseManage {
     Id? projectId,
   }) {
     final offset = pageIndex > 0 ? (pageIndex - 1) * pageSize : 0;
-    return _isar.packages
-        .where(sort: sort)
-        .filter()
-        .group((q) {
-          startTime ??= DateTime(0);
-          endTime ??= DateTime.now();
-          if (projectId != null) {
-            q = q.projectIdEqualTo(projectId).and();
-          }
-          return q.completeTimeBetween(startTime, endTime);
-        })
-        .offset(offset)
-        .limit(pageSize)
-        .findAllSync();
+    var q = _isar.packages.filter().group((q) {
+      startTime ??= DateTime(0);
+      endTime ??= DateTime.now();
+      if (projectId != null) {
+        q = q.projectIdEqualTo(projectId).and();
+      }
+      return q.completeTimeBetween(startTime, endTime);
+    });
+    var tmp =
+        sort == Sort.asc ? q.sortByCompleteTime() : q.sortByCompleteTimeDesc();
+    return tmp.offset(offset).limit(pageSize).findAllSync();
   }
 
   // 获取打包记录分页页数
@@ -249,3 +251,30 @@ class DBManage extends BaseManage {
 
 //单例调用
 final dbManage = DBManage();
+
+/// 测试代码--插入完成打包信息
+void _testInsertPackageCompleteInfo(Isar db) {
+  final objects = List.generate(99, (i) {
+    return Package()
+      ..projectId = i + 1
+      ..platform = PlatformType.android
+      ..status = PackageStatus.completed
+      ..completeTime = DateTime.now()
+      ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
+  });
+  db.writeTxn(() async {
+    await db.packages.putAll(objects);
+  });
+}
+
+/// 测试代码--修改打包信息项目id为已存在项目
+void _testUpdatePackageCompleteInfo(Isar db) {
+  final objects = db.packages
+      .where()
+      .findAllSync()
+      .map((e) => e..timeSpent = 1000 * 50 * 34)
+      .toList();
+  db.writeTxn(() async {
+    await db.packages.putAll(objects);
+  });
+}

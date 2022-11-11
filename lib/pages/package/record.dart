@@ -1,17 +1,28 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
+import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
+import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
-import 'package:flutter_platform_manage/model/db/package.dart';
+import 'package:flutter_platform_manage/model/package.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
+import 'package:flutter_platform_manage/utils/file.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/date_rang_picker_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
+import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/page_indicator.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:isar/isar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /*
 * 打包记录页
@@ -46,7 +57,7 @@ class _PackageRecordPageState
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Expanded(child: _buildRecordList()),
+            Expanded(child: _buildRecordList(context)),
             _buildPageIndicator(),
           ],
         ),
@@ -97,21 +108,78 @@ class _PackageRecordPageState
   }
 
   // 构建记录列表
-  Widget _buildRecordList() {
+  Widget _buildRecordList(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: ValueListenableBuilder<List<Package>>(
+      child: ValueListenableBuilder<List<PackageModel>>(
         valueListenable: logic.recordListController,
         builder: (_, recordList, __) {
           return ListView.separated(
-            itemBuilder: (_, i) => Text('第$i行'),
-            separatorBuilder: (_, i) => Divider(),
-            itemCount: 100,
+            itemBuilder: (_, i) {
+              final last = i > 0 ? recordList[i - 1] : null;
+              return _buildRecordListItem(context, recordList[i], last);
+            },
+            separatorBuilder: (_, i) => const Divider(),
+            itemCount: recordList.length,
           );
         },
       ),
     );
   }
+
+  // 构建打包记录列表子项
+  Widget _buildRecordListItem(
+      BuildContext context, PackageModel item, PackageModel? last) {
+    final project = item.projectInfo;
+    final title = project == null
+        ? const Text(
+            '项目信息已丢失',
+            style: TextStyle(color: Common.warningColor),
+          )
+        : Text(
+            '${item.completeTime} 完成 ${project.showTitle} 项目打包任务',
+          );
+    return MouseRightClickMenu(
+      key: ObjectKey(item.package.id),
+      menuItems: _getRecordItemMenus(context, item),
+      child: ListTile.selectable(
+        title: title,
+        subtitle: Text('打包平台 ${item.package.platform.name}  ·  '
+            '耗时 ${item.timeSpent}'),
+        onPressed: () {},
+      ),
+    );
+  }
+
+  // 打包记录列表子项右键菜单
+  List<Widget> _getRecordItemMenus(BuildContext context, PackageModel item) => [
+        ListTile(
+          leading: const Icon(
+            FluentIcons.company_directory,
+            size: 14,
+          ),
+          title: const Text('打开输出目录'),
+          onPressed: () {
+            Navigator.pop(context);
+            logic.openOutputDir(item.package.outputPath ?? '').then((v) {
+              if (!v) Utils.showSnack(context, '目录打开失败');
+            });
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            FluentIcons.save_as,
+            size: 14,
+          ),
+          title: const Text('文件另存为'),
+          onPressed: () {
+            Navigator.pop(context);
+            logic.fileSaveAs(item.package.outputPath ?? '').then((v) {
+              if (!v) Utils.showSnack(context, '文件另存为失败');
+            });
+          },
+        ),
+      ];
 
   // 构建分页指示器
   Widget _buildPageIndicator() {
@@ -121,20 +189,19 @@ class _PackageRecordPageState
         stream: dbManage.watchPackageRecordList(
           fireImmediately: true,
         ),
-        builder: (_, __) {
-          final pageCount = dbManage.getPackageRecordPageCount();
-          return ValueListenableBuilder<_OptionParams>(
-            valueListenable: logic.optionController,
-            builder: (_, option, __) {
-              return PageIndicator(
-                currentPage: option.pageIndex,
-                currentSize: option.pageSize,
-                pageCount: pageCount,
-                onChange: logic.updatePagination,
-              );
-            },
-          );
-        },
+        builder: (_, __) => ValueListenableBuilder<_OptionParams>(
+          valueListenable: logic.optionController,
+          builder: (_, option, __) {
+            return PageIndicator(
+              currentPage: option.pageIndex,
+              currentSize: option.pageSize,
+              pageCount: dbManage.getPackageRecordPageCount(
+                pageSize: option.pageSize,
+              ),
+              onChange: logic.updatePagination,
+            );
+          },
+        ),
       ),
     );
   }
@@ -216,20 +283,51 @@ class _PackageRecordPageLogic extends BaseLogic {
   final optionController = ValueChangeNotifier<_OptionParams>(_OptionParams());
 
   // 记录列表
-  final recordListController = ListValueChangeNotifier<Package>.empty();
+  final recordListController = ListValueChangeNotifier<PackageModel>.empty();
 
   _PackageRecordPageLogic() {
+    // 初始化加载
+    _loadRecordList();
     // 监听操作参数变化，刷新列表
-    optionController.addListener(() {
-      final option = optionController.value;
-      recordListController.setValue(dbManage.loadPackageRecordList(
-          pageIndex: option.pageIndex,
-          pageSize: option.pageSize,
-          sort: option.sort,
-          startTime: option.startTime,
-          endTime: option.endTime,
-          projectId: option.projectId));
-    });
+    optionController.addListener(_loadRecordList);
+  }
+
+  // 加载打包记录信息
+  Future<void> _loadRecordList() async {
+    final option = optionController.value;
+    final tmp = dbManage.loadPackageRecordList(
+        pageIndex: option.pageIndex,
+        pageSize: option.pageSize,
+        sort: option.sort,
+        startTime: option.startTime,
+        endTime: option.endTime,
+        projectId: option.projectId);
+    final packages = <PackageModel>[];
+    for (var it in tmp) {
+      final p = await _loadProjectInfo(it.projectId);
+      packages.add(PackageModel(
+        package: it,
+        projectInfo: p,
+      ));
+    }
+    recordListController.setValue(packages);
+  }
+
+  // 缓存加载过的项目表
+  final _cacheProjectInfo = <int, ProjectModel?>{};
+
+  // 获取项目信息
+  Future<ProjectModel?> _loadProjectInfo(int id) async {
+    if (_cacheProjectInfo.containsKey(id)) {
+      return _cacheProjectInfo[id];
+    }
+    final t = dbManage.loadProject(id);
+    if (t == null) return null;
+    final p = ProjectModel(project: t);
+    if (await p.update(simple: true)) {
+      return _cacheProjectInfo[id] = p;
+    }
+    return null;
   }
 
   // 切换排序状态
@@ -248,10 +346,9 @@ class _PackageRecordPageLogic extends BaseLogic {
     optionController.setValue(
       option.pageSize != pageSize
           ? (option
-            ..resetPage()
+            ..pageIndex = 1
             ..pageSize = pageSize)
-          : option
-        ..pageIndex = pageIndex,
+          : (option..pageIndex = pageIndex),
       update: true,
     );
   }
@@ -262,7 +359,7 @@ class _PackageRecordPageLogic extends BaseLogic {
     optionController.setValue(
       option
         ..projectId = projectId
-        ..resetPage(),
+        ..pageIndex = 1,
       update: true,
     );
   }
@@ -274,7 +371,7 @@ class _PackageRecordPageLogic extends BaseLogic {
       option
         ..startTime = startTime
         ..endTime = endTime
-        ..resetPage(),
+        ..pageIndex = 1,
       update: true,
     );
   }
@@ -293,6 +390,38 @@ class _PackageRecordPageLogic extends BaseLogic {
     optionController.dispose();
     recordListController.dispose();
     super.dispose();
+  }
+
+  // 打开输出目录
+  Future<bool> openOutputDir(String filePath) async {
+    try {
+      if (filePath.isEmpty) return false;
+      final f = File(filePath);
+      if (!f.parent.existsSync()) return false;
+      final uri = Uri.parse('file:${f.parent.path}');
+      return launchUrl(uri);
+    } catch (e) {
+      LogTool.e('打包任务记录，打开输出目录失败', error: e);
+      return false;
+    }
+  }
+
+  // 文件另存为
+  Future<bool> fileSaveAs(String filePath) async {
+    try {
+      if (filePath.isEmpty) return false;
+      final f = File(filePath);
+      if (!f.existsSync()) return false;
+      final path = await FilePicker.platform.saveFile(
+        dialogTitle: '请选择要保存的目录',
+        fileName: f.name,
+      );
+      if (path != null) f.copySync(path);
+    } catch (e) {
+      LogTool.e('打包任务记录，文件另存为失败', error: e);
+      return false;
+    }
+    return true;
   }
 }
 
@@ -333,7 +462,4 @@ class _OptionParams {
     final et = endTime?.format(DatePattern.fullDate) ?? '至今';
     return '$st - $et';
   }
-
-  // 重置页码
-  void resetPage() => pageIndex = 1;
 }

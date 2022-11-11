@@ -43,6 +43,11 @@ const PackageSchema = CollectionSchema(
       name: r'status',
       type: IsarType.byte,
       enumMap: _PackagestatusEnumValueMap,
+    ),
+    r'timeSpent': PropertySchema(
+      id: 5,
+      name: r'timeSpent',
+      type: IsarType.long,
     )
   },
   estimateSize: _packageEstimateSize,
@@ -99,6 +104,7 @@ void _packageSerialize(
   writer.writeByte(offsets[2], object.platform.index);
   writer.writeLong(offsets[3], object.projectId);
   writer.writeByte(offsets[4], object.status.index);
+  writer.writeLong(offsets[5], object.timeSpent);
 }
 
 Package _packageDeserialize(
@@ -118,6 +124,7 @@ Package _packageDeserialize(
   object.status =
       _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
           PackageStatus.packing;
+  object.timeSpent = reader.readLongOrNull(offsets[5]);
   return object;
 }
 
@@ -140,6 +147,8 @@ P _packageDeserializeProp<P>(
     case 4:
       return (_PackagestatusValueEnumMap[reader.readByteOrNull(offset)] ??
           PackageStatus.packing) as P;
+    case 5:
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -809,6 +818,75 @@ extension PackageQueryFilter
       ));
     });
   }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'timeSpent',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'timeSpent',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> timeSpentBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'timeSpent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension PackageQueryObject
@@ -875,6 +953,18 @@ extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
   QueryBuilder<Package, Package, QAfterSortBy> sortByStatusDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByTimeSpentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.desc);
     });
   }
 }
@@ -952,6 +1042,18 @@ extension PackageQuerySortThenBy
       return query.addSortBy(r'status', Sort.desc);
     });
   }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByTimeSpentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.desc);
+    });
+  }
 }
 
 extension PackageQueryWhereDistinct
@@ -984,6 +1086,12 @@ extension PackageQueryWhereDistinct
   QueryBuilder<Package, Package, QDistinct> distinctByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'status');
+    });
+  }
+
+  QueryBuilder<Package, Package, QDistinct> distinctByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'timeSpent');
     });
   }
 }
@@ -1023,6 +1131,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, PackageStatus, QQueryOperations> statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<Package, int?, QQueryOperations> timeSpentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'timeSpent');
     });
   }
 }

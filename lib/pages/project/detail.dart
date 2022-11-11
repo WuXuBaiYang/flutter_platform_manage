@@ -103,8 +103,11 @@ class _ProjectDetailPageState
             direction: Axis.vertical,
           ),
           Expanded(
-            child:
-                ProjectMenu.getProjectCommands(context, item, logic.controller),
+            child: ProjectMenu.getProjectCommands(
+              context,
+              item,
+              logic.controller,
+            ),
           ),
         ],
       ),

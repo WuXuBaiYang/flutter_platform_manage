@@ -113,7 +113,7 @@ class PageIndicator extends StatelessWidget {
         const SizedBox(width: 8),
         ComboBox<int>(
           value: currentSize,
-          items: List.generate(4, (i) {
+          items: List.generate(5, (i) {
             final size = (i + 1) * 20;
             return ComboBoxItem(
               value: size,

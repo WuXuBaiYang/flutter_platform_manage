@@ -23,6 +23,9 @@ class Package {
   @Index(type: IndexType.value)
   DateTime? completeTime;
 
+  // 所用时间
+  int? timeSpent;
+
   // 输入路径
   String? outputPath;
 }

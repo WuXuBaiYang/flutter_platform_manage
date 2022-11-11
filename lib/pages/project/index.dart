@@ -66,7 +66,7 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
   Widget _buildProjectGrid() {
     return FutureBuilder<List<ProjectModel>>(
       future: dbManage.loadAllProjectInfos(),
-      builder: (_, snap) {
+      builder: (c, snap) {
         final list = snap.data ?? [];
         if (snap.hasData && list.isNotEmpty) {
           return ReorderableBuilder(
@@ -85,7 +85,7 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
             ),
             children: List.generate(
               list.length,
-              (i) => _buildProjectGridItem(list[i]),
+              (i) => _buildProjectGridItem(c, list[i]),
             ),
           );
         }
@@ -99,10 +99,10 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
   }
 
   // 构建项目表格子项
-  Widget _buildProjectGridItem(ProjectModel item) {
+  Widget _buildProjectGridItem(BuildContext context, ProjectModel item) {
     return MouseRightClickMenu(
       key: ObjectKey(item.project.id),
-      menuItems: _getProjectGirdItemMenuItems(item),
+      menuItems: _getProjectMenuItems(context, item),
       child: Center(
         child: GestureDetector(
           child: Card(
@@ -162,7 +162,8 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
   }
 
   // 获取项目列表子项右键菜单项
-  List<Widget> _getProjectGirdItemMenuItems(ProjectModel item) => [
+  List<Widget> _getProjectMenuItems(BuildContext context, ProjectModel item) =>
+      [
         ListTile(
           leading: const Icon(
             FluentIcons.rename,

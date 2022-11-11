@@ -7,7 +7,7 @@ import 'package:flutter_platform_manage/utils/file_handle.dart';
 import 'db/environment.dart';
 
 /*
-*
+* 项目信息包装
 * @author wuxubaiyang
 * @Time 5/20/2022 10:37 AM
 */
