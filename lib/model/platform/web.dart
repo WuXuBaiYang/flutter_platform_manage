@@ -48,7 +48,7 @@ class WebPlatform extends BasePlatform {
   String get _faviconFilePath => '$platformPath/favicon.png';
 
   @override
-  Future<bool> update({bool simple=false}) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandleJSON.from(_manifestFilePath);
     try {
       final jsonData = await handle.jsonDataMap;
@@ -167,29 +167,20 @@ class WebPlatform extends BasePlatform {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final WebPlatform typedOther = other;
-    return name == typedOther.name &&
-        shortName == typedOther.shortName &&
-        startUrl == typedOther.startUrl &&
-        display == typedOther.display &&
-        backgroundColor == typedOther.backgroundColor &&
-        themeColor == typedOther.themeColor &&
-        description == typedOther.description &&
-        preferRelatedApplications == typedOther.preferRelatedApplications;
+    if (other is! WebPlatform) return false;
+    return name == other.name &&
+        shortName == other.shortName &&
+        startUrl == other.startUrl &&
+        display == other.display &&
+        backgroundColor == other.backgroundColor &&
+        themeColor == other.themeColor &&
+        description == other.description &&
+        preferRelatedApplications == other.preferRelatedApplications;
   }
 
   @override
-  int get hashCode => Object.hash(
-        name,
-        shortName,
-        startUrl,
-        display,
-        backgroundColor,
-        themeColor,
-        description,
-        preferRelatedApplications,
-      );
+  int get hashCode => Object.hash(name, shortName, startUrl, display,
+      backgroundColor, themeColor, description, preferRelatedApplications);
 }
 
 // 根据名称获取对应启动模式

@@ -150,18 +150,13 @@ class AndroidPlatform extends BasePlatform {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final AndroidPlatform typedOther = other;
-    return label == typedOther.label &&
-        package == typedOther.package &&
-        (permissions.length == typedOther.permissions.length &&
-            !permissions.any((e) => !typedOther.permissions.contains(e)));
+    if (other is! AndroidPlatform) return false;
+    return label == other.label &&
+        package == other.package &&
+        (permissions.length == other.permissions.length &&
+            !permissions.any((e) => !other.permissions.contains(e)));
   }
 
   @override
-  int get hashCode => Object.hash(
-        label,
-        package,
-        Object.hashAll(permissions),
-      );
+  int get hashCode => Object.hash(label, package, Object.hashAll(permissions));
 }

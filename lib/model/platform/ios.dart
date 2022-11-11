@@ -35,7 +35,7 @@ class IOSPlatform extends BasePlatform {
       '$platformPath/${ProjectFilePath.iosAssetsAppIcon}';
 
   @override
-  Future<bool> update({bool simple=false}) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandlePList.from(_infoPlistFilePath);
     try {
       // 加载项目图标
@@ -128,18 +128,14 @@ class IOSPlatform extends BasePlatform {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final IOSPlatform typedOther = other;
-    return bundleName == typedOther.bundleName &&
-        bundleDisplayName == typedOther.bundleDisplayName &&
-        (permissions.length == typedOther.permissions.length &&
-            !permissions.any((e) => !typedOther.permissions.contains(e)));
+    if (other is! IOSPlatform) return false;
+    return bundleName == other.bundleName &&
+        bundleDisplayName == other.bundleDisplayName &&
+        (permissions.length == other.permissions.length &&
+            !permissions.any((e) => !other.permissions.contains(e)));
   }
 
   @override
-  int get hashCode => Object.hash(
-        bundleName,
-        bundleDisplayName,
-        Object.hashAll(permissions),
-      );
+  int get hashCode =>
+      Object.hash(bundleName, bundleDisplayName, Object.hashAll(permissions));
 }

@@ -26,13 +26,12 @@ class Project {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final Project typedOther = other;
-    return id == typedOther.id &&
-        path == typedOther.path &&
-        alias == typedOther.alias &&
-        envId == typedOther.envId &&
-        order == typedOther.order;
+    if (other is! Project) return false;
+    return id == other.id &&
+        path == other.path &&
+        alias == other.alias &&
+        envId == other.envId &&
+        order == other.order;
   }
 
   @override

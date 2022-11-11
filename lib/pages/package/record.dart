@@ -9,6 +9,7 @@ import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/date_rang_picker_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
+import 'package:flutter_platform_manage/widgets/page_indicator.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:isar/isar.dart';
 
@@ -98,7 +99,7 @@ class _PackageRecordPageState
   // 构建记录列表
   Widget _buildRecordList() {
     return Padding(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: ValueListenableBuilder<List<Package>>(
         valueListenable: logic.recordListController,
         builder: (_, recordList, __) {
@@ -115,8 +116,26 @@ class _PackageRecordPageState
   // 构建分页指示器
   Widget _buildPageIndicator() {
     return Padding(
-      padding: EdgeInsets.all(14),
-      child: Text('分页指示器'),
+      padding: const EdgeInsets.all(14),
+      child: StreamBuilder(
+        stream: dbManage.watchPackageRecordList(
+          fireImmediately: true,
+        ),
+        builder: (_, __) {
+          final pageCount = dbManage.getPackageRecordPageCount();
+          return ValueListenableBuilder<_OptionParams>(
+            valueListenable: logic.optionController,
+            builder: (_, option, __) {
+              return PageIndicator(
+                currentPage: option.pageIndex,
+                currentSize: option.pageSize,
+                pageCount: pageCount,
+                onChange: logic.updatePagination,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -223,22 +242,16 @@ class _PackageRecordPageLogic extends BaseLogic {
     );
   }
 
-  // 页面切换
-  void setPage(int page) {
+  // 更新分页信息
+  void updatePagination(int pageIndex, int pageSize) {
     final option = optionController.value;
     optionController.setValue(
-      option..pageIndex = page,
-      update: true,
-    );
-  }
-
-  // 单页数据量设置
-  void setPageSize(int size) {
-    final option = optionController.value;
-    optionController.setValue(
-      option
-        ..pageSize = size
-        ..resetPage(),
+      option.pageSize != pageSize
+          ? (option
+            ..resetPage()
+            ..pageSize = pageSize)
+          : option
+        ..pageIndex = pageIndex,
       update: true,
     );
   }
@@ -268,7 +281,11 @@ class _PackageRecordPageLogic extends BaseLogic {
 
   // 重置过滤器
   void resetFilter() {
-    optionController.setValue(_OptionParams());
+    final option = optionController.value;
+    optionController.setValue(
+      // 保持部分参数不变
+      _OptionParams()..pageSize = option.pageSize,
+    );
   }
 
   @override
@@ -289,7 +306,7 @@ class _OptionParams {
   int pageIndex = 1;
 
   // 分页单页数据量
-  int pageSize = 15;
+  int pageSize = 20;
 
   // 排序方式
   Sort sort = Sort.asc;

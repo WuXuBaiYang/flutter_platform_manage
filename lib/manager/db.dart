@@ -212,7 +212,7 @@ class DBManage extends BaseManage {
   // 分页获取打包历史记录列表
   List<Package> loadPackageRecordList({
     int pageIndex = 1,
-    int pageSize = 15,
+    int pageSize = 20,
     Sort sort = Sort.asc,
     DateTime? startTime,
     DateTime? endTime,
@@ -236,8 +236,8 @@ class DBManage extends BaseManage {
   }
 
   // 获取打包记录分页页数
-  int getPackageRecordPages({
-    int pageSize = 15,
+  int getPackageRecordPageCount({
+    int pageSize = 20,
   }) {
     final count = _isar.packages
         .filter()

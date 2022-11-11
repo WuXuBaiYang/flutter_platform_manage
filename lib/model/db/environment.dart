@@ -26,13 +26,12 @@ class Environment {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final Environment typedOther = other;
-    return id == typedOther.id &&
-        path == typedOther.path &&
-        flutter == typedOther.flutter &&
-        channel == typedOther.channel &&
-        dart == typedOther.dart;
+    if (other is! Environment) return false;
+    return id == other.id &&
+        path == other.path &&
+        flutter == other.flutter &&
+        channel == other.channel &&
+        dart == other.dart;
   }
 
   @override
