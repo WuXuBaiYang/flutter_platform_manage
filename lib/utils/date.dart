@@ -120,10 +120,10 @@ class DatePattern {
   static const String timeZH = 'hh时mm分';
 
   // 完整日期/时间格式
-  static const String fullDateTime = 'yyyy/MM/dd hh-mm-ss';
+  static const String fullDateTime = 'yyyy/MM/dd hh:mm:ss';
 
   // 简略日期/时间格式
-  static const String dateTime = 'MM/dd hh-mm';
+  static const String dateTime = 'MM/dd hh:mm';
 
   // 完整日期格式
   static const String fullDate = 'yyyy/MM/dd';
@@ -132,7 +132,7 @@ class DatePattern {
   static const String date = 'MM/dd';
 
   // 完整时间格式
-  static const String fullTime = 'hh-mm-ss';
+  static const String fullTime = 'hh:mm:ss';
 
   // 简略时间格式
   static const String time = 'hh-mm';

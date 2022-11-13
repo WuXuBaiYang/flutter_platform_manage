@@ -249,7 +249,7 @@ class _PermissionImportDialogLogic extends BaseLogic {
     if (checked) {
       permissionListController.removeValue(item);
     } else {
-      permissionListController.addValue([item]);
+      permissionListController.addValue(item);
     }
   }
 

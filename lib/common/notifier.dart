@@ -33,9 +33,17 @@ class ValueChangeNotifier<V> extends ChangeNotifier
 * @Time 2022/3/31 15:27
 */
 class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
-  ListValueChangeNotifier(List<V> value) : super(value);
+  // 是否允许值重复
+  final bool deduplication;
 
-  ListValueChangeNotifier.empty() : this([]);
+  ListValueChangeNotifier(
+    List<V> value, {
+    this.deduplication = false,
+  }) : super(value);
+
+  ListValueChangeNotifier.empty({
+    this.deduplication = false,
+  }) : super([]);
 
   // 获取数据长度
   int get length => value.length;
@@ -64,20 +72,40 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
   bool contains(V item) => value.contains(item);
 
   // 添加数据
-  void addValue(List<V> newValue, {bool notify = true}) {
+  void addValue(V newValue, {bool notify = true}) {
+    if (_checkDeduplication(newValue)) {
+      value.add(newValue);
+    }
+    if (notify) notifyListeners();
+  }
+
+  // 添加多条数据
+  void addValues(List<V> newValue, {bool notify = true}) {
+    if (deduplication) newValue.removeWhere((e) => value.contains(e));
     value.addAll(newValue);
     if (notify) notifyListeners();
   }
 
   // 插入数据
-  void insertValue(int index, List<V> newValue, {bool notify = true}) {
+  void insertValue(int index, V newValue, {bool notify = true}) {
+    if (_checkDeduplication(newValue)) {
+      value.insert(index, newValue);
+    }
+    if (notify) notifyListeners();
+  }
+
+  // 插入多条数据
+  void insertValues(int index, List<V> newValue, {bool notify = true}) {
+    if (deduplication) newValue.removeWhere((e) => value.contains(e));
     value.insertAll(index, newValue);
     if (notify) notifyListeners();
   }
 
   // 更新/添加数据
   void putValue(int index, V item, {bool notify = true}) {
-    value[index] = item;
+    if (_checkDeduplication(item)) {
+      value[index] = item;
+    }
     if (notify) notifyListeners();
   }
 
@@ -88,12 +116,22 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
     return result;
   }
 
+  // 移除多条数据
+  void removeValues(List<V> items, {bool notify = true}) {
+    value.removeWhere((e) => items.contains(e));
+    if (notify) notifyListeners();
+  }
+
   // 移除下标数据
   V? removeValueAt(int index, {bool notify = true}) {
     final result = value.removeAt(index);
     if (notify) notifyListeners();
     return result;
   }
+
+  // 检查去重状态
+  bool _checkDeduplication(V v) =>
+      !deduplication || (deduplication && !value.contains(v));
 
   @override
   String toString() => '${describeIdentity(this)}($value)';

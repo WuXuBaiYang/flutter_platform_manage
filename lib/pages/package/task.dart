@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
+import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
@@ -11,7 +12,13 @@ import 'package:flutter_platform_manage/widgets/logic_state.dart';
 * @Time 2022/11/10 10:41
 */
 class PackageTaskPage extends StatefulWidget {
-  const PackageTaskPage({super.key});
+  // 加载项目信息缓存回调
+  final OnProjectCacheLoad onProjectCacheLoad;
+
+  const PackageTaskPage({
+    Key? key,
+    required this.onProjectCacheLoad,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PackageTaskPageState();
@@ -25,7 +32,9 @@ class PackageTaskPage extends StatefulWidget {
 class _PackageTaskPageState
     extends LogicState<PackageTaskPage, _PackageTaskPageLogic> {
   @override
-  _PackageTaskPageLogic initLogic() => _PackageTaskPageLogic();
+  _PackageTaskPageLogic initLogic() => _PackageTaskPageLogic(
+        widget.onProjectCacheLoad,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -68,4 +77,9 @@ class _PackageTaskPageState
 * @author wuxubaiyang
 * @Time 2022/11/10 10:41
 */
-class _PackageTaskPageLogic extends BaseLogic {}
+class _PackageTaskPageLogic extends BaseLogic {
+  // 项目信息缓存加载回调
+  final OnProjectCacheLoad _projectCacheLoad;
+
+  _PackageTaskPageLogic(this._projectCacheLoad) {}
+}

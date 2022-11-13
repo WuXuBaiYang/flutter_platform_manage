@@ -237,16 +237,17 @@ class DBManage extends BaseManage {
     return tmp.offset(offset).limit(pageSize).findAllSync();
   }
 
+  // 获取总打包记录数据量
+  int getPackageRecordCount() => _isar.packages
+      .filter()
+      .statusEqualTo(PackageStatus.completed)
+      .countSync();
+
   // 获取打包记录分页页数
   int getPackageRecordPageCount({
     int pageSize = 20,
-  }) {
-    final count = _isar.packages
-        .filter()
-        .statusEqualTo(PackageStatus.completed)
-        .countSync();
-    return (count / pageSize).ceil();
-  }
+  }) =>
+      (getPackageRecordCount() / pageSize).ceil();
 }
 
 //单例调用
@@ -256,10 +257,10 @@ final dbManage = DBManage();
 void _testInsertPackageCompleteInfo(Isar db) {
   final objects = List.generate(99, (i) {
     return Package()
-      ..projectId = i + 1
+      ..projectId = 3
       ..platform = PlatformType.android
       ..status = PackageStatus.completed
-      ..completeTime = DateTime.now()
+      ..completeTime = DateTime.now().subtract(Duration(days: i % 15))
       ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
   });
   db.writeTxn(() async {
@@ -269,11 +270,8 @@ void _testInsertPackageCompleteInfo(Isar db) {
 
 /// 测试代码--修改打包信息项目id为已存在项目
 void _testUpdatePackageCompleteInfo(Isar db) {
-  final objects = db.packages
-      .where()
-      .findAllSync()
-      .map((e) => e..timeSpent = 1000 * 50 * 34)
-      .toList();
+  final objects =
+      db.packages.where().findAllSync().map((e) => e..projectId = 3).toList();
   db.writeTxn(() async {
     await db.packages.putAll(objects);
   });
