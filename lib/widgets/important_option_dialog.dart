@@ -102,7 +102,12 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
           style: ButtonStyle(
             backgroundColor: ButtonState.all(Colors.red),
           ),
-          child: Text(widget.confirm ?? '确认'),
+          child: Text(
+            widget.confirm ?? '确认',
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
           onPressed: () {
             var result = widget.onConfirmTap();
             Navigator.pop<T>(context, result);

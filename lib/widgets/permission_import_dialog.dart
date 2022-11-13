@@ -77,8 +77,10 @@ class _PermissionImportDialogState
         ),
         FilledButton(
           child: const Text('选择'),
-          onPressed: () =>
-              Navigator.pop(context, logic.permissionListController.value),
+          onPressed: () => Navigator.pop(
+            context,
+            logic.copyPermissionList(),
+          ),
         ),
       ],
     );
@@ -255,9 +257,14 @@ class _PermissionImportDialogLogic extends BaseLogic {
   bool hasPermission(PermissionItemModel item) =>
       permissionListController.contains(item);
 
+  // 拷贝所选权限列表
+  List<PermissionItemModel> copyPermissionList() =>
+      [...permissionListController.value];
+
   @override
   void dispose() {
     permissionListController.dispose();
+    permissionListController.value.cast();
     filterController.dispose();
     searchController.dispose();
     super.dispose();
