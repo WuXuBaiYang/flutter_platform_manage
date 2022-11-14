@@ -5,18 +5,22 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
-import 'package:flutter_platform_manage/pages/project/menu.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
+import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
+import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
+import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'platforms/android.dart';
 import 'platforms/ios.dart';
 import 'platforms/linux.dart';
@@ -45,16 +49,9 @@ typedef PlatformPageBuilder = Widget Function(dynamic platformInfo);
 * @Time 2022-07-22 11:38:37
 */
 class _ProjectDetailPageState
-    extends LogicState<ProjectDetailPage, _ProjectDetailPageLogic>
-    with WindowListener {
+    extends LogicState<ProjectDetailPage, _ProjectDetailPageLogic> {
   @override
   _ProjectDetailPageLogic initLogic() => _ProjectDetailPageLogic();
-
-  @override
-  void initState() {
-    windowManager.addListener(this);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +59,7 @@ class _ProjectDetailPageState
       title: '项目详情',
       content: ScaffoldPage.withPadding(
         content: CacheFutureBuilder<ProjectModel>(
-          controller: logic.controller,
+          controller: logic.projectController,
           future: () => logic.loadProjectInfo(context),
           builder: (_, snap) {
             if (snap.hasData) {
@@ -95,20 +92,12 @@ class _ProjectDetailPageState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: _buildProjectInfoItem(item),
-          ),
+          Expanded(child: _buildProjectInfoItem(item)),
           const ThicknessDivider(
             size: 70,
             direction: Axis.vertical,
           ),
-          Expanded(
-            child: ProjectMenu.getProjectCommands(
-              context,
-              item,
-              logic.controller,
-            ),
-          ),
+          Expanded(child: _buildProjectInfoMenus(item)),
         ],
       ),
     );
@@ -127,6 +116,8 @@ class _ProjectDetailPageState
             !item.exist ? '项目信息丢失' : item.showTitle,
             style: TextStyle(
               color: !item.exist ? Colors.red : null,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
             ),
           ),
           subtitle: Text('${!item.exist ? item.project.alias : item.version}'
@@ -137,6 +128,97 @@ class _ProjectDetailPageState
           platforms: item.platformList,
           tagSize: PlatformTagSize.small,
         ),
+      ],
+    );
+  }
+
+  // 构建项目信息菜单列表
+  Widget _buildProjectInfoMenus(ProjectModel item) {
+    return Column(
+      children: [
+        CommandBar(
+          mainAxisAlignment: MainAxisAlignment.start,
+          primaryItems: [
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('替换图标'),
+              onPressed: () => ProjectLogoDialog.show(
+                context,
+                initialPlatforms: item.platformList,
+                minFileSize: const Size.square(1024),
+              ),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('修改版本号'),
+              onPressed: () => ProjectVersionDialog.show(
+                context,
+                initialProjectInfo: item,
+              ).then((v) {
+                if (null != v) logic.projectController.refreshValue();
+              }),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('修改项目名称'),
+              onPressed: () => ProjectReNameDialog.show(
+                context,
+                initialProjectInfo: item,
+              ).then((v) {
+                if (null != v) logic.projectController.refreshValue();
+              }),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('打开根目录'),
+              onPressed: () => logic.openAppPath(item).then((v) {
+                if (!v) Utils.showSnack(context, '目录启动失败');
+              }),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('应用打包'),
+              onPressed: () {
+                Utils.showSnack(context, '开发中');
+              },
+            ),
+          ],
+        ),
+        CommandBar(
+          mainAxisAlignment: MainAxisAlignment.end,
+          primaryItems: [
+            CommandBarButton(
+              icon: const Icon(FluentIcons.refresh),
+              label: const Text('刷新'),
+              onPressed: () {
+                logic.projectController.refreshValue();
+                Utils.showSnack(context, '项目信息已刷新');
+              },
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.app_icon_default_edit),
+              label: const Text('编辑'),
+              onPressed: () => ProjectImportDialog.show(
+                context,
+                initialProject: item.project,
+              ).then((v) {
+                if (null != v) logic.projectController.refreshValue();
+              }),
+            ),
+            CommandBarButton(
+              icon: Icon(FluentIcons.delete, color: Colors.red),
+              label: Text('删除', style: TextStyle(color: Colors.red)),
+              onPressed: () => ImportantOptionDialog.show(
+                context,
+                message: '是否删除该项目 ${item.showTitle}',
+                confirm: '删除',
+                onConfirmTap: () => logic
+                    .deleteProject(item)
+                    .then((_) => Navigator.maybePop(context)),
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -205,12 +287,6 @@ class _ProjectDetailPageState
           );
         });
   }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
 }
 
 /*
@@ -220,7 +296,7 @@ class _ProjectDetailPageState
 */
 class _ProjectDetailPageLogic extends BaseLogic {
   // 异步缓存加载控制器
-  final controller = CacheFutureBuilderController<ProjectModel>();
+  final projectController = CacheFutureBuilderController<ProjectModel>();
 
   // 底部导航条当前下标
   final bottomBarIndex = ValueChangeNotifier<int>(0);
@@ -238,7 +314,7 @@ class _ProjectDetailPageLogic extends BaseLogic {
         context,
         loadFuture: ScriptHandle.createPlatforms(item, [platform]),
       );
-      if (result ?? false) controller.refreshValue();
+      if (result ?? false) projectController.refreshValue();
     } catch (e) {
       Utils.showSnack(context, "平台创建失败");
     }
@@ -257,8 +333,20 @@ class _ProjectDetailPageLogic extends BaseLogic {
 
   @override
   void dispose() {
-    controller.dispose();
+    projectController.dispose();
     bottomBarIndex.dispose();
     super.dispose();
+  }
+
+  // 打开项目根目录
+  Future<bool> openAppPath(ProjectModel item) {
+    final uri = Uri.parse('file:${item.project.path}');
+    return launchUrl(uri);
+  }
+
+  // 删除项目信息
+  Future<bool> deleteProject(ProjectModel item) {
+    final id = item.project.id;
+    return dbManage.deleteProject(id);
   }
 }

@@ -112,7 +112,6 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
             initialValue: info.permissions,
             onSaved: (v) => info.permissions = v ?? [],
             builder: (f) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildPermissionManageHeader(f, expanded),
                 Expanded(child: _buildPermissionManageList(f)),

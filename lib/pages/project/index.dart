@@ -16,7 +16,6 @@ import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
-import 'package:window_manager/window_manager.dart';
 
 /*
 * 项目页
@@ -35,16 +34,9 @@ class ProjectPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
-    with WindowListener {
+class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic> {
   @override
   _ProjectPageLogic initLogic() => _ProjectPageLogic();
-
-  @override
-  void initState() {
-    windowManager.addListener(this);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,12 +254,6 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
   }
 }
 
