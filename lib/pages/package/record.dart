@@ -139,9 +139,10 @@ class _PackageRecordPageState
   // 构建编辑操作菜单
   Widget _buildEditorCommandBar(BuildContext context) {
     return CommandBarCard(
-      child: ValueListenableBuilder<List<int>>(
-        valueListenable: logic.selectedController,
-        builder: (_, selectList, __) {
+      child: ValueListenableBuilder2<List<int>, _OptionParams>(
+        first: logic.selectedController,
+        second: logic.optionController,
+        builder: (_, selectList, option, __) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: CommandBar(
@@ -472,7 +473,16 @@ class _PackageRecordPageLogic extends BaseLogic {
     // 监听操作参数变化，刷新列表
     optionController.addListener(_loadRecordList);
     // 当编辑状态发生变化，则清空选择列表
-    editorController.addListener(() => selectedController.clear());
+    editorController.addListener(() {
+      if (!editorController.value) {
+        selectedController.clear();
+      }
+    });
+    // 监听选择数据变化
+    selectedController.addListener(() {
+      final isEmpty = selectedController.isEmpty;
+      editorController.setValue(!isEmpty);
+    });
   }
 
   // 加载打包记录信息

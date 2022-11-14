@@ -84,12 +84,21 @@ class ScriptHandle {
   }
 
   // 脚本执行方法
-  static Future<String> _runShell(String script, {String? path}) async {
+  static Future<String> _runShell(
+    String script, {
+    String? path,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+  }) async {
     final list = await Shell(
       throwOnError: false,
       workingDirectory: path,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
+      stdin: stdin,
+      stdout: stdout,
+      stderr: stderr,
     ).run(script);
     final errText = list.map((e) => e.errText).join('');
     if (errText.isNotEmpty) throw Exception(errText);
