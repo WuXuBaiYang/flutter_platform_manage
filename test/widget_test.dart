@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter_platform_manage/model/gen_key.dart';
+import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -24,5 +26,30 @@ void main() {
   });
   test('测试除法', () {
     print((7 / 3).ceil());
+  });
+
+  test('生成android签名文件', () async {
+    final result = await ScriptHandle.genAndroidKey(AndroidKeyGenParams(
+      alias: 'testKey',
+      validity: 3650,
+      dName: AndroidKeyGenDName.empty(),
+      keyPass: '123456',
+      storePass: '123456',
+      keystore: r'C:\Users\wuxubaiyang\Desktop\test.keystore',
+    ));
+    print('android签名生成 ${result ? '成功' : '失败'}');
+  });
+
+  test('获取android签名文件信息', () async {
+    try {
+      final result =
+          await ScriptHandle.loadAndroidKeyInfo(AndroidKeyGenParams.info(
+        storePass: '123456',
+        keystore: r'C:\Users\wuxubaiyang\Desktop\test.keystore',
+      ));
+      print(result);
+    } catch (e) {
+      print(e.toString());
+    }
   });
 }

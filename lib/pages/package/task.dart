@@ -61,6 +61,12 @@ class _PackageTaskPageState
 
   // 构建任务列表
   Widget _buildTaskList() {
+    return Center(
+      child: TextButton(
+        child: const Text('点击测试'),
+        onPressed: () {},
+      ),
+    );
     return StreamBuilder<List<Package>>(
       stream: dbManage.watchPackageTaskList(
         fireImmediately: true,

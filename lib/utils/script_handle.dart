@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
+import 'package:flutter_platform_manage/model/gen_key.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:process_run/shell.dart';
 
 /*
@@ -18,9 +21,8 @@ class ScriptHandle {
     String path, {
     Environment? oldEnv,
   }) async {
-    final outText = await runShell(
-      '$path/${ProjectFilePath.flutter} --version',
-    );
+    final script = '$path/${ProjectFilePath.flutter} --version';
+    final outText = await _runShell(script);
     var version = 'Flutter', channel = 'channel', dart = 'Dart';
     for (var it in outText.split(r'•')) {
       it = it.trim();
@@ -41,18 +43,48 @@ class ScriptHandle {
 
   // 创建平台信息
   static Future<bool> createPlatforms(
-      ProjectModel projectInfo, List<PlatformType> platforms) async {
+    ProjectModel projectInfo,
+    List<PlatformType> platforms,
+  ) async {
     final env = projectInfo.environment;
     if (null == env) return false;
-    final outText = await runShell(
-      '${env.path}/${ProjectFilePath.flutter} create --platforms=${platforms.map((e) => e.name).join(',')} .',
+    final script = '${env.path}/${ProjectFilePath.flutter} create '
+        '--platforms=${platforms.map((e) => e.name).join(',')} .';
+    final outText = await _runShell(
+      script,
       path: projectInfo.project.path,
     );
     return RegExp(r'All done').hasMatch(outText);
   }
 
+  // 查看android签名文件信息
+  static Future<String> loadAndroidKeyInfo(AndroidKeyGenParams params) {
+    if (!params.checkCanGetInfo()) throw Exception('参数不完整');
+    final script = 'keytool -v -list '
+        '-storepass ${params.storePass} -keystore ${params.keystore}';
+    return _runShell(script);
+  }
+
+  // 生成android签名文件
+  static Future<bool> genAndroidKey(AndroidKeyGenParams params) async {
+    try {
+      if (!params.checkCanGenKey()) throw Exception('参数不完整');
+      final script = 'keytool -genkey '
+          '-alias ${params.alias} -keyalg ${params.keyAlg} '
+          '-keysize ${params.keySize} -validity ${params.validity} '
+          '-dname "${params.getDNameInfo()}" -storetype PKCS12 '
+          '-keypass ${params.keyPass} -storepass ${params.storePass} '
+          '-keystore ${params.keystore}';
+      await _runShell(script);
+      return File(params.keystore).exists();
+    } catch (e) {
+      LogTool.e('android签名生成失败', error: e);
+      return false;
+    }
+  }
+
   // 脚本执行方法
-  static Future<String> runShell(String script, {String? path}) async {
+  static Future<String> _runShell(String script, {String? path}) async {
     final list = await Shell(
       throwOnError: false,
       workingDirectory: path,
