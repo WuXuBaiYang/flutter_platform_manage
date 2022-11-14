@@ -36,6 +36,7 @@ class _SystemSettingsState
     return StreamBuilder<ThemeEvent>(
       initialData: ThemeEvent(
         themeType: themeManage.currentType,
+        fontFamily: ThemeFontFamily.alibabaSans,
       ),
       stream: eventManage.on<ThemeEvent>(),
       builder: (_, snap) {

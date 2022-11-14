@@ -10,5 +10,11 @@ class ThemeEvent extends BaseEvent {
   // 全局样式类型
   final ThemeType themeType;
 
-  const ThemeEvent({required this.themeType});
+  // 当前字体样式
+  final ThemeFontFamily fontFamily;
+
+  const ThemeEvent({
+    required this.themeType,
+    required this.fontFamily,
+  });
 }

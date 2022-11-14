@@ -4,6 +4,8 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
+import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/gen_android_key.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
@@ -44,7 +46,7 @@ class _PackageTaskPageState
         header: PageHeader(
           commandBar: _buildCommandBar(),
         ),
-        content: _buildTaskList(),
+        content: _buildTaskList(context),
       ),
     );
   }
@@ -60,11 +62,15 @@ class _PackageTaskPageState
   }
 
   // 构建任务列表
-  Widget _buildTaskList() {
+  Widget _buildTaskList(BuildContext context) {
     return Center(
       child: TextButton(
         child: const Text('点击测试'),
-        onPressed: () {},
+        onPressed: () {
+          GenAndroidKeyDialog.show(context).then((v) {
+            Utils.showSnack(context, '生成的签名文件路径');
+          });
+        },
       ),
     );
     return StreamBuilder<List<Package>>(
