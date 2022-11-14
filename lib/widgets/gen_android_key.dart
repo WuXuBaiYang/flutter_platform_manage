@@ -36,8 +36,29 @@ class _GenAndroidKeyDialogState
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return ContentDialog(
+      title: const Text('生成Android签名文件'),
+      content: SizedBox(),
+      actions: _getActions(context),
+    );
   }
+
+  // 动态加载操作按钮集合
+  List<Widget> _getActions(BuildContext context) => [
+        Button(
+          child: const Text('取消'),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+        FilledButton(
+          onPressed: () => logic.genAndroidKey().then(
+                (v) => Navigator.maybePop(context, v),
+              ),
+          child: const Text(
+            '生成签名',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ];
 }
 
 /*
@@ -45,4 +66,10 @@ class _GenAndroidKeyDialogState
 * @author wuxubaiyang
 * @Time 2022/11/14 15:51
 */
-class _GenAndroidKeyDialogLogic extends BaseLogic {}
+class _GenAndroidKeyDialogLogic extends BaseLogic {
+  // 生成android签名
+  Future<String?> genAndroidKey() async {
+    ///
+    return null;
+  }
+}
