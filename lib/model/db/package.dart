@@ -19,6 +19,9 @@ class Package {
   @enumerated
   PackageStatus status = PackageStatus.stop;
 
+  // 打包使用的脚本
+  String script = '';
+
   // 完成时间
   @Index(type: IndexType.value)
   DateTime? completeTime;
@@ -28,6 +31,9 @@ class Package {
 
   // 输入路径
   String? outputPath;
+
+  // 打包大小
+  int? packageSize;
 }
 
 // 打包状态枚举

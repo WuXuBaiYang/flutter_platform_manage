@@ -27,25 +27,35 @@ const PackageSchema = CollectionSchema(
       name: r'outputPath',
       type: IsarType.string,
     ),
-    r'platform': PropertySchema(
+    r'packageSize': PropertySchema(
       id: 2,
+      name: r'packageSize',
+      type: IsarType.long,
+    ),
+    r'platform': PropertySchema(
+      id: 3,
       name: r'platform',
       type: IsarType.byte,
       enumMap: _PackageplatformEnumValueMap,
     ),
     r'projectId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'projectId',
       type: IsarType.long,
     ),
+    r'script': PropertySchema(
+      id: 5,
+      name: r'script',
+      type: IsarType.string,
+    ),
     r'status': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'status',
       type: IsarType.byte,
       enumMap: _PackagestatusEnumValueMap,
     ),
     r'timeSpent': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'timeSpent',
       type: IsarType.long,
     )
@@ -90,6 +100,7 @@ int _packageEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.script.length * 3;
   return bytesCount;
 }
 
@@ -101,10 +112,12 @@ void _packageSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.completeTime);
   writer.writeString(offsets[1], object.outputPath);
-  writer.writeByte(offsets[2], object.platform.index);
-  writer.writeLong(offsets[3], object.projectId);
-  writer.writeByte(offsets[4], object.status.index);
-  writer.writeLong(offsets[5], object.timeSpent);
+  writer.writeLong(offsets[2], object.packageSize);
+  writer.writeByte(offsets[3], object.platform.index);
+  writer.writeLong(offsets[4], object.projectId);
+  writer.writeString(offsets[5], object.script);
+  writer.writeByte(offsets[6], object.status.index);
+  writer.writeLong(offsets[7], object.timeSpent);
 }
 
 Package _packageDeserialize(
@@ -117,14 +130,16 @@ Package _packageDeserialize(
   object.completeTime = reader.readDateTimeOrNull(offsets[0]);
   object.id = id;
   object.outputPath = reader.readStringOrNull(offsets[1]);
+  object.packageSize = reader.readLongOrNull(offsets[2]);
   object.platform =
-      _PackageplatformValueEnumMap[reader.readByteOrNull(offsets[2])] ??
+      _PackageplatformValueEnumMap[reader.readByteOrNull(offsets[3])] ??
           PlatformType.android;
-  object.projectId = reader.readLong(offsets[3]);
+  object.projectId = reader.readLong(offsets[4]);
+  object.script = reader.readString(offsets[5]);
   object.status =
-      _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+      _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[6])] ??
           PackageStatus.packing;
-  object.timeSpent = reader.readLongOrNull(offsets[5]);
+  object.timeSpent = reader.readLongOrNull(offsets[7]);
   return object;
 }
 
@@ -140,14 +155,18 @@ P _packageDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
       return (_PackageplatformValueEnumMap[reader.readByteOrNull(offset)] ??
           PlatformType.android) as P;
-    case 3:
-      return (reader.readLong(offset)) as P;
     case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
       return (_PackagestatusValueEnumMap[reader.readByteOrNull(offset)] ??
           PackageStatus.packing) as P;
-    case 5:
+    case 7:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -660,6 +679,75 @@ extension PackageQueryFilter
     });
   }
 
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'packageSize',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'packageSize',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'packageSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'packageSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'packageSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> packageSizeBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'packageSize',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterFilterCondition> platformEqualTo(
       PlatformType value) {
     return QueryBuilder.apply(this, (query) {
@@ -762,6 +850,136 @@ extension PackageQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'script',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'script',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'script',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'script',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> scriptIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'script',
+        value: '',
       ));
     });
   }
@@ -920,6 +1138,18 @@ extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
     });
   }
 
+  QueryBuilder<Package, Package, QAfterSortBy> sortByPackageSize() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'packageSize', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByPackageSizeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'packageSize', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> sortByPlatform() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'platform', Sort.asc);
@@ -941,6 +1171,18 @@ extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
   QueryBuilder<Package, Package, QAfterSortBy> sortByProjectIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'projectId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByScript() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'script', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByScriptDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'script', Sort.desc);
     });
   }
 
@@ -1007,6 +1249,18 @@ extension PackageQuerySortThenBy
     });
   }
 
+  QueryBuilder<Package, Package, QAfterSortBy> thenByPackageSize() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'packageSize', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByPackageSizeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'packageSize', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> thenByPlatform() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'platform', Sort.asc);
@@ -1028,6 +1282,18 @@ extension PackageQuerySortThenBy
   QueryBuilder<Package, Package, QAfterSortBy> thenByProjectIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'projectId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByScript() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'script', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByScriptDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'script', Sort.desc);
     });
   }
 
@@ -1071,6 +1337,12 @@ extension PackageQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Package, Package, QDistinct> distinctByPackageSize() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'packageSize');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByPlatform() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'platform');
@@ -1080,6 +1352,13 @@ extension PackageQueryWhereDistinct
   QueryBuilder<Package, Package, QDistinct> distinctByProjectId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'projectId');
+    });
+  }
+
+  QueryBuilder<Package, Package, QDistinct> distinctByScript(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'script', caseSensitive: caseSensitive);
     });
   }
 
@@ -1116,6 +1395,12 @@ extension PackageQueryProperty
     });
   }
 
+  QueryBuilder<Package, int?, QQueryOperations> packageSizeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'packageSize');
+    });
+  }
+
   QueryBuilder<Package, PlatformType, QQueryOperations> platformProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'platform');
@@ -1125,6 +1410,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, int, QQueryOperations> projectIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'projectId');
+    });
+  }
+
+  QueryBuilder<Package, String, QQueryOperations> scriptProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'script');
     });
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
+import 'package:flutter_platform_manage/utils/file.dart';
 
 /*
 * 打包信息包装
@@ -31,5 +32,12 @@ class PackageModel {
     final time = package.timeSpent;
     if (time == null) return '项目尚未完成';
     return Duration(milliseconds: time).format(DurationPattern.fullTime);
+  }
+
+  // 获取文件大小
+  String get packageSize {
+    final size = package.packageSize;
+    if (size == null) return '项目尚未完成';
+    return FileTool.parseFileSize(size, lowerCase: true);
   }
 }
