@@ -3,7 +3,7 @@
 * @author wuxubaiyang
 * @Time 2022/11/14 11:34
 */
-class AndroidKeyGenParams {
+class AndroidKeyParams {
   // 别名
   String alias = '';
 
@@ -17,7 +17,7 @@ class AndroidKeyGenParams {
   int validity = 0;
 
   // 签名信息
-  AndroidKeyGenDName dName = AndroidKeyGenDName();
+  final dName = AndroidKeyDName();
 
   // 签名密码
   String keyPass = '';
@@ -28,9 +28,9 @@ class AndroidKeyGenParams {
   // 签名存储路径
   String keystore = '';
 
-  AndroidKeyGenParams();
+  AndroidKeyParams();
 
-  AndroidKeyGenParams.info({
+  AndroidKeyParams.info({
     required this.storePass,
     required this.keystore,
   });
@@ -49,8 +49,9 @@ class AndroidKeyGenParams {
       keystore.isNotEmpty;
 
   // 获取dName的信息字符串
-  String getDNameInfo() =>
-      'CN=${dName.cn},OU=${dName.ou},O=${dName.o},L=${dName.l},S=${dName.s},C=${dName.c}';
+  String getDNameInfo() => 'CN=${dName?.cn ?? ''},OU=${dName?.ou ?? ''},'
+      'O=${dName?.o ?? ''},L=${dName?.l ?? ''},'
+      'S=${dName?.s ?? ''},C=${dName?.c ?? ''}';
 }
 
 /*
@@ -58,7 +59,7 @@ class AndroidKeyGenParams {
 * @author wuxubaiyang
 * @Time 2022/11/14 11:38
 */
-class AndroidKeyGenDName {
+class AndroidKeyDName {
   // 名字
   String cn = '';
 

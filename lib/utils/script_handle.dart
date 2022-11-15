@@ -58,7 +58,7 @@ class ScriptHandle {
   }
 
   // 查看android签名文件信息
-  static Future<String> loadAndroidKeyInfo(AndroidKeyGenParams params) {
+  static Future<String> loadAndroidKeyInfo(AndroidKeyParams params) {
     if (!params.checkCanGetInfo()) throw Exception('参数不完整');
     final script = 'keytool -v -list '
         '-storepass ${params.storePass} -keystore ${params.keystore}';
@@ -66,7 +66,7 @@ class ScriptHandle {
   }
 
   // 生成android签名文件
-  static Future<bool> genAndroidKey(AndroidKeyGenParams params) async {
+  static Future<bool> genAndroidKey(AndroidKeyParams params) async {
     try {
       if (!params.checkCanGenKey()) throw Exception('参数不完整');
       final script = 'keytool -genkey '

@@ -96,19 +96,22 @@ class Utils {
     final navigator = Navigator.of(context);
     try {
       if (null != _loadingDialog) navigator.maybePop();
+      const duration = Duration(milliseconds: 200);
       _loadingDialog = showDialog<void>(
         context: context,
+        transitionDuration: duration,
         builder: (_) => const Center(
           child: Card(
             child: ProgressRing(),
           ),
         ),
       )..whenComplete(() => _loadingDialog = null);
+      await Future.delayed(duration);
       final result = await loadFuture;
-      if (null != _loadingDialog) navigator.maybePop();
+      if (null != _loadingDialog) await navigator.maybePop();
       return result;
     } catch (e) {
-      if (null != _loadingDialog) navigator.maybePop();
+      if (null != _loadingDialog) await navigator.maybePop();
       rethrow;
     }
   }

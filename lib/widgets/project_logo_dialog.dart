@@ -89,10 +89,12 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => Utils.showLoading(context,
-                      loadFuture: logic.replaceLogos().then((v) {
-                        if (!v) Utils.showSnack(context, '图标替换失败');
-                      }))
+                  ? () => Utils.showLoading<bool>(
+                        context,
+                        loadFuture: logic.replaceLogos(),
+                      ).then((v) {
+                        if (v != null && !v) Utils.showSnack(context, '图标替换失败');
+                      })
                   : null,
               child: const Text('替换'),
             );

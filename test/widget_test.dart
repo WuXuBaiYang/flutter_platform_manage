@@ -29,10 +29,11 @@ void main() {
   });
 
   test('生成android签名文件', () async {
-    final result = await ScriptHandle.genAndroidKey(AndroidKeyGenParams()
+    final result = await ScriptHandle.genAndroidKey(AndroidKeyParams()
       ..alias = 'testKey'
       ..validity = 3650
-      ..dName = AndroidKeyGenDName()
+      ..dName.cn='中文打包测试'
+      ..dName.ou='中文'
       ..keyPass = '123456'
       ..storePass = '123456'
       ..keystore = r'C:\Users\wuxubaiyang\Desktop\test.keystore');
@@ -42,7 +43,7 @@ void main() {
   test('获取android签名文件信息', () async {
     try {
       final result =
-          await ScriptHandle.loadAndroidKeyInfo(AndroidKeyGenParams.info(
+          await ScriptHandle.loadAndroidKeyInfo(AndroidKeyParams.info(
         storePass: '123456',
         keystore: r'C:\Users\wuxubaiyang\Desktop\test.keystore',
       ));

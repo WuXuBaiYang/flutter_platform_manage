@@ -5,7 +5,7 @@ import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/gen_android_key.dart';
+import 'package:flutter_platform_manage/widgets/gen_android_key_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 
 /*
