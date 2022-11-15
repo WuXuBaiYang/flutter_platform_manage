@@ -29,14 +29,13 @@ void main() {
   });
 
   test('生成android签名文件', () async {
-    final result = await ScriptHandle.genAndroidKey(AndroidKeyGenParams(
-      alias: 'testKey',
-      validity: 3650,
-      dName: AndroidKeyGenDName.empty(),
-      keyPass: '123456',
-      storePass: '123456',
-      keystore: r'C:\Users\wuxubaiyang\Desktop\test.keystore',
-    ));
+    final result = await ScriptHandle.genAndroidKey(AndroidKeyGenParams()
+      ..alias = 'testKey'
+      ..validity = 3650
+      ..dName = AndroidKeyGenDName()
+      ..keyPass = '123456'
+      ..storePass = '123456'
+      ..keystore = r'C:\Users\wuxubaiyang\Desktop\test.keystore');
     print('android签名生成 ${result ? '成功' : '失败'}');
   });
 
