@@ -49,9 +49,8 @@ class AndroidKeyParams {
       keystore.isNotEmpty;
 
   // 获取dName的信息字符串
-  String getDNameInfo() => 'CN=${dName?.cn ?? ''},OU=${dName?.ou ?? ''},'
-      'O=${dName?.o ?? ''},L=${dName?.l ?? ''},'
-      'S=${dName?.s ?? ''},C=${dName?.c ?? ''}';
+  String getDNameInfo() =>
+      'CN=${dName.cn},OU=${dName.ou},O=${dName.o},L=${dName.l},S=${dName.s},C=${dName.c}';
 }
 
 /*
