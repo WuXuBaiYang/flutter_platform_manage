@@ -14,7 +14,7 @@ import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/utils/file.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/dialog/date_rang_picker_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/date_rang_picker.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';

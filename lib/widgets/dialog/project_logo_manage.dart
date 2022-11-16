@@ -18,14 +18,14 @@ import 'package:image/image.dart' as handle;
 * @author wuxubaiyang
 * @Time 2022/10/31 11:05
 */
-class ProjectLogoDialog extends StatefulWidget {
+class ProjectLogoManageDialog extends StatefulWidget {
   // 项目平台集合
   final List<BasePlatform> initialPlatforms;
 
   // 所选图标最小尺寸
   final Size minFileSize;
 
-  const ProjectLogoDialog({
+  const ProjectLogoManageDialog({
     super.key,
     required this.initialPlatforms,
     required this.minFileSize,
@@ -39,7 +39,7 @@ class ProjectLogoDialog extends StatefulWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => ProjectLogoDialog(
+      builder: (_) => ProjectLogoManageDialog(
         initialPlatforms: initialPlatforms,
         minFileSize: minFileSize,
       ),
@@ -47,7 +47,7 @@ class ProjectLogoDialog extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _ProjectLogoDialogState();
+  State<StatefulWidget> createState() => _ProjectLogoManageDialogState();
 }
 
 /*
@@ -55,11 +55,11 @@ class ProjectLogoDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/10/31 11:05
 */
-class _ProjectLogoDialogState
-    extends LogicState<ProjectLogoDialog, _ProjectLogoDialogLogic> {
+class _ProjectLogoManageDialogState
+    extends LogicState<ProjectLogoManageDialog, _ProjectLogoManageDialogLogic> {
   @override
-  _ProjectLogoDialogLogic initLogic() =>
-      _ProjectLogoDialogLogic(widget.initialPlatforms);
+  _ProjectLogoManageDialogLogic initLogic() =>
+      _ProjectLogoManageDialogLogic(widget.initialPlatforms);
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +227,7 @@ class _ProjectLogoDialogState
 * @author wuxubaiyang
 * @Time 2022/11/2 9:11
 */
-class _ProjectLogoDialogLogic extends BaseLogic {
+class _ProjectLogoManageDialogLogic extends BaseLogic {
   // 平台下标
   final indexController = ValueChangeNotifier<int>(0);
 
@@ -237,7 +237,7 @@ class _ProjectLogoDialogLogic extends BaseLogic {
   // 项目图标与平台表
   final List<BasePlatform> platforms;
 
-  _ProjectLogoDialogLogic(this.platforms);
+  _ProjectLogoManageDialogLogic(this.platforms);
 
   // 接收尺寸并格式化
   String handleSize(Size size) {

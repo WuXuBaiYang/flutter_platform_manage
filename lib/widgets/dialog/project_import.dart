@@ -8,7 +8,7 @@ import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/dialog/env_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/env_import.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';

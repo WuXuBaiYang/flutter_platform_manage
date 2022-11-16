@@ -4,10 +4,10 @@ import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:flutter_platform_manage/widgets/dialog/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_logo_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_logo_manage.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -156,7 +156,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
           ),
           onPressed: () {
             final info = logic.platformInfo;
-            ProjectLogoDialog.show(
+            ProjectLogoManageDialog.show(
               context,
               initialPlatforms: [info],
               minFileSize: _minFileSizeMap[info.type]!,

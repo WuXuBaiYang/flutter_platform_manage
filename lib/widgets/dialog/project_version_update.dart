@@ -11,11 +11,11 @@ import 'package:flutter_platform_manage/widgets/logic_state.dart';
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class ProjectVersionDialog extends StatefulWidget {
+class ProjectVersionUpdateDialog extends StatefulWidget {
   // 编辑项目信息时回传对象
   final ProjectModel initialProjectInfo;
 
-  const ProjectVersionDialog({
+  const ProjectVersionUpdateDialog({
     Key? key,
     required this.initialProjectInfo,
   }) : super(key: key);
@@ -27,14 +27,14 @@ class ProjectVersionDialog extends StatefulWidget {
   }) {
     return showDialog<ProjectModel>(
       context: context,
-      builder: (_) => ProjectVersionDialog(
+      builder: (_) => ProjectVersionUpdateDialog(
         initialProjectInfo: initialProjectInfo,
       ),
     );
   }
 
   @override
-  State<StatefulWidget> createState() => _ProjectVersionDialogState();
+  State<StatefulWidget> createState() => _ProjectVersionUpdateDialogState();
 }
 
 /*
@@ -42,11 +42,11 @@ class ProjectVersionDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectVersionDialogState
-    extends LogicState<ProjectVersionDialog, _ProjectVersionDialogLogic> {
+class _ProjectVersionUpdateDialogState
+    extends LogicState<ProjectVersionUpdateDialog, _ProjectVersionUpdateDialogLogic> {
   @override
-  _ProjectVersionDialogLogic initLogic() =>
-      _ProjectVersionDialogLogic(widget.initialProjectInfo);
+  _ProjectVersionUpdateDialogLogic initLogic() =>
+      _ProjectVersionUpdateDialogLogic(widget.initialProjectInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +139,7 @@ class _ProjectVersionDialogState
 * @author wuxubaiyang
 * @Time 2022/11/1 17:15
 */
-class _ProjectVersionDialogLogic extends BaseLogic {
+class _ProjectVersionUpdateDialogLogic extends BaseLogic {
   // 版本号输入框控制器
   final TextEditingController versionController;
 
@@ -149,7 +149,7 @@ class _ProjectVersionDialogLogic extends BaseLogic {
   // 项目信息
   final ProjectModel projectInfo;
 
-  _ProjectVersionDialogLogic(this.projectInfo)
+  _ProjectVersionUpdateDialogLogic(this.projectInfo)
       : versionController = TextEditingController(text: projectInfo.version);
 
   // 更新输入框内容

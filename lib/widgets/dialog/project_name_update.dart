@@ -11,11 +11,11 @@ import 'package:flutter_platform_manage/widgets/logic_state.dart';
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class ProjectReNameDialog extends StatefulWidget {
+class ProjectNameUpdateDialog extends StatefulWidget {
   // 编辑项目信息时回传对象
   final ProjectModel initialProjectInfo;
 
-  const ProjectReNameDialog({
+  const ProjectNameUpdateDialog({
     Key? key,
     required this.initialProjectInfo,
   }) : super(key: key);
@@ -27,14 +27,14 @@ class ProjectReNameDialog extends StatefulWidget {
   }) {
     return showDialog<ProjectModel>(
       context: context,
-      builder: (_) => ProjectReNameDialog(
+      builder: (_) => ProjectNameUpdateDialog(
         initialProjectInfo: initialProjectInfo,
       ),
     );
   }
 
   @override
-  State<StatefulWidget> createState() => _ProjectReNameDialogState();
+  State<StatefulWidget> createState() => _ProjectNameUpdateDialogState();
 }
 
 /*
@@ -42,11 +42,11 @@ class ProjectReNameDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectReNameDialogState
-    extends LogicState<ProjectReNameDialog, _ProjectReNameDialogLogic> {
+class _ProjectNameUpdateDialogState
+    extends LogicState<ProjectNameUpdateDialog, _ProjectNameUpdateDialogLogic> {
   @override
-  _ProjectReNameDialogLogic initLogic() =>
-      _ProjectReNameDialogLogic(widget.initialProjectInfo);
+  _ProjectNameUpdateDialogLogic initLogic() =>
+      _ProjectNameUpdateDialogLogic(widget.initialProjectInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +131,7 @@ class _ProjectReNameDialogState
 * @author wuxubaiyang
 * @Time 2022/11/1 16:51
 */
-class _ProjectReNameDialogLogic extends BaseLogic {
+class _ProjectNameUpdateDialogLogic extends BaseLogic {
   // 输入框控制器
   final TextEditingController nameController;
 
@@ -141,7 +141,7 @@ class _ProjectReNameDialogLogic extends BaseLogic {
   // 项目对象
   final ProjectModel projectInfo;
 
-  _ProjectReNameDialogLogic(this.projectInfo)
+  _ProjectNameUpdateDialogLogic(this.projectInfo)
       : nameController = TextEditingController(text: projectInfo.name);
 
   // 提交项目名修改

@@ -9,15 +9,15 @@ import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
-import 'package:flutter_platform_manage/widgets/dialog/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_logo_dialog.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_rename_dialog.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_version_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_logo_manage.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_name_update.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_version_update.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -142,7 +142,7 @@ class _ProjectDetailPageState
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text('替换图标'),
-              onPressed: () => ProjectLogoDialog.show(
+              onPressed: () => ProjectLogoManageDialog.show(
                 context,
                 initialPlatforms: item.platformList,
                 minFileSize: const Size.square(1024),
@@ -151,7 +151,7 @@ class _ProjectDetailPageState
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text('修改版本号'),
-              onPressed: () => ProjectVersionDialog.show(
+              onPressed: () => ProjectVersionUpdateDialog.show(
                 context,
                 initialProjectInfo: item,
               ).then((v) {
@@ -161,7 +161,7 @@ class _ProjectDetailPageState
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text('修改项目名称'),
-              onPressed: () => ProjectReNameDialog.show(
+              onPressed: () => ProjectNameUpdateDialog.show(
                 context,
                 initialProjectInfo: item,
               ).then((v) {
