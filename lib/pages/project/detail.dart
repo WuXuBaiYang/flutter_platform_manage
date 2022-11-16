@@ -2,7 +2,9 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
+import 'package:flutter_platform_manage/manager/event.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
+import 'package:flutter_platform_manage/model/event/project_package.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_platform_manage/widgets/app_page.dart';
 import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
@@ -52,6 +55,22 @@ class _ProjectDetailPageState
     extends LogicState<ProjectDetailPage, _ProjectDetailPageLogic> {
   @override
   _ProjectDetailPageLogic initLogic() => _ProjectDetailPageLogic();
+
+  @override
+  void initState() {
+    super.initState();
+    // 监听项目打包事件
+    eventManage.on<ProjectPackageEvent>().listen((e) {
+      // 接收打包消息并执行打包操作
+      logic.loadProjectInfo(context).then((p) {
+        ProjectPackageDialog.show(
+          context,
+          initialPlatform: e.type,
+          initialProjectInfo: p,
+        );
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,9 +197,10 @@ class _ProjectDetailPageState
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
               label: const Text('应用打包'),
-              onPressed: () {
-                Utils.showSnack(context, '开发中');
-              },
+              onPressed: () => ProjectPackageDialog.show(
+                context,
+                initialProjectInfo: item,
+              ),
             ),
           ],
         ),

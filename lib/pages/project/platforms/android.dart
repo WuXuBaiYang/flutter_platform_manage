@@ -5,6 +5,8 @@ import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/android.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
+import 'package:flutter_platform_manage/widgets/dialog/android_build_guide.dart';
+import 'package:flutter_platform_manage/widgets/dialog/gen_android_key.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
 import 'package:flutter_platform_manage/widgets/dialog/permission_import.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
@@ -43,6 +45,16 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
       _buildPermissionManage(),
       _buildPackageName(),
       buildAppLogo(),
+      buildPackage(actions: [
+        TextButton(
+          child: const Text('生成签名'),
+          onPressed: () => GenAndroidKeyDialog.show(context),
+        ),
+        TextButton(
+          child: const Text('引导'),
+          onPressed: () => AndroidBuildGuideDialog.show(context),
+        ),
+      ]),
     ];
   }
 

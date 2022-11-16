@@ -42,6 +42,7 @@ class _PlatformWebPageState
       _buildBackgroundColor(),
       _buildThemeColor(),
       _buildPreferRelatedApplications(),
+      buildPackage(),
     ];
   }
 

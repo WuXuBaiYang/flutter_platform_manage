@@ -8,6 +8,7 @@ import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
@@ -156,6 +157,20 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic> {
   // 获取项目列表子项右键菜单项
   List<Widget> _getProjectMenuItems(BuildContext context, ProjectModel item) =>
       [
+        ListTile(
+          leading: const Icon(
+            FluentIcons.running,
+            size: 14,
+          ),
+          title: const Text('打包'),
+          onPressed: () {
+            Navigator.pop(context);
+            ProjectPackageDialog.show(
+              context,
+              initialProjectInfo: item,
+            );
+          },
+        ),
         ListTile(
           leading: const Icon(
             FluentIcons.rename,

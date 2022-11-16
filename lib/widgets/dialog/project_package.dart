@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/model/package.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 
 /*
@@ -11,22 +12,28 @@ import 'package:flutter_platform_manage/model/project.dart';
 */
 class ProjectPackageDialog extends StatefulWidget {
   // 项目信息
-  final ProjectModel initialProjectInfo;
+  final ProjectModel? initialProjectInfo;
+
+  // 平台信息
+  final PlatformType? initialPlatform;
 
   const ProjectPackageDialog({
     super.key,
-    required this.initialProjectInfo,
+    this.initialProjectInfo,
+    this.initialPlatform,
   });
 
   // 展示项目打包弹窗
   static Future<PackageModel?> show(
     BuildContext context, {
-    required ProjectModel initialProjectInfo,
+    ProjectModel? initialProjectInfo,
+    PlatformType? initialPlatform,
   }) {
     return showDialog<PackageModel>(
       context: context,
       builder: (_) => ProjectPackageDialog(
         initialProjectInfo: initialProjectInfo,
+        initialPlatform: initialPlatform,
       ),
     );
   }
