@@ -3,6 +3,7 @@ import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:isar/isar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
@@ -63,7 +64,7 @@ class _ProjectSettingsState
           return ListView.separated(
             shrinkWrap: true,
             itemCount: envList.length,
-            separatorBuilder: (_, i) => const Divider(),
+            separatorBuilder: (_, i) => const ThicknessDivider(),
             itemBuilder: (_, i) {
               final item = envList[i];
               return _buildEnvironmentListItem(item);

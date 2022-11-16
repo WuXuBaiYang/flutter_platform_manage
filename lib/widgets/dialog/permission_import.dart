@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/debouncer.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*

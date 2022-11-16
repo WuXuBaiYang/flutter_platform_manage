@@ -7,7 +7,7 @@ import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';

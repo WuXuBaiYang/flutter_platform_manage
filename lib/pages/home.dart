@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/pages/project/index.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/dialog/windows_close.dart';
 import 'package:window_manager/window_manager.dart';
 

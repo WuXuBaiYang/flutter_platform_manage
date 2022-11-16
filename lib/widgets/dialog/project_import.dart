@@ -9,8 +9,9 @@ import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/env_import.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
 
 /*
@@ -78,7 +79,7 @@ class _ProjectImportDialogState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(_stepsMap.length * 2 - 1, (i) {
-                    if (i.isOdd) return const Divider(size: 60);
+                    if (i.isOdd) return const ThicknessDivider(size: 60);
                     i = i ~/ 2;
                     var it = _stepsMap.keys.elementAt(i);
                     return RadioButton(

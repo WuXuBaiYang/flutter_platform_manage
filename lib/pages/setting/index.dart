@@ -3,7 +3,7 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/pages/setting/settings/project.dart';
 import 'package:flutter_platform_manage/pages/setting/settings/system.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 
 /*
 * 设置页

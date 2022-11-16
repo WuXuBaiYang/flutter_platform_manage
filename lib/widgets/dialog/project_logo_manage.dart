@@ -8,8 +8,9 @@ import 'package:flutter_platform_manage/model/event/project_logo.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image/image.dart' as handle;
 
@@ -71,10 +72,8 @@ class _ProjectLogoManageDialogState
       content: Column(
         children: [
           _buildPlatformHeader(),
-          const Divider(
-            style: DividerThemeData(
-              horizontalMargin: EdgeInsets.symmetric(vertical: 14),
-            ),
+          const ThicknessDivider(
+            horizontalMargin: EdgeInsets.symmetric(vertical: 14),
           ),
           Expanded(child: _buildPlatformTabs()),
         ],

@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/gen_android_key.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 
 /*
 * 打包任务页

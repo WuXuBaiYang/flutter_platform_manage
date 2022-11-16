@@ -5,7 +5,7 @@ import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_logo_manage.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';

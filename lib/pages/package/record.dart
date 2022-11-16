@@ -15,11 +15,12 @@ import 'package:flutter_platform_manage/utils/file.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/date_rang_picker.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/page_indicator.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
 import 'package:isar/isar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -277,7 +278,7 @@ class _PackageRecordPageState
                 onPressed: () => logic.itemSelected(checked, id),
               ),
               const SizedBox(height: 4),
-              const Divider(),
+              const ThicknessDivider(),
             ],
           ),
         ),

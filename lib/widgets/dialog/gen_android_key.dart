@@ -5,7 +5,8 @@ import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
 * android签名文件生成
@@ -181,7 +182,7 @@ class _GenAndroidKeyDialogState
             ),
           ),
           const SizedBox(height: 14),
-          const Divider(),
+          const ThicknessDivider(),
           const SizedBox(height: 14),
           _buildFoldDName(context),
         ],

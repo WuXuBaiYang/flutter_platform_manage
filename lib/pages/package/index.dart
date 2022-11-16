@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/package/record.dart';
 import 'package:flutter_platform_manage/pages/package/task.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 
 // 加载项目详情缓存回调
 typedef OnProjectCacheLoad = Future<ProjectModel?> Function(int id);
