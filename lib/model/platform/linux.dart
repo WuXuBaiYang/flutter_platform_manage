@@ -37,17 +37,4 @@ class LinuxPlatform extends BasePlatform {
     }
     return true;
   }
-
-  @override
-  Future<bool> modifyDisplayName(String name,
-      {FileHandle? handle, bool autoCommit = false}) async {
-    ///待实现
-    return true;
-  }
-
-  @override
-  Future<bool> projectPackaging(File output) async {
-    ///待实现
-    return true;
-  }
 }

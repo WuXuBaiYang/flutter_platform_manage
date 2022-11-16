@@ -31,7 +31,7 @@ abstract class BasePlatform {
   }) : projectIcons = const [];
 
   // 更新信息
-  Future<bool> update({bool simple=false});
+  Future<bool> update({bool simple = false});
 
   // 提交信息变动
   Future<bool> commit();
@@ -55,11 +55,15 @@ abstract class BasePlatform {
   }
 
   // 修改平台应用名（展示名称）
-  Future<bool> modifyDisplayName(String name,
-      {FileHandle? handle, bool autoCommit = false});
+  Future<bool> modifyDisplayName(
+    String name, {
+    FileHandle? handle,
+    bool autoCommit = false,
+  }) =>
+      Future.value(true);
 
-  // 项目打包
-  Future<bool> projectPackaging(File output);
+  // 获取平台应用名（展示名称）为空则代表该平台不支持
+  String? get displayName => null;
 }
 
 /*

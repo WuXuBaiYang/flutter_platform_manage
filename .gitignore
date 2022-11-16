@@ -367,3 +367,9 @@ macos/Podfile.lock
 
 jtech.db.isar
 jtech.db.isar-lck
+
+key.properties
+key.properties
+*.properties
+key.properties
+key.properties

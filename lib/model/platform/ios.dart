@@ -121,10 +121,7 @@ class IOSPlatform extends BasePlatform {
   }
 
   @override
-  Future<bool> projectPackaging(File output) async {
-    /// 待实现
-    return true;
-  }
+  String? get displayName => bundleDisplayName;
 
   @override
   bool operator ==(dynamic other) {
