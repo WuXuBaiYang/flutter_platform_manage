@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
-import 'package:flutter_platform_manage/model/gen_key.dart';
+import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/log.dart';

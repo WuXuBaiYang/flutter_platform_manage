@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/model/platform/web.dart';
-import 'package:flutter_platform_manage/widgets/color_picker_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/color_picker_dialog.dart';
 import 'platform.dart';
 
 /*

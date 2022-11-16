@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_platform_manage/model/gen_key.dart';
+import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,8 +32,8 @@ void main() {
     final result = await ScriptHandle.genAndroidKey(AndroidKeyParams()
       ..alias = 'testKey'
       ..validity = 3650
-      ..dName.cn='中文打包测试'
-      ..dName.ou='中文'
+      ..dName.cn = '中文打包测试'
+      ..dName.ou = '中文'
       ..keyPass = '123456'
       ..storePass = '123456'
       ..keystore = r'C:\Users\wuxubaiyang\Desktop\test.keystore');

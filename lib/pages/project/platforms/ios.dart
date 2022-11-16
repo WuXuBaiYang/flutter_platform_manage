@@ -5,8 +5,8 @@ import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/platform/ios.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
-import 'package:flutter_platform_manage/widgets/permission_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/permission_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'platform.dart';
 

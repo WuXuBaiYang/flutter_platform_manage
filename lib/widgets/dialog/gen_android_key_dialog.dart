@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
-import 'package:flutter_platform_manage/model/gen_key.dart';
+import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';

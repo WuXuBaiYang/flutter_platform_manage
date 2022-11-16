@@ -6,14 +6,14 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option_dialog.dart';
 import 'package:flutter_platform_manage/widgets/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
-import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
-import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_rename_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_version_dialog.dart';
 import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 
