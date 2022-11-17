@@ -168,24 +168,26 @@ class DBManage extends BaseManage {
       );
 
   // 修改打包状态（已完成任务无法再改变）
-  Future<Id?> updatePackageStatus(
-    Id id,
+  Future<List<Id>> updatePackageStatus(
+    List<Id> ids,
     PackageStatus status, {
     bool silent = false,
   }) =>
       _isar.writeTxn(
         () async {
           // 判断id是否存在，并且状态为非完成
-          final package = await _isar.packages
+          final packages = await _isar.packages
               .filter()
-              .idEqualTo(id)
+              .allOf<int, dynamic>(ids, (q, e) => q.idEqualTo(e))
               .and()
               .not()
               .statusEqualTo(PackageStatus.completed)
-              .findFirst();
-          if (package == null) return null;
-          package.status = status;
-          return _isar.packages.put(package);
+              .findAll();
+          if (packages.isEmpty) return [];
+          for (var it in packages) {
+            it.status = status;
+          }
+          return _isar.packages.putAll(packages);
         },
         silent: silent,
       );

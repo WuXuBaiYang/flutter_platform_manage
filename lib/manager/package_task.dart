@@ -67,6 +67,7 @@ class PackageTaskManage extends BaseManage {
   // 开始/恢复打包任务
   Future<bool> resumeTask({List<int> ids = const []}) async {
     final maxQueue = _maxQueueController.value;
+    // dbManage.updatePackageStatus(ids, PackageStatus.prepare);
     if (ids.isEmpty) ids.addAll(_packageTasks.keys);
     return true;
   }
