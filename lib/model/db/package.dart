@@ -11,6 +11,9 @@ class Package {
   // 项目id
   int projectId = 0;
 
+  // 所用环境id
+  int envId = 0;
+
   // 打包目标平台
   @enumerated
   PlatformType platform = PlatformType.android;
@@ -34,6 +37,9 @@ class Package {
 
   // 打包大小
   int? packageSize;
+
+  // 打包失败的异常描述
+  List<String> errors = [];
 }
 
 // 打包状态枚举

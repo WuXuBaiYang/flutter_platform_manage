@@ -268,9 +268,11 @@ void _testInsertPackageCompleteInfo(Isar db) {
   final objects = List.generate(99, (i) {
     return Package()
       ..projectId = 2
+      ..envId = 1
       ..platform = PlatformType.android
       ..status = PackageStatus.completed
       ..packageSize = 1129301291
+      ..timeSpent = 1000 * 60 * 3
       ..completeTime = DateTime.now().subtract(Duration(days: i % 15))
       ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
   });

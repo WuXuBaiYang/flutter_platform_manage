@@ -225,6 +225,7 @@ class _PackageRecordPageState
     final id = item.package.id;
     final project = item.projectInfo;
     final checked = logic.hasItemSelected(id);
+    final env = project?.environment;
     return Row(
       children: [
         _buildRecordListItemTimeline(
@@ -249,17 +250,15 @@ class _PackageRecordPageState
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     children: [
-                      const Icon(FluentIcons.bullseye, size: 15),
-                      const SizedBox(width: 4),
-                      Text(item.package.platform.name),
-                      const SizedBox(width: 14),
-                      const Icon(FluentIcons.timer, size: 15),
-                      const SizedBox(width: 4),
-                      Text(item.timeSpent),
-                      const SizedBox(width: 14),
-                      const Icon(FluentIcons.classroom_logo, size: 15),
-                      const SizedBox(width: 4),
-                      Text(item.packageSize),
+                      ..._buildRecordListItemInfo(
+                          FluentIcons.bullseye, item.package.platform.name),
+                      ..._buildRecordListItemInfo(
+                          FluentIcons.timer, item.timeSpent),
+                      ..._buildRecordListItemInfo(
+                          FluentIcons.classroom_logo, item.packageSize),
+                      if (env != null)
+                        ..._buildRecordListItemInfo(
+                            FluentIcons.device_run, 'v${env.flutter}'),
                     ],
                   ),
                 ),
@@ -284,6 +283,14 @@ class _PackageRecordPageState
       ],
     );
   }
+
+  // 构建记录列表子项的详细信息构造
+  List<Widget> _buildRecordListItemInfo(IconData icon, String text) => [
+        Icon(icon, size: 15),
+        const SizedBox(width: 4),
+        Text(text),
+        const SizedBox(width: 14),
+      ];
 
   // 构建记录列表子项时间轴
   Widget _buildRecordListItemTimeline(

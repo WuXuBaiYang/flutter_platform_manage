@@ -34,7 +34,7 @@ class ScriptHandle {
         dart = it.replaceAll(dart, '').trim();
       }
     }
-    return oldEnv ??= Environment()
+    return (oldEnv ??= Environment())
       ..path = path
       ..flutter = version
       ..channel = channel

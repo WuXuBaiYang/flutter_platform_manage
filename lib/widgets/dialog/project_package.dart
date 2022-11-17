@@ -327,16 +327,6 @@ class _ProjectPackageDialogLogic extends BaseLogic {
     });
   }
 
-  // 打包脚本对照表
-  final _packageScriptMap = {
-    PlatformType.android: 'flutter build apk',
-    PlatformType.ios: '',
-    PlatformType.web: 'flutter build web',
-    PlatformType.macos: '',
-    PlatformType.windows: 'flutter build windows',
-    PlatformType.linux: '',
-  };
-
   // 指定打包操作
   Future<PackageModel?> doPackageTask() async {
     final state = formKey.currentState;
@@ -360,9 +350,8 @@ class _ProjectPackageDialogLogic extends BaseLogic {
       final packageInfo = PackageModel(
         package: Package()
           ..projectId = project.project.id
-          ..platform = platform
-          ..status = PackageStatus.prepare
-          ..script = _packageScriptMap[platform]!,
+          ..envId = project.project.envId
+          ..platform = platform,
         projectInfo: project,
       );
       if (!await packageTaskManage.addTask(
