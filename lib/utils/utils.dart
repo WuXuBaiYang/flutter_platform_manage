@@ -13,6 +13,26 @@ import 'package:flutter/services.dart';
 * @Time 5/18/2022 10:58 AM
 */
 class Utils {
+  // 版本号自增
+  static String autoIncrement(BuildContext context, String version) {
+    var t = version.split('+');
+    if (t.length != 2) {
+      Utils.showSnack(context, '版本号格式错误');
+      return version;
+    }
+    var vName = t.first, vCode = t.last;
+    var c = int.tryParse(vCode);
+    if (null == c) {
+      Utils.showSnack(context, '版本号格式化失败');
+      return version;
+    }
+    vCode = '${++c}';
+    t = vName.split('.');
+    t.last = vCode;
+    vName = t.join('.');
+    return '$vName+$vCode';
+  }
+
   // 解析颜色
   static Color? parseHexColor(String hexColor) {
     if (hexColor.isEmpty) return null;

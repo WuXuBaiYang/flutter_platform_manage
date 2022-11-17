@@ -8,9 +8,7 @@ import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/package.dart';
-import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
-import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
 import 'package:flutter_platform_manage/utils/file.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
@@ -20,6 +18,7 @@ import 'package:flutter_platform_manage/utils/date.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/page_indicator.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/combobox_select.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
 import 'package:isar/isar.dart';
@@ -382,46 +381,19 @@ class _PackageRecordPageState
   // 构建项目选择组件
   Widget _buildProjectSelect(int? projectId) {
     projectId ??= -1;
-    const resetChild = ComboBoxItem(
-      value: -1,
-      child: Text('全部项目'),
-    );
-    return CacheFutureBuilder<List<ProjectModel>>(
-      future: dbManage.loadAllProjectInfos,
-      builder: (_, snap) {
-        final projects = snap.data ?? [];
-        return ComboBox<int>(
-          value: projectId,
-          items: projects.map(_buildProjectSelectItem).toList()
-            ..add(resetChild),
-          onChanged: (v) {
-            if (v != null && v <= 0) v = null;
-            logic.selectProject(v);
-          },
-        );
+    return ProjectSelectComboBox<int>(
+      value: projectId,
+      getValue: (v) => v?.project.id,
+      onChanged: (v) {
+        if (v != null && v <= 0) v = null;
+        logic.selectProject(v);
       },
-    );
-  }
-
-  // 构建项目选择子项
-  ComboBoxItem<int> _buildProjectSelectItem(ProjectModel e) {
-    return ComboBoxItem(
-      value: e.project.id,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          ProjectLogo.custom(
-            projectIcon: e.projectIcon,
-            size: const Size.square(15),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            e.showTitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+      additional: const [
+        ComboBoxItem(
+          value: -1,
+          child: Text('全部项目'),
+        ),
+      ],
     );
   }
 

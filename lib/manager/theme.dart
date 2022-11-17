@@ -96,7 +96,7 @@ extension ThemeTypeExtension on ThemeType {
         ),
       }[this]!;
 
-  // 获取字体样式
+  // 字体样式
   Typography? get _typography => Typography.raw(
         title: TextStyle(
           fontSize: 18,

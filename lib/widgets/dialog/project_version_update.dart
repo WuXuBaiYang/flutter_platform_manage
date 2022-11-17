@@ -42,8 +42,8 @@ class ProjectVersionUpdateDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectVersionUpdateDialogState
-    extends LogicState<ProjectVersionUpdateDialog, _ProjectVersionUpdateDialogLogic> {
+class _ProjectVersionUpdateDialogState extends LogicState<
+    ProjectVersionUpdateDialog, _ProjectVersionUpdateDialogLogic> {
   @override
   _ProjectVersionUpdateDialogLogic initLogic() =>
       _ProjectVersionUpdateDialogLogic(widget.initialProjectInfo);
@@ -96,14 +96,17 @@ class _ProjectVersionUpdateDialogState
       child: TextFormBox(
         controller: logic.versionController,
         autofocus: true,
-        autovalidateMode: AutovalidateMode.always,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         suffix: Row(
           children: [
             Tooltip(
               message: '自增版本号',
               child: IconButton(
                 icon: const Icon(FluentIcons.add_multiple),
-                onPressed: () => logic.autoIncrement(context),
+                onPressed: () {
+                  final v = logic.versionController.value.text;
+                  logic.updateInput(Utils.autoIncrement(context, v));
+                },
               ),
             ),
             Tooltip(
@@ -163,26 +166,6 @@ class _ProjectVersionUpdateDialogLogic extends BaseLogic {
         ),
       ),
     );
-  }
-
-  // 版本号自增
-  void autoIncrement(BuildContext context) {
-    var t = versionController.text.split('+');
-    if (t.length != 2) {
-      Utils.showSnack(context, '版本号格式错误');
-      return;
-    }
-    var vName = t.first, vCode = t.last;
-    var c = int.tryParse(vCode);
-    if (null == c) {
-      Utils.showSnack(context, '版本号格式化失败');
-      return;
-    }
-    vCode = '${++c}';
-    t = vName.split('.');
-    t.last = vCode;
-    vName = t.join('.');
-    updateInput('$vName+$vCode');
   }
 
   // 提交项目版本号修改

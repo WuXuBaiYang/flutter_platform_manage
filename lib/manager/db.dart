@@ -119,11 +119,13 @@ class DBManage extends BaseManage {
       _isar.projects.where().sortByOrder().findAllSync();
 
   // 获取所有项目信息并读取本地文件信息
-  Future<List<ProjectModel>> loadAllProjectInfos() async {
+  Future<List<ProjectModel>> loadAllProjectInfos({
+    bool simple = true,
+  }) async {
     final list = <ProjectModel>[];
     for (var it in dbManage.loadAllProjects()) {
       final project = ProjectModel(project: it);
-      await project.update(simple: true);
+      await project.update(simple: simple);
       list.add(project);
     }
     return list;

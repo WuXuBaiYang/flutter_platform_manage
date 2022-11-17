@@ -4,9 +4,8 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
-import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/dialog/gen_android_key.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
 
 /*
 * 打包任务页
@@ -67,19 +66,9 @@ class _PackageTaskPageState
       child: TextButton(
         child: const Text('点击测试'),
         onPressed: () {
-          GenAndroidKeyDialog.show(context).then((v) {
-            Utils.showSnack(context, '生成的签名文件路径');
-          });
+          ProjectPackageDialog.show(context);
         },
       ),
-    );
-    return StreamBuilder<List<Package>>(
-      stream: dbManage.watchPackageTaskList(
-        fireImmediately: true,
-      ),
-      builder: (_, taskList) {
-        return SizedBox();
-      },
     );
   }
 }

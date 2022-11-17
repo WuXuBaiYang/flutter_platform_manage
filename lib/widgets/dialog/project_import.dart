@@ -8,6 +8,7 @@ import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
+import 'package:flutter_platform_manage/widgets/custom_animated_size.dart';
 import 'package:flutter_platform_manage/widgets/dialog/env_import.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
@@ -94,8 +95,7 @@ class _ProjectImportDialogState
                   }),
                 ),
                 const SizedBox(height: 14),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
+                CustomAnimatedSize(
                   child: IndexedStack(
                     index: currentStep,
                     children: _stepsMap.values.map((e) => e()).toList(),

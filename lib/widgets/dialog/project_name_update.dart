@@ -53,7 +53,7 @@ class _ProjectNameUpdateDialogState
     return ContentDialog(
       title: Row(
         children: [
-          const Text('修改 pubspec.yaml 文件中的项目名称'),
+          const Text('修改 pubspec.yaml 文件项目名称'),
           IconButton(
             icon: const Icon(FluentIcons.info),
             onPressed: () {
@@ -112,9 +112,8 @@ class _ProjectNameUpdateDialogState
               return null;
             },
             onSaved: (v) {
-              if (null != v && logic.projectInfo.name != v) {
-                logic.projectInfo.modifyProjectName(v, autoCommit: true);
-              }
+              if (v == null || logic.projectInfo.name == v) return;
+              logic.projectInfo.modifyProjectName(v, autoCommit: true);
             },
             inputFormatters: [
               FilteringTextInputFormatter.allow(_reNameRegExp),

@@ -165,10 +165,13 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic> {
           title: const Text('打包'),
           onPressed: () {
             Navigator.pop(context);
-            ProjectPackageDialog.show(
-              context,
-              initialProjectInfo: item,
-            );
+            item.update(simple: false).then((v) {
+              if (!v) return Utils.showSnack(context, '信息更新失败');
+              ProjectPackageDialog.show(
+                context,
+                initialProjectInfo: item,
+              );
+            });
           },
         ),
         ListTile(

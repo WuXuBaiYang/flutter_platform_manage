@@ -141,19 +141,15 @@ class ProjectModel {
     return autoCommit ? await handle.commit() : true;
   }
 
-  // 修改展示名称
-  Future<bool> modifyDisplayName(String name) async {
-    ///待实现
-    return true;
+  @override
+  bool operator ==(dynamic other) {
+    if (other is! ProjectModel) return false;
+    return project == other.project &&
+        exist == other.exist &&
+        name == other.name &&
+        version == other.version;
   }
 
-  // 修改平台图标
-  Future<void> modifyProjectIcon(File file) async {
-    ///待实现
-  }
-
-  // 项目平台打包
-  Future<void> projectPackaging(File output) async {
-    ///待实现
-  }
+  @override
+  int get hashCode => Object.hash(project, exist, name, version);
 }

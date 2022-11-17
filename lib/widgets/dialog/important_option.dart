@@ -93,25 +93,20 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
 
   // 动态加载操作按钮集合
   List<Widget> _getActions(BuildContext context) => [
-    Button(
-      child: const Text('取消'),
-      onPressed: () => Navigator.maybePop(context),
-    ),
-    if (widget.middle != null) widget.middle!,
-    FilledButton(
-      style: ButtonStyle(
-        backgroundColor: ButtonState.all(Colors.red),
-      ),
-      child: Text(
-        widget.confirm ?? '确认',
-        style: const TextStyle(
-          color: Colors.white,
+        Button(
+          child: const Text('取消'),
+          onPressed: () => Navigator.maybePop(context),
         ),
-      ),
-      onPressed: () {
-        var result = widget.onConfirmTap();
-        Navigator.pop<T>(context, result);
-      },
-    ),
-  ];
+        if (widget.middle != null) widget.middle!,
+        FilledButton(
+          style: ButtonStyle(
+            backgroundColor: ButtonState.all(Colors.red),
+          ),
+          child: Text(widget.confirm ?? '确认'),
+          onPressed: () {
+            var result = widget.onConfirmTap();
+            Navigator.pop<T>(context, result);
+          },
+        ),
+      ];
 }

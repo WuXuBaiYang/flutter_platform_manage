@@ -291,10 +291,7 @@ class _GenAndroidKeyDialogState
             }
             Navigator.maybePop(context, v);
           }),
-          child: const Text(
-            '生成签名',
-            style: TextStyle(color: Colors.white),
-          ),
+          child: const Text('生成签名'),
         ),
       ];
 }
@@ -322,9 +319,9 @@ class _GenAndroidKeyDialogLogic extends BaseLogic {
 
   // 生成android签名
   Future<String?> genAndroidKey() async {
-    final formState = formKey.currentState;
-    if (formState != null && formState.validate()) {
-      formState.save();
+    final state = formKey.currentState;
+    if (state != null && state.validate()) {
+      state.save();
       if (await ScriptHandle.genAndroidKey(params)) {
         return params.keystore;
       }

@@ -189,18 +189,18 @@ class _ProjectDetailPageState
             ),
             CommandBarButton(
               icon: const Icon(FluentIcons.access_logo),
-              label: const Text('打开根目录'),
-              onPressed: () => logic.openAppPath(item).then((v) {
-                if (!v) Utils.showSnack(context, '目录启动失败');
-              }),
-            ),
-            CommandBarButton(
-              icon: const Icon(FluentIcons.access_logo),
               label: const Text('应用打包'),
               onPressed: () => ProjectPackageDialog.show(
                 context,
                 initialProjectInfo: item,
               ),
+            ),
+            CommandBarButton(
+              icon: const Icon(FluentIcons.access_logo),
+              label: const Text('打开根目录'),
+              onPressed: () => logic.openAppPath(item).then((v) {
+                if (!v) Utils.showSnack(context, '目录启动失败');
+              }),
             ),
           ],
         ),
