@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/cache.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/event.dart';
+import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
@@ -31,6 +32,7 @@ void main() async {
   await eventManage.init();
   await eventManage.init();
   await permissionManage.init();
+  await packageTaskManage.init();
   // 启动应用
   runApp(const MyApp());
 }

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
+import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/package.dart';
@@ -74,10 +77,8 @@ class _ProjectPackageDialogState
           onPressed: () => Navigator.maybePop(context),
         ),
         FilledButton(
-          onPressed: () => logic.doPackage().then((v) {
+          onPressed: () => logic.doPackageTask().then((v) {
             if (v == null) return Utils.showSnack(context, '添加到打包失败');
-
-            ///添加到打包队列
             Utils.showSnack(context, '已添加到打包队列');
             Navigator.maybePop(context, v);
           }),
@@ -134,14 +135,38 @@ class _ProjectPackageDialogState
     );
   }
 
+  // 当前运营平台支持打包表
+  final _platformSupportMap = <String, List<PlatformType>>{
+    'linux': [
+      PlatformType.android,
+      // PlatformType.linux,
+      PlatformType.web,
+    ],
+    'macos': [
+      PlatformType.android,
+      // PlatformType.macos,
+      // PlatformType.ios,
+      PlatformType.web,
+    ],
+    'windows': [
+      PlatformType.android,
+      PlatformType.windows,
+      PlatformType.web,
+    ],
+  };
+
   // 构建平台选择
   Widget _buildPlatformSelect(ProjectModel project, PlatformType? platform) {
+    final platformSupports =
+        _platformSupportMap[Platform.operatingSystem] ?? [];
     return InfoLabel(
       label: '选择平台',
       child: PlatformSelectComboBox(
         value: platform,
         isExpanded: true,
-        platforms: project.platformMap.keys.toList(),
+        platforms: project.platformMap.keys
+            .where((e) => platformSupports.contains(e))
+            .toList(),
         onChanged: logic.platformController.setValue,
       ),
     );
@@ -313,7 +338,7 @@ class _ProjectPackageDialogLogic extends BaseLogic {
   };
 
   // 指定打包操作
-  Future<PackageModel?> doPackage() async {
+  Future<PackageModel?> doPackageTask() async {
     final state = formKey.currentState;
     if (state != null && state.validate()) {
       state.save();
@@ -332,7 +357,7 @@ class _ProjectPackageDialogLogic extends BaseLogic {
         displayNameController.value.text,
       )) return null;
       // 构造打包信息并添加到队列
-      return PackageModel(
+      final packageInfo = PackageModel(
         package: Package()
           ..projectId = project.project.id
           ..platform = platform
@@ -340,6 +365,10 @@ class _ProjectPackageDialogLogic extends BaseLogic {
           ..script = _packageScriptMap[platform]!,
         projectInfo: project,
       );
+      if (!await packageTaskManage.addTask(
+        packageInfo.package,
+      )) return null;
+      return packageInfo;
     }
     return null;
   }

@@ -138,10 +138,7 @@ class DBManage extends BaseManage {
       _isar.projects.watchLazy(fireImmediately: fireImmediately);
 
   // 添加打包任务(一个项目相同平台同时只能有一个打包任务，非完成状态)
-  Future<Id?> addPackage(
-    Package package, {
-    bool silent = false,
-  }) =>
+  Future<Id?> addPackage(Package package, {bool silent = false}) =>
       _isar.writeTxn(
         () async {
           // 检查该项目是否已存在并且是非完成状态
@@ -215,6 +212,15 @@ class DBManage extends BaseManage {
           .filter()
           .group((q) => q.statusEqualTo(PackageStatus.completed))
           .watchLazy(fireImmediately: fireImmediately);
+
+  // 获取打包记录列表（非完成状态）
+  List<Package> loadPackageTaskList() {
+    return _isar.packages
+        .filter()
+        .not()
+        .statusEqualTo(PackageStatus.completed)
+        .findAllSync();
+  }
 
   // 分页获取打包历史记录列表
   List<Package> loadPackageRecordList({
