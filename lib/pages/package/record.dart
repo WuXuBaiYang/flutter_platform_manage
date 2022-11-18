@@ -215,13 +215,8 @@ class _PackageRecordPageState
   }
 
   // 构建打包记录列表子项
-  Widget _buildRecordListItem(
-    BuildContext context,
-    PackageModel item,
-    PackageModel? last,
-    bool isEdited,
-    int index,
-  ) {
+  Widget _buildRecordListItem(BuildContext context, PackageModel item,
+      PackageModel? last, bool isEdited, int index) {
     final id = item.package.id;
     final project = item.projectInfo;
     final checked = logic.hasItemSelected(id);
@@ -333,10 +328,7 @@ class _PackageRecordPageState
   // 打包记录列表子项右键菜单
   List<Widget> _getRecordItemMenus(BuildContext context, PackageModel item) => [
         ListTile(
-          leading: const Icon(
-            FluentIcons.company_directory,
-            size: 14,
-          ),
+          leading: const Icon(FluentIcons.company_directory, size: 14),
           title: const Text('打开输出目录'),
           onPressed: () {
             Navigator.pop(context);
@@ -346,10 +338,7 @@ class _PackageRecordPageState
           },
         ),
         ListTile(
-          leading: const Icon(
-            FluentIcons.save_as,
-            size: 14,
-          ),
+          leading: const Icon(FluentIcons.save_as, size: 14),
           title: const Text('文件另存为'),
           onPressed: () {
             Navigator.pop(context);
@@ -444,12 +433,16 @@ class _PackageRecordPageLogic extends BaseLogic {
   final selectedController =
       ListValueChangeNotifier<int>.empty(deduplication: true);
 
+  // 流控制器
+  late final _subscription = dbManage
+      .watchPackageRecordList(fireImmediately: true)
+      .listen((_) => _loadRecordList());
+
   // 项目信息缓存加载回调
   final OnProjectCacheLoad _projectCacheLoad;
 
   _PackageRecordPageLogic(this._projectCacheLoad) {
-    // 初始化加载
-    _loadRecordList();
+    _subscription.resume();
     // 监听操作参数变化，刷新列表
     optionController.addListener(_loadRecordList);
     // 当编辑状态发生变化，则清空选择列表
@@ -478,10 +471,7 @@ class _PackageRecordPageLogic extends BaseLogic {
     final packages = <PackageModel>[];
     for (var it in tmp) {
       final p = await _projectCacheLoad(it.projectId);
-      packages.add(PackageModel(
-        package: it,
-        projectInfo: p,
-      ));
+      packages.add(PackageModel(package: it, projectInfo: p));
     }
     recordListController.setValue(packages);
   }
@@ -541,7 +531,7 @@ class _PackageRecordPageLogic extends BaseLogic {
     );
   }
 
-// 打开输出目录
+  // 打开输出目录
   Future<bool> openOutputDir(String filePath) async {
     try {
       if (filePath.isEmpty) return false;
@@ -629,8 +619,11 @@ class _PackageRecordPageLogic extends BaseLogic {
 
   @override
   void dispose() {
-    optionController.dispose();
     recordListController.dispose();
+    selectedController.dispose();
+    optionController.dispose();
+    editorController.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 }

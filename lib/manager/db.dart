@@ -243,7 +243,10 @@ class DBManage extends BaseManage {
     Id? projectId,
   }) {
     final offset = pageIndex > 0 ? (pageIndex - 1) * pageSize : 0;
-    var q = _isar.packages.filter().group((q) {
+    var q = _isar.packages
+        .filter()
+        .statusEqualTo(PackageStatus.completed)
+        .group((q) {
       startTime ??= DateTime(0);
       endTime ??= DateTime.now();
       if (projectId != null) {
@@ -255,6 +258,13 @@ class DBManage extends BaseManage {
         sort == Sort.asc ? q.sortByCompleteTime() : q.sortByCompleteTimeDesc();
     return tmp.offset(offset).limit(pageSize).findAllSync();
   }
+
+  // 获取总打包任务数据量
+  int getPackageTaskCount() => _isar.packages
+      .filter()
+      .not()
+      .statusEqualTo(PackageStatus.completed)
+      .countSync();
 
   // 获取总打包记录数据量
   int getPackageRecordCount() => _isar.packages

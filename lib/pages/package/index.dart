@@ -95,6 +95,7 @@ class _PackagePageLogic extends BaseLogic {
   @override
   void dispose() {
     pageIndexController.dispose();
+    _cacheProjectInfo.clear();
     super.dispose();
   }
 }
