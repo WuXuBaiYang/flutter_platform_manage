@@ -87,6 +87,7 @@ dependencies:
   # nosql数据库
   isar: ^3.0.2
 
+  # nosql核心库
   isar_flutter_libs: ^3.0.2
 
   # The following adds the Cupertino Icons font to your application.

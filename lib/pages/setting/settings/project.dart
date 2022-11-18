@@ -87,10 +87,13 @@ class _ProjectSettingsState
         children: [
           IconButton(
             icon: const Icon(FluentIcons.refresh),
-            onPressed: () => Utils.showLoading<Environment>(
+            onPressed: () => Utils.showLoading(
               context,
-              loadFuture: ScriptHandle.loadFlutterEnv(item.path, oldEnv: item),
-            ).then(logic.updateEnv),
+              loadFuture: ScriptHandle.loadFlutterEnv(
+                item.path,
+                oldEnv: item,
+              ).then(logic.updateEnv),
+            ),
           ),
           IconButton(
             icon: const Icon(FluentIcons.info),

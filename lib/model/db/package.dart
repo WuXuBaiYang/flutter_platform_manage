@@ -22,9 +22,6 @@ class Package {
   @enumerated
   PackageStatus status = PackageStatus.stopped;
 
-  // 打包使用的脚本
-  String script = '';
-
   // 完成时间
   @Index(type: IndexType.value)
   DateTime? completeTime;
@@ -37,6 +34,9 @@ class Package {
 
   // 打包大小
   int? packageSize;
+
+  // 打包输出记录
+  List<String> logs = [];
 
   // 打包失败的异常描述
   List<String> errors = [];

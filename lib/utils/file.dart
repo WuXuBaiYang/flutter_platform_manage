@@ -121,7 +121,7 @@ extension FileDirExtension on FileDir {
 * @Time 2022/3/17 16:23
 */
 extension FileExtension on File {
-  // 获取文件名
+  // 获取文件/目录名
   String? get name {
     final index = path.lastIndexOf(RegExp(r'[/\\]'));
     if (index >= 0 && index < path.length) {

@@ -32,31 +32,31 @@ const PackageSchema = CollectionSchema(
       name: r'errors',
       type: IsarType.stringList,
     ),
-    r'outputPath': PropertySchema(
+    r'logs': PropertySchema(
       id: 3,
+      name: r'logs',
+      type: IsarType.stringList,
+    ),
+    r'outputPath': PropertySchema(
+      id: 4,
       name: r'outputPath',
       type: IsarType.string,
     ),
     r'packageSize': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'packageSize',
       type: IsarType.long,
     ),
     r'platform': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'platform',
       type: IsarType.byte,
       enumMap: _PackageplatformEnumValueMap,
     ),
     r'projectId': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'projectId',
       type: IsarType.long,
-    ),
-    r'script': PropertySchema(
-      id: 7,
-      name: r'script',
-      type: IsarType.string,
     ),
     r'status': PropertySchema(
       id: 8,
@@ -111,13 +111,19 @@ int _packageEstimateSize(
       bytesCount += value.length * 3;
     }
   }
+  bytesCount += 3 + object.logs.length * 3;
+  {
+    for (var i = 0; i < object.logs.length; i++) {
+      final value = object.logs[i];
+      bytesCount += value.length * 3;
+    }
+  }
   {
     final value = object.outputPath;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.script.length * 3;
   return bytesCount;
 }
 
@@ -130,11 +136,11 @@ void _packageSerialize(
   writer.writeDateTime(offsets[0], object.completeTime);
   writer.writeLong(offsets[1], object.envId);
   writer.writeStringList(offsets[2], object.errors);
-  writer.writeString(offsets[3], object.outputPath);
-  writer.writeLong(offsets[4], object.packageSize);
-  writer.writeByte(offsets[5], object.platform.index);
-  writer.writeLong(offsets[6], object.projectId);
-  writer.writeString(offsets[7], object.script);
+  writer.writeStringList(offsets[3], object.logs);
+  writer.writeString(offsets[4], object.outputPath);
+  writer.writeLong(offsets[5], object.packageSize);
+  writer.writeByte(offsets[6], object.platform.index);
+  writer.writeLong(offsets[7], object.projectId);
   writer.writeByte(offsets[8], object.status.index);
   writer.writeLong(offsets[9], object.timeSpent);
 }
@@ -150,13 +156,13 @@ Package _packageDeserialize(
   object.envId = reader.readLong(offsets[1]);
   object.errors = reader.readStringList(offsets[2]) ?? [];
   object.id = id;
-  object.outputPath = reader.readStringOrNull(offsets[3]);
-  object.packageSize = reader.readLongOrNull(offsets[4]);
+  object.logs = reader.readStringList(offsets[3]) ?? [];
+  object.outputPath = reader.readStringOrNull(offsets[4]);
+  object.packageSize = reader.readLongOrNull(offsets[5]);
   object.platform =
-      _PackageplatformValueEnumMap[reader.readByteOrNull(offsets[5])] ??
+      _PackageplatformValueEnumMap[reader.readByteOrNull(offsets[6])] ??
           PlatformType.android;
-  object.projectId = reader.readLong(offsets[6]);
-  object.script = reader.readString(offsets[7]);
+  object.projectId = reader.readLong(offsets[7]);
   object.status =
       _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[8])] ??
           PackageStatus.prepare;
@@ -178,16 +184,16 @@ P _packageDeserializeProp<P>(
     case 2:
       return (reader.readStringList(offset) ?? []) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 4:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
+      return (reader.readLongOrNull(offset)) as P;
+    case 6:
       return (_PackageplatformValueEnumMap[reader.readByteOrNull(offset)] ??
           PlatformType.android) as P;
-    case 6:
-      return (reader.readLong(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 8:
       return (_PackagestatusValueEnumMap[reader.readByteOrNull(offset)] ??
           PackageStatus.prepare) as P;
@@ -829,6 +835,221 @@ extension PackageQueryFilter
     });
   }
 
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'logs',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'logs',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'logs',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'logs',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      logsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'logs',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> logsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'logs',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterFilterCondition> outputPathIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1150,136 +1371,6 @@ extension PackageQueryFilter
     });
   }
 
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'script',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'script',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'script',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'script',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterFilterCondition> scriptIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'script',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<Package, Package, QAfterFilterCondition> statusEqualTo(
       PackageStatus value) {
     return QueryBuilder.apply(this, (query) {
@@ -1482,18 +1573,6 @@ extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
     });
   }
 
-  QueryBuilder<Package, Package, QAfterSortBy> sortByScript() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'script', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterSortBy> sortByScriptDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'script', Sort.desc);
-    });
-  }
-
   QueryBuilder<Package, Package, QAfterSortBy> sortByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.asc);
@@ -1605,18 +1684,6 @@ extension PackageQuerySortThenBy
     });
   }
 
-  QueryBuilder<Package, Package, QAfterSortBy> thenByScript() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'script', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Package, Package, QAfterSortBy> thenByScriptDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'script', Sort.desc);
-    });
-  }
-
   QueryBuilder<Package, Package, QAfterSortBy> thenByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.asc);
@@ -1662,6 +1729,12 @@ extension PackageQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Package, Package, QDistinct> distinctByLogs() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'logs');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByOutputPath(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1684,13 +1757,6 @@ extension PackageQueryWhereDistinct
   QueryBuilder<Package, Package, QDistinct> distinctByProjectId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'projectId');
-    });
-  }
-
-  QueryBuilder<Package, Package, QDistinct> distinctByScript(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'script', caseSensitive: caseSensitive);
     });
   }
 
@@ -1733,6 +1799,12 @@ extension PackageQueryProperty
     });
   }
 
+  QueryBuilder<Package, List<String>, QQueryOperations> logsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'logs');
+    });
+  }
+
   QueryBuilder<Package, String?, QQueryOperations> outputPathProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'outputPath');
@@ -1754,12 +1826,6 @@ extension PackageQueryProperty
   QueryBuilder<Package, int, QQueryOperations> projectIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'projectId');
-    });
-  }
-
-  QueryBuilder<Package, String, QQueryOperations> scriptProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'script');
     });
   }
 

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
-import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:process_run/shell.dart';
 
@@ -49,7 +48,32 @@ class ScriptHandle {
     final script = '$envPath/${ProjectFilePath.flutter} create '
         '--platforms=${platforms.map((e) => e.name).join(',')} .';
     final outText = await _runShell(script);
-    return RegExp(r'All done').hasMatch(outText);
+    return outText.contains(r'All done');
+  }
+
+  // 项目平台打包
+  static Future<bool> buildApp(
+    String envPath,
+    String projectPath, {
+    required PlatformType platform,
+    ShellController? controller,
+  }) async {
+    final t = const {
+      PlatformType.android: 'apk',
+      PlatformType.ios: '',
+      PlatformType.web: 'web',
+      PlatformType.windows: 'windows',
+      PlatformType.macos: '',
+      PlatformType.linux: '',
+    }[platform];
+    if (t == null || t.isEmpty) return false;
+    final script = '$envPath/${ProjectFilePath.flutter} build $t';
+    final outText = await _runShell(
+      script,
+      path: projectPath,
+      controller: controller,
+    );
+    return outText.contains(r'√  Built');
   }
 
   // 查看android签名文件信息
@@ -82,21 +106,110 @@ class ScriptHandle {
   static Future<String> _runShell(
     String script, {
     String? path,
-    Stream<List<int>>? stdin,
-    StreamSink<List<int>>? stdout,
-    StreamSink<List<int>>? stderr,
+    ShellController? controller,
   }) async {
-    final list = await Shell(
-      throwOnError: false,
+    final shell = Shell(
+      throwOnError: true,
       workingDirectory: path,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
-      stdin: stdin,
-      stdout: stdout,
-      stderr: stderr,
-    ).run(script);
+      stdin: controller?._inController.stream,
+      stdout: controller?._outController,
+      stderr: controller?._errOutController,
+    );
+    // 监听kill命令并返回结果
+    controller?._killInController.stream
+        .listen((e) => controller._killOutController.add(shell.kill(e)));
+    final list = await shell.run(script);
+    controller?.dispose();
     final errText = list.map((e) => e.errText).join('');
     if (errText.isNotEmpty) throw Exception(errText);
     return list.map((e) => e.outText).join('');
+  }
+}
+
+// 控制器输出回调
+typedef OnShellOutListener = void Function(String text);
+
+/*
+* 脚本控制器
+* @author wuxubaiyang
+* @Time 2022/11/18 13:39
+*/
+class ShellController {
+  // shell输入控制器
+  final _inController = StreamController<List<int>>();
+
+  // shell输出控制器
+  final _outController = StreamController<List<int>>();
+
+  // shell异常输出控制器
+  final _errOutController = StreamController<List<int>>();
+
+  // 杀死进程输入控制器
+  final _killInController = StreamController<ProcessSignal>();
+
+  // 杀死进程输出控制器
+  final _killOutController = StreamController<bool>();
+
+  // 输出回调集合
+  final List<OnShellOutListener> _outListeners = [];
+
+  // 异常输出回调
+  final List<OnShellOutListener> _errOutListeners = [];
+
+  ShellController() {
+    // 监听内容输出
+    _outController.stream.listen((e) {
+      if (_outListeners.isEmpty) return;
+      final result = String.fromCharCodes(
+        Uint8List.fromList(e),
+      );
+      for (var li in _outListeners) {
+        li.call(result);
+      }
+    });
+    // 监听异常内容输出
+    _errOutController.stream.listen((e) {
+      if (_errOutListeners.isEmpty) return;
+      final result = String.fromCharCodes(
+        Uint8List.fromList(e),
+      );
+      for (var li in _errOutListeners) {
+        li.call(result);
+      }
+    });
+  }
+
+  // 向shell输入
+  void addInput(String text) => _inController.add(text.codeUnits);
+
+  // 监听shell输出
+  void addOutListener(OnShellOutListener listener) =>
+      _outListeners.add(listener);
+
+  // 监听shell异常输出
+  void addErrOutListener(OnShellOutListener listener) =>
+      _errOutListeners.add(listener);
+
+  // 杀死控制台
+  Future<bool> kill({
+    ProcessSignal signal = ProcessSignal.sigterm,
+  }) {
+    final c = Completer<bool>();
+    _killOutController.stream.listen(c.complete);
+    _killInController.add(signal);
+    return c.future;
+  }
+
+  // 销毁控制器
+  void dispose() {
+    _inController.close();
+    _outController.close();
+    _errOutController.close();
+    _killInController.close();
+    _killOutController.close();
+    _errOutListeners.clear();
+    _outListeners.clear();
   }
 }

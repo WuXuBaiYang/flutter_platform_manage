@@ -3,6 +3,8 @@
 * @author wuxubaiyang
 * @Time 5/15/2022 10:30 AM
 */
+import 'package:flutter_platform_manage/model/platform/platform.dart';
+
 class ProjectFilePath {
   // pubspec.yaml
   static const String pubspec = 'pubspec.yaml';
@@ -44,4 +46,17 @@ class ProjectFilePath {
 
   // web/manifest.json
   static const String webManifest = 'manifest.json';
+
+  // 项目打包输出目录
+  static const String packageOutput = 'platformManager/outputs';
+
+  // android打包输出文件路径
+  static String getPlatformOutput(PlatformType platformType) => {
+        PlatformType.android: 'build/app/outputs/apk/release/app-release.apk',
+        PlatformType.ios: '',
+        PlatformType.web: 'build/web',
+        PlatformType.windows: 'build/windows',
+        PlatformType.macos: '',
+        PlatformType.linux: '',
+      }[platformType]!;
 }
