@@ -52,4 +52,18 @@ void main() {
       print(e.toString());
     }
   });
+
+  test('测试集合下标', () {
+    final a = ['1', '2', '3', '4'];
+    print(a.sublist(0, a.length));
+  });
+
+  test('集合相等对比', () {
+    final a = [1, 2, 3, 4];
+    final b = [1, 2, 3, 4];
+    for (var it in b.sublist(0, 2)) {
+      b.remove(it);
+    }
+    print(a.every((e) => b.contains(e)));
+  });
 }

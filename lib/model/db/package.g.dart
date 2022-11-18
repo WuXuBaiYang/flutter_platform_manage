@@ -217,16 +217,18 @@ const _PackageplatformValueEnumMap = {
 const _PackagestatusEnumValueMap = {
   'prepare': 0,
   'packing': 1,
-  'stop': 2,
-  'fail': 3,
-  'completed': 4,
+  'stopping': 2,
+  'stopped': 3,
+  'fail': 4,
+  'completed': 5,
 };
 const _PackagestatusValueEnumMap = {
   0: PackageStatus.prepare,
   1: PackageStatus.packing,
-  2: PackageStatus.stop,
-  3: PackageStatus.fail,
-  4: PackageStatus.completed,
+  2: PackageStatus.stopping,
+  3: PackageStatus.stopped,
+  4: PackageStatus.fail,
+  5: PackageStatus.completed,
 };
 
 Id _packageGetId(Package object) {

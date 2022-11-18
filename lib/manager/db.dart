@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/model/project.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:isar/isar.dart';
 
 /*
@@ -168,12 +169,14 @@ class DBManage extends BaseManage {
       );
 
   // 修改打包状态（已完成任务无法再改变）
-  Future<List<Id>> updatePackageStatus(
+  Future<bool> updatePackageStatus(
     List<Id> ids,
     PackageStatus status, {
     bool silent = false,
-  }) =>
-      _isar.writeTxn(
+  }) async {
+    if (ids.isEmpty) return true;
+    try {
+      final result = await _isar.writeTxn<List<Id>>(
         () async {
           // 判断id是否存在，并且状态为非完成
           final packages = await _isar.packages
@@ -191,6 +194,12 @@ class DBManage extends BaseManage {
         },
         silent: silent,
       );
+      return result.every((e) => ids.contains(e));
+    } catch (e) {
+      LogTool.e('更新打包状态失败', error: e);
+      return false;
+    }
+  }
 
   // 监听打包任务列表变化
   Stream<List<Package>> watchPackageTaskList({

@@ -330,11 +330,14 @@ class _ProjectDetailPageLogic extends BaseLogic {
         Utils.showSnack(context, '创建失败，本地目录名称只能使用字母数字下划线');
         return;
       }
-      final result = await Utils.showLoading<bool>(
+      final envPath = item.environment?.path;
+      if (envPath == null || envPath.isEmpty) return;
+      await Utils.showLoading(
         context,
-        loadFuture: ScriptHandle.createPlatforms(item, [platform]),
+        loadFuture: ScriptHandle.createPlatforms(envPath, [platform]).then((v) {
+          if (v) projectController.refreshValue();
+        }),
       );
-      if (result ?? false) projectController.refreshValue();
     } catch (e) {
       Utils.showSnack(context, "平台创建失败");
     }

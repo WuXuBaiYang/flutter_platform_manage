@@ -20,7 +20,7 @@ class Package {
 
   // 状态
   @enumerated
-  PackageStatus status = PackageStatus.stop;
+  PackageStatus status = PackageStatus.stopped;
 
   // 打包使用的脚本
   String script = '';
@@ -43,4 +43,4 @@ class Package {
 }
 
 // 打包状态枚举
-enum PackageStatus { prepare, packing, stop, fail, completed }
+enum PackageStatus { prepare, packing, stopping, stopped, fail, completed }

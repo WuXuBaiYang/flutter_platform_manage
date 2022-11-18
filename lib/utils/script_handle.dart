@@ -43,17 +43,12 @@ class ScriptHandle {
 
   // 创建平台信息
   static Future<bool> createPlatforms(
-    ProjectModel projectInfo,
+    String envPath,
     List<PlatformType> platforms,
   ) async {
-    final env = projectInfo.environment;
-    if (null == env) return false;
-    final script = '${env.path}/${ProjectFilePath.flutter} create '
+    final script = '$envPath/${ProjectFilePath.flutter} create '
         '--platforms=${platforms.map((e) => e.name).join(',')} .';
-    final outText = await _runShell(
-      script,
-      path: projectInfo.project.path,
-    );
+    final outText = await _runShell(script);
     return RegExp(r'All done').hasMatch(outText);
   }
 
