@@ -5,6 +5,7 @@ import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
+import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
@@ -305,12 +306,12 @@ class _PackageTaskPageLogic extends BaseLogic {
   Future<void> deleteAllSelected() async {
     try {
       final ids = selectedController.value;
-      await dbManage.deletePackages(ids);
+      await packageTaskManage.removeTask(ids: ids);
       selectedController.removeValues(ids);
       await _loadTaskList();
       editorController.setValue(false);
     } catch (e) {
-      LogTool.e('删除打包任务记录失败', error: e);
+      LogTool.e('删除打包任务失败', error: e);
     }
   }
 
