@@ -35,7 +35,7 @@ class DBManage extends BaseManage {
     );
 
     /// 测试代码
-    // _testInsertPackageCompleteInfo(_isar);
+    _testInsertPackageCompleteInfo(_isar);
     // _testUpdatePackageCompleteInfo(_isar);
   }
 
@@ -284,16 +284,21 @@ final dbManage = DBManage();
 
 /// 测试代码--插入完成打包信息
 void _testInsertPackageCompleteInfo(Isar db) {
-  final objects = List.generate(99, (i) {
+  final objects = List.generate(1, (i) {
+    final t = 'abcdefghijklmnopqrstuvwxyz'.split('').map((e) {
+      return e * 1000;
+    }).toList();
     return Package()
       ..projectId = 2
       ..envId = 1
       ..platform = PlatformType.android
       ..status = PackageStatus.completed
-      ..packageSize = 1129301291
-      ..timeSpent = 1000 * 60 * 3
-      ..completeTime = DateTime.now().subtract(Duration(days: i % 15))
-      ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
+      // ..logs = t
+      // ..errors = t
+    // ..packageSize = 1129301291
+    // ..timeSpent = 1000 * 60 * 3
+    ..completeTime = DateTime.now().subtract(Duration(days: i % 15));
+    // ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
   });
   db.writeTxn(() async {
     await db.packages.putAll(objects);

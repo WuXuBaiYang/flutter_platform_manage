@@ -14,7 +14,9 @@ import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/date_rang_picker.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
+import 'package:flutter_platform_manage/widgets/dialog/package_log.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
+import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/page_indicator.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/combobox_select.dart';
@@ -174,6 +176,13 @@ class _PackageRecordPageState
         second: logic.selectedController,
         third: logic.editorController,
         builder: (_, recordList, selectList, isEdited, __) {
+          if (recordList.isEmpty) {
+            return Center(
+              child: NoticeBox.empty(
+                message: '无打包记录',
+              ),
+            );
+          }
           return ListView.builder(
             itemExtent: 75,
             itemBuilder: (_, i) {
@@ -305,6 +314,14 @@ class _PackageRecordPageState
   // 打包记录列表子项右键菜单
   List<Widget> _getRecordItemMenus(BuildContext context, PackageModel item) => [
         ListTile(
+          leading: const Icon(FluentIcons.view_original, size: 14),
+          title: const Text('查看日志'),
+          onPressed: () {
+            Navigator.pop(context);
+            PackageLogDialog.show(context, logs: item.package.logs);
+          },
+        ),
+        ListTile(
           leading: const Icon(FluentIcons.company_directory, size: 14),
           title: const Text('打开输出目录'),
           onPressed: () {
@@ -328,25 +345,28 @@ class _PackageRecordPageState
 
   // 构建分页指示器
   Widget _buildPageIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(14),
-      child: StreamBuilder(
-        stream: dbManage.watchPackageRecordList(
-          fireImmediately: true,
-        ),
-        builder: (_, __) => ValueListenableBuilder<_OptionParams>(
-          valueListenable: logic.optionController,
-          builder: (_, option, __) {
-            return PageIndicator(
+    return StreamBuilder(
+      stream: dbManage.watchPackageRecordList(
+        fireImmediately: true,
+      ),
+      builder: (_, __) => ValueListenableBuilder<_OptionParams>(
+        valueListenable: logic.optionController,
+        builder: (_, option, __) {
+          final pageCount = dbManage.getPackageRecordPageCount(
+            pageSize: option.pageSize,
+          );
+          if (pageCount <= 0) return const SizedBox();
+
+          return Padding(
+            padding: const EdgeInsets.all(14),
+            child: PageIndicator(
               currentPage: option.pageIndex,
               currentSize: option.pageSize,
-              pageCount: dbManage.getPackageRecordPageCount(
-                pageSize: option.pageSize,
-              ),
+              pageCount: pageCount,
               onChange: logic.updatePagination,
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

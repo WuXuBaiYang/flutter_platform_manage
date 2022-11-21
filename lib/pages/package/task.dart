@@ -12,7 +12,9 @@ import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/package_log.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
+import 'package:flutter_platform_manage/widgets/notice_box.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
@@ -128,7 +130,7 @@ class _PackageTaskPageState
                 : [
                     CommandBarButton(
                       label: const Text('全部开始'),
-                      icon: const Icon(FluentIcons.download),
+                      icon: const Icon(FluentIcons.play),
                       onPressed: () => packageTaskManage.startTask(),
                     ),
                     const CommandBarSeparator(),
@@ -165,6 +167,13 @@ class _PackageTaskPageState
         second: logic.selectedController,
         third: logic.editorController,
         builder: (_, recordList, selectList, isEdited, __) {
+          if (recordList.isEmpty) {
+            return Center(
+              child: NoticeBox.empty(
+                message: '右上角 ‘添加’ 打包任务',
+              ),
+            );
+          }
           return ListView.builder(
             itemExtent: 75,
             itemBuilder: (_, i) {
@@ -183,29 +192,11 @@ class _PackageTaskPageState
       BuildContext context, PackageModel item, bool isEdited, int index) {
     final id = item.package.id;
     final project = item.projectInfo;
-    final platform = item.package.platform;
     final checked = logic.hasItemSelected(id);
-    final env = project?.environment;
     return Column(
       children: [
         ListTile.selectable(
-          leading: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              ProjectLogo(
-                projectIcon: item.projectInfo?.projectIcon,
-              ),
-              CircleAvatar(
-                radius: 12,
-                child: SvgPicture.asset(
-                  platform.platformImage,
-                  color: Colors.white,
-                  width: 15,
-                  height: 15,
-                ),
-              ),
-            ],
-          ),
+          leading: _buildTaskListItemHeader(item),
           title: project == null
               ? const Text(
                   '项目信息丢失',
@@ -217,27 +208,79 @@ class _PackageTaskPageState
             child: Row(
               children: [
                 Text('v${project?.version}  ·  '
-                    'Flutter ${env?.flutter}  ·  '
+                    'Flutter ${project?.environment?.flutter}  ·  '
                     '${item.package.status.nameCN}'),
               ],
             ),
           ),
-          trailing: Visibility(
-            visible: isEdited,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8, right: 7),
-              child: Checkbox(
-                checked: checked,
-                onChanged: (v) => logic.itemSelected(checked, id),
-              ),
-            ),
-          ),
+          trailing: _buildTaskListItemOptions(
+              context, item.package, isEdited, checked, id),
           selected: checked,
           onPressed: () => logic.itemSelected(checked, id),
         ),
         const SizedBox(height: 4),
         const ThicknessDivider(),
       ],
+    );
+  }
+
+  // 构建任务列表子项头部
+  Widget _buildTaskListItemHeader(PackageModel item) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        ProjectLogo(
+          projectIcon: item.projectInfo?.projectIcon,
+        ),
+        CircleAvatar(
+          radius: 12,
+          child: SvgPicture.asset(
+            item.package.platform.platformImage,
+            color: Colors.white,
+            width: 15,
+            height: 15,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 构建任务列表子项得操作按钮
+  Widget _buildTaskListItemOptions(BuildContext context, Package package,
+      bool isEdited, bool checked, int id) {
+    final status = package.status;
+    final doWork = const [
+      PackageStatus.prepare,
+      PackageStatus.packing,
+    ].contains(status);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, right: 7),
+      child: Row(
+        children: [
+          if (status == PackageStatus.fail)
+            IconButton(
+              icon: Icon(FluentIcons.warning, color: Colors.red),
+              onPressed: () =>
+                  PackageLogDialog.show(context, logs: package.errors),
+            ),
+          const SizedBox(width: 8),
+          if (isEdited)
+            Checkbox(
+              checked: checked,
+              onChanged: (v) => logic.itemSelected(checked, id),
+            ),
+          if (!isEdited || status != PackageStatus.stopping)
+            IconButton(
+              icon: Icon(
+                doWork ? FluentIcons.pause : FluentIcons.play,
+                size: 16,
+              ),
+              onPressed: () => doWork
+                  ? packageTaskManage.stopTask(ids: [id])
+                  : packageTaskManage.startTask(ids: [id]),
+            ),
+        ],
+      ),
     );
   }
 }
