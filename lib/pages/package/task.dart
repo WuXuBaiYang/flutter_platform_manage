@@ -214,7 +214,7 @@ class _PackageTaskPageState
             ),
           ),
           trailing: _buildTaskListItemOptions(
-              context, item.package, isEdited, checked, id),
+              context, item.package, isEdited, checked),
           selected: checked,
           onPressed: () => logic.itemSelected(checked, id),
         ),
@@ -246,8 +246,9 @@ class _PackageTaskPageState
   }
 
   // 构建任务列表子项得操作按钮
-  Widget _buildTaskListItemOptions(BuildContext context, Package package,
-      bool isEdited, bool checked, int id) {
+  Widget _buildTaskListItemOptions(
+      BuildContext context, Package package, bool isEdited, bool checked) {
+    final id = package.id;
     final status = package.status;
     final doWork = const [
       PackageStatus.prepare,
