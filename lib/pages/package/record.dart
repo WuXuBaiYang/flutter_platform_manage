@@ -279,15 +279,15 @@ class _PackageRecordPageState
     DateTime? last,
     bool first,
   ) {
+    final color = themeManage.currentTheme.accentColor;
+    final isNode = first ||
+        (curr != null && last != null && curr.difference(last).inDays >= 1);
     return SizedBox(
       width: 35,
       child: Column(
         children: [
           Visibility(
-            visible: first ||
-                (curr != null &&
-                    last != null &&
-                    curr.difference(last).inDays >= 1),
+            visible: isNode,
             child: Column(
               children: [
                 const SizedBox(height: 8),
@@ -300,12 +300,7 @@ class _PackageRecordPageState
               ],
             ),
           ),
-          Expanded(
-            child: Container(
-              width: 2,
-              color: themeManage.currentTheme.accentColor,
-            ),
-          ),
+          Expanded(child: Container(width: 2, color: color)),
         ],
       ),
     );
