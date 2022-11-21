@@ -44,3 +44,16 @@ class Package {
 
 // 打包状态枚举
 enum PackageStatus { packing, prepare, stopping, stopped, fail, completed }
+
+// 打包状态枚举扩展
+extension PackageStatusExtension on PackageStatus {
+  // 获取状态名称
+  String get nameCN => {
+        PackageStatus.packing: '打包中',
+        PackageStatus.prepare: '准备中',
+        PackageStatus.stopping: '停止中',
+        PackageStatus.stopped: '已停止',
+        PackageStatus.fail: '打包失败',
+        PackageStatus.completed: '已完成',
+      }[this]!;
+}

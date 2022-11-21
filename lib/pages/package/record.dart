@@ -229,9 +229,8 @@ class _PackageRecordPageState
                           FluentIcons.timer, item.timeSpent),
                       ..._buildRecordListItemInfo(
                           FluentIcons.classroom_logo, item.packageSize),
-                      if (env != null)
-                        ..._buildRecordListItemInfo(
-                            FluentIcons.device_run, 'v${env.flutter}'),
+                      ..._buildRecordListItemInfo(
+                          FluentIcons.device_run, 'v${env?.flutter}'),
                     ],
                   ),
                 ),

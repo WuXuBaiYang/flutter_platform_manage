@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
@@ -7,15 +6,17 @@ import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
+import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/model/package.dart';
+import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
-import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /*
 * 打包任务页
@@ -168,11 +169,7 @@ class _PackageTaskPageState
             itemExtent: 75,
             itemBuilder: (_, i) {
               final item = recordList[i];
-              return MouseRightClickMenu(
-                key: ObjectKey(item.package.id),
-                menuItems: _getTaskItemMenus(context, item),
-                child: _buildTaskListItem(context, item, isEdited, i),
-              );
+              return _buildTaskListItem(context, item, isEdited, i);
             },
             itemCount: recordList.length,
           );
@@ -186,32 +183,42 @@ class _PackageTaskPageState
       BuildContext context, PackageModel item, bool isEdited, int index) {
     final id = item.package.id;
     final project = item.projectInfo;
+    final platform = item.package.platform;
     final checked = logic.hasItemSelected(id);
     final env = project?.environment;
     return Column(
       children: [
         ListTile.selectable(
-          leading: ProjectLogo(
-            projectIcon: item.projectInfo?.projectIcon,
+          leading: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              ProjectLogo(
+                projectIcon: item.projectInfo?.projectIcon,
+              ),
+              CircleAvatar(
+                radius: 12,
+                child: SvgPicture.asset(
+                  platform.platformImage,
+                  color: Colors.white,
+                  width: 15,
+                  height: 15,
+                ),
+              ),
+            ],
           ),
           title: project == null
               ? const Text(
                   '项目信息丢失',
                   style: TextStyle(color: Common.warningColor),
                 )
-              : Text('${project.showTitle}  ·  ${item.completeTime}'),
+              : Text(project.showTitle),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Row(
               children: [
-                ..._buildTaskListItemInfo(
-                    FluentIcons.bullseye, item.package.platform.name),
-                ..._buildTaskListItemInfo(FluentIcons.timer, item.timeSpent),
-                ..._buildTaskListItemInfo(
-                    FluentIcons.classroom_logo, item.packageSize),
-                if (env != null)
-                  ..._buildTaskListItemInfo(
-                      FluentIcons.device_run, 'v${env.flutter}'),
+                Text('v${project?.version}  ·  '
+                    'Flutter ${env?.flutter}  ·  '
+                    '${item.package.status.nameCN}'),
               ],
             ),
           ),
@@ -233,25 +240,6 @@ class _PackageTaskPageState
       ],
     );
   }
-
-  // 构建任务列表子项的详细信息构造
-  List<Widget> _buildTaskListItemInfo(IconData icon, String text) => [
-        Icon(icon, size: 15),
-        const SizedBox(width: 4),
-        Text(text),
-        const SizedBox(width: 14),
-      ];
-
-  // 打包任务列表子项右键菜单
-  List<Widget> _getTaskItemMenus(BuildContext context, PackageModel item) => [
-        // ListTile(
-        //   leading: const Icon(FluentIcons.company_directory, size: 14),
-        //   title: const Text('需要实现'),
-        //   onPressed: () {
-        //     /// 待实现
-        //   },
-        // ),
-      ];
 }
 
 /*
