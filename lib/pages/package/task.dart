@@ -11,6 +11,7 @@ import 'package:flutter_platform_manage/model/package.dart';
 import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
@@ -61,13 +62,7 @@ class _PackageTaskPageState
               return Text('共 $count 个任务');
             },
           ),
-          commandBar: ValueListenableBuilder<bool>(
-            valueListenable: logic.editorController,
-            builder: (_, isEditor, __) {
-              if (isEditor) return _buildEditorCommandBar(context);
-              return _buildCommandBar(context);
-            },
-          ),
+          commandBar: _buildCommandBar(context),
         ),
         content: _buildTaskList(context),
       ),
@@ -77,66 +72,83 @@ class _PackageTaskPageState
   // 构建操作菜单
   Widget _buildCommandBar(BuildContext context) {
     return CommandBarCard(
-        child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: CommandBar(
-        overflowBehavior: CommandBarOverflowBehavior.noWrap,
-        primaryItems: [
-          const CommandBarSeparator(),
-          CommandBarButton(
-            label: const Text('编辑'),
-            icon: const Icon(FluentIcons.edit),
-            onPressed: () => logic.editorController.setValue(true),
-          ),
-        ],
-      ),
-    ));
-  }
-
-  // 构建编辑操作菜单
-  Widget _buildEditorCommandBar(BuildContext context) {
-    return CommandBarCard(
-      child: ValueListenableBuilder<List<int>>(
-        valueListenable: logic.selectedController,
-        builder: (_, selectList, __) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: CommandBar(
-              overflowBehavior: CommandBarOverflowBehavior.noWrap,
-              primaryItems: [
-                CommandBarButton(
-                  icon: const Icon(FluentIcons.back),
-                  onPressed: () => logic.editorController.setValue(false),
-                ),
-                if (logic.hasSelected) ...[
-                  const CommandBarSeparator(),
-                  CommandBarButton(
-                    icon: Icon(
-                      FluentIcons.delete,
-                      color: Colors.red,
+      child: ValueListenableBuilder2<bool, List<int>>(
+        first: logic.editorController,
+        second: logic.selectedController,
+        builder: (_, isEditor, selectList, __) {
+          return CommandBar(
+            overflowBehavior: CommandBarOverflowBehavior.noWrap,
+            primaryItems: isEditor
+                ? [
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.back),
+                      onPressed: () => logic.editorController.setValue(false),
                     ),
-                    label: Text(
-                      '(${selectList.length})',
-                      style: TextStyle(color: Colors.red),
+                    if (logic.hasSelected) ...[
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: const Icon(FluentIcons.download),
+                        onPressed: () =>
+                            packageTaskManage.startTask(ids: selectList),
+                      ),
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: const Icon(FluentIcons.pause),
+                        onPressed: () =>
+                            packageTaskManage.stopTask(ids: selectList),
+                      ),
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: Icon(
+                          FluentIcons.delete,
+                          color: Colors.red,
+                        ),
+                        label: Text(
+                          '(${selectList.length})',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        onPressed: logic.deleteAllSelected,
+                      ),
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: const Icon(FluentIcons.broom),
+                        onPressed: () => logic.editorController.setValue(false),
+                      ),
+                    ],
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      icon: Checkbox(
+                        checked: logic.hasPageAllSelected,
+                        onChanged: (v) => logic.pageAllSelected(!(v ?? false)),
+                      ),
+                      onPressed: null,
                     ),
-                    onPressed: logic.deleteAllSelected,
-                  ),
-                  const CommandBarSeparator(),
-                  CommandBarButton(
-                    icon: const Icon(FluentIcons.clear_selection_mirrored),
-                    onPressed: () => logic.editorController.setValue(false),
-                  ),
-                ],
-                const CommandBarSeparator(),
-                CommandBarButton(
-                  icon: Checkbox(
-                    checked: logic.hasPageAllSelected,
-                    onChanged: (v) => logic.pageAllSelected(!(v ?? false)),
-                  ),
-                  onPressed: null,
-                ),
-              ],
-            ),
+                  ]
+                : [
+                    CommandBarButton(
+                      label: const Text('全部开始'),
+                      icon: const Icon(FluentIcons.download),
+                      onPressed: () => packageTaskManage.startTask(),
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: const Text('全部暂停'),
+                      icon: const Icon(FluentIcons.pause),
+                      onPressed: () => packageTaskManage.stopTask(),
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: const Text('添加'),
+                      icon: const Icon(FluentIcons.add),
+                      onPressed: () => ProjectPackageDialog.show(context),
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: const Text('编辑'),
+                      icon: const Icon(FluentIcons.edit),
+                      onPressed: () => logic.editorController.setValue(true),
+                    ),
+                  ],
           );
         },
       ),

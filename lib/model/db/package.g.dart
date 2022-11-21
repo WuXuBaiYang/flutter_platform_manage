@@ -165,7 +165,7 @@ Package _packageDeserialize(
   object.projectId = reader.readLong(offsets[7]);
   object.status =
       _PackagestatusValueEnumMap[reader.readByteOrNull(offsets[8])] ??
-          PackageStatus.prepare;
+          PackageStatus.packing;
   object.timeSpent = reader.readLongOrNull(offsets[9]);
   return object;
 }
@@ -196,7 +196,7 @@ P _packageDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 8:
       return (_PackagestatusValueEnumMap[reader.readByteOrNull(offset)] ??
-          PackageStatus.prepare) as P;
+          PackageStatus.packing) as P;
     case 9:
       return (reader.readLongOrNull(offset)) as P;
     default:
@@ -221,16 +221,16 @@ const _PackageplatformValueEnumMap = {
   5: PlatformType.linux,
 };
 const _PackagestatusEnumValueMap = {
-  'prepare': 0,
-  'packing': 1,
+  'packing': 0,
+  'prepare': 1,
   'stopping': 2,
   'stopped': 3,
   'fail': 4,
   'completed': 5,
 };
 const _PackagestatusValueEnumMap = {
-  0: PackageStatus.prepare,
-  1: PackageStatus.packing,
+  0: PackageStatus.packing,
+  1: PackageStatus.prepare,
   2: PackageStatus.stopping,
   3: PackageStatus.stopped,
   4: PackageStatus.fail,

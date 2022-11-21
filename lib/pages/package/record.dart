@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
@@ -69,13 +68,7 @@ class _PackageRecordPageState
               return Text('共 $count 条记录');
             },
           ),
-          commandBar: ValueListenableBuilder<bool>(
-            valueListenable: logic.editorController,
-            builder: (_, isEditor, __) {
-              if (isEditor) return _buildEditorCommandBar(context);
-              return _buildCommandBar(context);
-            },
-          ),
+          commandBar: _buildCommandBar(context),
         ),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -91,96 +84,81 @@ class _PackageRecordPageState
   // 构建操作菜单
   Widget _buildCommandBar(BuildContext context) {
     return CommandBarCard(
-      child: ValueListenableBuilder<_OptionParams>(
-        valueListenable: logic.optionController,
-        builder: (_, option, __) {
+      child: ValueListenableBuilder3<bool, _OptionParams, List<int>>(
+        first: logic.editorController,
+        second: logic.optionController,
+        third: logic.selectedController,
+        builder: (_, isEditor, option, selectList, __) {
           return CommandBar(
             overflowBehavior: CommandBarOverflowBehavior.noWrap,
-            primaryItems: [
-              CommandBarButton(
-                label: Text(option.sortStatus),
-                icon: Icon(option.sortStatusIcon),
-                onPressed: logic.switchSort,
-              ),
-              const CommandBarSeparator(),
-              CommandBarButton(
-                label: Text(option.timeTitle),
-                icon: const Icon(FluentIcons.date_time),
-                onPressed: () => _showDateRangPicker(
-                  context,
-                  start: option.startTime,
-                  end: option.endTime,
-                ),
-              ),
-              const CommandBarSeparator(),
-              CommandBarButton(
-                icon: _buildProjectSelect(option.projectId),
-                onPressed: null,
-              ),
-              const CommandBarSeparator(),
-              CommandBarButton(
-                label: const Text('重置'),
-                icon: const Icon(FluentIcons.reset),
-                onPressed: logic.resetFilter,
-              ),
-              const CommandBarSeparator(),
-              CommandBarButton(
-                label: const Text('编辑'),
-                icon: const Icon(FluentIcons.edit),
-                onPressed: () => logic.editorController.setValue(true),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  // 构建编辑操作菜单
-  Widget _buildEditorCommandBar(BuildContext context) {
-    return CommandBarCard(
-      child: ValueListenableBuilder2<List<int>, _OptionParams>(
-        first: logic.selectedController,
-        second: logic.optionController,
-        builder: (_, selectList, option, __) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: CommandBar(
-              overflowBehavior: CommandBarOverflowBehavior.noWrap,
-              primaryItems: [
-                CommandBarButton(
-                  icon: const Icon(FluentIcons.back),
-                  onPressed: () => logic.editorController.setValue(false),
-                ),
-                if (logic.hasSelected) ...[
-                  const CommandBarSeparator(),
-                  CommandBarButton(
-                    icon: Icon(
-                      FluentIcons.delete,
-                      color: Colors.red,
+            primaryItems: isEditor
+                ? [
+                    CommandBarButton(
+                      icon: const Icon(FluentIcons.back),
+                      onPressed: () => logic.editorController.setValue(false),
                     ),
-                    label: Text(
-                      '(${selectList.length})',
-                      style: TextStyle(color: Colors.red),
+                    if (logic.hasSelected) ...[
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: Icon(
+                          FluentIcons.delete,
+                          color: Colors.red,
+                        ),
+                        label: Text(
+                          '(${selectList.length})',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        onPressed: logic.deleteAllSelected,
+                      ),
+                      const CommandBarSeparator(),
+                      CommandBarButton(
+                        icon: const Icon(FluentIcons.broom),
+                        onPressed: () => logic.editorController.setValue(false),
+                      ),
+                    ],
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      icon: Checkbox(
+                        checked: logic.hasPageAllSelected,
+                        onChanged: (v) => logic.pageAllSelected(!(v ?? false)),
+                      ),
+                      onPressed: null,
                     ),
-                    onPressed: logic.deleteAllSelected,
-                  ),
-                  const CommandBarSeparator(),
-                  CommandBarButton(
-                    icon: const Icon(FluentIcons.clear_selection_mirrored),
-                    onPressed: () => logic.editorController.setValue(false),
-                  ),
-                ],
-                const CommandBarSeparator(),
-                CommandBarButton(
-                  icon: Checkbox(
-                    checked: logic.hasPageAllSelected,
-                    onChanged: (v) => logic.pageAllSelected(!(v ?? false)),
-                  ),
-                  onPressed: null,
-                ),
-              ],
-            ),
+                  ]
+                : [
+                    CommandBarButton(
+                      label: Text(option.sortStatus),
+                      icon: Icon(option.sortStatusIcon),
+                      onPressed: logic.switchSort,
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: Text(option.timeTitle),
+                      icon: const Icon(FluentIcons.date_time),
+                      onPressed: () => _showDateRangPicker(
+                        context,
+                        start: option.startTime,
+                        end: option.endTime,
+                      ),
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      icon: _buildProjectSelect(option.projectId),
+                      onPressed: null,
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: const Text('重置'),
+                      icon: const Icon(FluentIcons.reset),
+                      onPressed: logic.resetFilter,
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      label: const Text('编辑'),
+                      icon: const Icon(FluentIcons.edit),
+                      onPressed: () => logic.editorController.setValue(true),
+                    ),
+                  ],
           );
         },
       ),
@@ -384,10 +362,24 @@ class _PackageRecordPageState
         if (v != null && v <= 0) v = null;
         logic.selectProject(v);
       },
-      additional: const [
+      selectedItemBuilder: (_, items) {
+        return items.map((e) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: e.child,
+          );
+        }).toList();
+      },
+      additional: [
         ComboBoxItem(
           value: -1,
-          child: Text('全部项目'),
+          child: Row(
+            children: const [
+              Icon(FluentIcons.view_all2),
+              SizedBox(width: 6),
+              Text('全部项目'),
+            ],
+          ),
         ),
       ],
     );

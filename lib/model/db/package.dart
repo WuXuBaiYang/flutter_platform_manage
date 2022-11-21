@@ -43,4 +43,4 @@ class Package {
 }
 
 // 打包状态枚举
-enum PackageStatus { prepare, packing, stopping, stopped, fail, completed }
+enum PackageStatus { packing, prepare, stopping, stopped, fail, completed }

@@ -8,6 +8,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 // 获取参数回调
 typedef OnSelectGetValue<T> = T? Function(ProjectModel? v);
+// 自定义项目选择下拉框回调
+typedef ProjectComboBoxBuilder<T> = List<Widget> Function(
+    BuildContext context, List<ComboBoxItem<T>> items);
 
 /*
 * 项目选择下拉框
@@ -33,6 +36,9 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
   // 是否加载简易项目信息
   final bool simple;
 
+  // 自定义选择item
+  final ProjectComboBoxBuilder<T>? selectedItemBuilder;
+
   const ProjectSelectComboBox({
     Key? key,
     this.value,
@@ -40,6 +46,7 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
     this.onChanged,
     this.isExpanded = false,
     this.simple = true,
+    this.selectedItemBuilder,
     required this.getValue,
   }) : super(key: key);
 
@@ -49,11 +56,15 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
       future: () => dbManage.loadAllProjectInfos(simple: simple),
       builder: (_, snap) {
         final projects = snap.data ?? [];
+        final items = projects.map(_buildProjectSelectItem).toList()
+          ..addAll(additional);
         return ComboBox<T>(
           isExpanded: isExpanded,
           value: value,
-          items: projects.map(_buildProjectSelectItem).toList()
-            ..addAll(additional),
+          selectedItemBuilder: selectedItemBuilder != null
+              ? (_) => selectedItemBuilder!(context, items)
+              : null,
+          items: items,
           onChanged: onChanged,
         );
       },
@@ -65,17 +76,20 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
     return ComboBoxItem<T>(
       value: getValue(e),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ProjectLogo.custom(
             projectIcon: e.projectIcon,
             size: const Size.square(15),
           ),
-          const SizedBox(width: 8),
-          Text(
-            e.showTitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          const SizedBox(width: 6),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Text(
+              e.showTitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
