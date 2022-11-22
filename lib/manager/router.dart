@@ -30,12 +30,10 @@ class JRouter extends BaseManage {
   }
 
   //获取页面参数
-  V? find<V>(BuildContext context, String key, {V? def}) {
-    dynamic temp = ModalRoute.of(context)?.settings.arguments;
-    if (temp is Map) {
-      temp = temp[key] ?? def;
-    }
-    return null != temp ? temp as V : temp;
+  V? findInMap<V>(BuildContext context, String key) {
+    dynamic arguments = ModalRoute.of(context)?.settings.arguments;
+    if (arguments is Map) return arguments[key] as V;
+    return null;
   }
 
   //页面跳转

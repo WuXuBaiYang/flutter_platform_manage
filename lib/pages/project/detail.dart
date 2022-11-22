@@ -345,7 +345,7 @@ class _ProjectDetailPageLogic extends BaseLogic {
 
   // 更新当前项目信息
   Future<ProjectModel> loadProjectInfo(BuildContext context) async {
-    final id = jRouter.find<int>(context, 'id');
+    final id = jRouter.findInMap<int>(context, 'id');
     if (null == id) throw Exception('项目id不能为空');
     final value = dbManage.loadProject(id);
     if (null == value) throw Exception('项目信息不存在');
