@@ -77,7 +77,7 @@ class _PackageTaskPageState
     return CommandBarCard(
       child: ValueListenableBuilder2<bool, List<int>>(
         first: logic.editorController,
-        second: logic.selectedController,
+        second: logic.selectedListController,
         builder: (_, isEditor, selectList, __) {
           return CommandBar(
             overflowBehavior: CommandBarOverflowBehavior.noWrap,
@@ -131,13 +131,20 @@ class _PackageTaskPageState
                     CommandBarButton(
                       label: const Text('全部开始'),
                       icon: const Icon(FluentIcons.play),
-                      onPressed: () => packageTaskManage.startTask(),
+                      onPressed: () =>
+                          packageTaskManage.startTask(ids: logic.allTaskIds),
                     ),
                     const CommandBarSeparator(),
                     CommandBarButton(
                       label: const Text('全部暂停'),
                       icon: const Icon(FluentIcons.pause),
-                      onPressed: () => packageTaskManage.stopTask(),
+                      onPressed: () =>
+                          packageTaskManage.stopTask(ids: logic.allTaskIds),
+                    ),
+                    const CommandBarSeparator(),
+                    CommandBarButton(
+                      icon: _buildTaskQueueCount(),
+                      onPressed: null,
                     ),
                     const CommandBarSeparator(),
                     CommandBarButton(
@@ -158,38 +165,60 @@ class _PackageTaskPageState
     );
   }
 
+  // 构建任务队列数量
+  Widget _buildTaskQueueCount() {
+    var maxQueue = packageTaskManage.maxQueue;
+    final items = [1, 2, 3]
+        .map((e) => ComboBoxItem<int>(
+              value: e,
+              child: Text('$e 条并发'),
+            ))
+        .toList();
+    return StatefulBuilder(
+      builder: (_, state) {
+        return ComboBox<int>(
+          items: items,
+          value: maxQueue,
+          selectedItemBuilder: (_) => items.map((e) => e.child).toList(),
+          onChanged: (v) async {
+            if (v == null) return;
+            if (await packageTaskManage.updateMaxQueue(v)) {
+              state(() => maxQueue = v);
+            }
+          },
+        );
+      },
+    );
+  }
+
   // 构建任务列表
   Widget _buildTaskList(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: ValueListenableBuilder3<List<PackageModel>, List<int>, bool>(
-        first: logic.taskListController,
-        second: logic.selectedController,
-        third: logic.editorController,
-        builder: (_, recordList, selectList, isEdited, __) {
-          if (recordList.isEmpty) {
-            return Center(
-              child: NoticeBox.empty(
-                message: '右上角 ‘添加’ 打包任务',
-              ),
-            );
-          }
-          return ListView.builder(
-            itemExtent: 75,
-            itemBuilder: (_, i) {
-              final item = recordList[i];
-              return _buildTaskListItem(context, item, isEdited, i);
-            },
-            itemCount: recordList.length,
+    return ValueListenableBuilder3<List<PackageModel>, bool, dynamic>(
+      first: logic.taskListController,
+      second: logic.editorController,
+      third: logic.selectedListController,
+      builder: (_, recordList, isEdited, __, ___) {
+        if (recordList.isEmpty) {
+          return Center(
+            child: NoticeBox.empty(message: '右上角 ‘添加’ 打包任务'),
           );
-        },
-      ),
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: ListView.builder(
+            itemCount: recordList.length,
+            itemBuilder: (_, i) =>
+                _buildTaskListItem(context, recordList[i], isEdited),
+            itemExtent: 75,
+          ),
+        );
+      },
     );
   }
 
   // 构建打包任务列表子项
   Widget _buildTaskListItem(
-      BuildContext context, PackageModel item, bool isEdited, int index) {
+      BuildContext context, PackageModel item, bool isEdited) {
     final id = item.package.id;
     final project = item.projectInfo;
     final checked = logic.hasItemSelected(id);
@@ -205,18 +234,14 @@ class _PackageTaskPageState
               : Text(project.showTitle),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: Row(
-              children: [
-                Text('v${project?.version}  ·  '
-                    'Flutter ${project?.environment?.flutter}  ·  '
-                    '${item.package.status.nameCN}'),
-              ],
-            ),
+            child: Text('v${project?.version}  ·  '
+                'Flutter ${project?.environment?.flutter}  ·  '
+                '${item.package.status.nameCN}'),
           ),
           trailing: _buildTaskListItemOptions(
               context, item.package, isEdited, checked),
-          selected: checked,
           onPressed: () => logic.itemSelected(checked, id),
+          selected: checked,
         ),
         const SizedBox(height: 4),
         const ThicknessDivider(),
@@ -237,8 +262,8 @@ class _PackageTaskPageState
           child: SvgPicture.asset(
             item.package.platform.platformImage,
             color: Colors.white,
-            width: 15,
-            height: 15,
+            width: 18,
+            height: 18,
           ),
         ),
       ],
@@ -264,13 +289,24 @@ class _PackageTaskPageState
               onPressed: () =>
                   PackageLogDialog.show(context, logs: package.errors),
             ),
+          if (status == PackageStatus.packing)
+            const SizedBox.square(
+              dimension: 25,
+              child: ProgressRing(),
+            ),
           const SizedBox(width: 8),
           if (isEdited)
             Checkbox(
               checked: checked,
               onChanged: (v) => logic.itemSelected(checked, id),
             ),
-          if (!isEdited || status != PackageStatus.stopping)
+          if (status == PackageStatus.stopping)
+            const SizedBox(
+              width: 30,
+              height: 15,
+              child: ProgressBar(),
+            ),
+          if (!isEdited && status != PackageStatus.stopping)
             IconButton(
               icon: Icon(
                 doWork ? FluentIcons.pause : FluentIcons.play,
@@ -299,7 +335,7 @@ class _PackageTaskPageLogic extends BaseLogic {
   final editorController = ValueChangeNotifier<bool>(false);
 
   // 所选记录表
-  final selectedController =
+  final selectedListController =
       ListValueChangeNotifier<int>.empty(deduplication: true);
 
   // 流控制器
@@ -315,15 +351,19 @@ class _PackageTaskPageLogic extends BaseLogic {
     // 当编辑状态发生变化，则清空选择列表
     editorController.addListener(() {
       if (!editorController.value) {
-        selectedController.clear();
+        selectedListController.clear();
       }
     });
     // 监听选择数据变化
-    selectedController.addListener(() {
-      final isEmpty = selectedController.isEmpty;
+    selectedListController.addListener(() {
+      final isEmpty = selectedListController.isEmpty;
       editorController.setValue(!isEmpty);
     });
   }
+
+  // 获取全部任务id
+  List<int> get allTaskIds =>
+      taskListController.value.map((e) => e.package.id).toList();
 
   // 加载打包任务信息
   Future<void> _loadTaskList() async {
@@ -339,19 +379,17 @@ class _PackageTaskPageLogic extends BaseLogic {
   // 本页全选/取消选择
   void pageAllSelected(bool checked) {
     final ids = taskListController.value.map((e) => e.package.id).toList();
-    if (checked) {
-      selectedController.removeValues(ids);
-    } else {
-      selectedController.addValues(ids);
-    }
+    return checked
+        ? selectedListController.removeValues(ids)
+        : selectedListController.addValues(ids);
   }
 
   // 删除本页已选择内容
   Future<void> deleteAllSelected() async {
     try {
-      final ids = selectedController.value;
+      final ids = selectedListController.value;
       await packageTaskManage.removeTask(ids: ids);
-      selectedController.removeValues(ids);
+      selectedListController.removeValues(ids);
       await _loadTaskList();
       editorController.setValue(false);
     } catch (e) {
@@ -360,32 +398,24 @@ class _PackageTaskPageLogic extends BaseLogic {
   }
 
   // 判断是否已全选
-  bool get hasPageAllSelected {
-    for (var it in taskListController.value) {
-      if (!selectedController.contains(it.package.id)) return false;
-    }
-    return true;
-  }
+  bool get hasPageAllSelected => taskListController.value
+      .every((e) => selectedListController.contains(e.package.id));
 
   // 判断本页是否存在已选中内容
-  bool get hasSelected => selectedController.isNotEmpty;
+  bool get hasSelected => selectedListController.isNotEmpty;
 
   // 选择/取消一条数据
-  void itemSelected(bool checked, int id) {
-    if (checked) {
-      selectedController.removeValue(id);
-    } else {
-      selectedController.addValue(id);
-    }
-  }
+  void itemSelected(bool checked, int id) => checked
+      ? selectedListController.removeValue(id)
+      : selectedListController.addValue(id);
 
   // 判断是否已选择
-  bool hasItemSelected(int id) => selectedController.contains(id);
+  bool hasItemSelected(int id) => selectedListController.contains(id);
 
   @override
   void dispose() {
+    selectedListController.dispose();
     taskListController.dispose();
-    selectedController.dispose();
     editorController.dispose();
     _subscription.cancel();
     super.dispose();

@@ -42,6 +42,9 @@ class PackageTaskManage extends BaseManage {
         .map((_, v) => MapEntry(v.id, v)));
   }
 
+  // 获取最大打包并发数
+  int get maxQueue => _maxQueue;
+
   // 更新打包队列最大并发数
   Future<bool> updateMaxQueue(int count) async {
     if (_inProcess) return false;
@@ -64,13 +67,12 @@ class PackageTaskManage extends BaseManage {
   }
 
   // 移除打包任务
-  Future<bool> removeTask({List<int> ids = const []}) async {
+  Future<bool> removeTask({required List<int> ids}) async {
+    if (ids.isEmpty) return true;
     if (_inProcess) return false;
-    if (ids.isEmpty) ids.addAll(_taskQueue.keys);
     // 停止全部任务并移除
     if (!await stopTask(ids: ids)) return false;
-    final l = await dbManage.deletePackages(ids);
-    if (l != ids.length) return false;
+    await dbManage.deletePackages(ids);
     _taskQueue.removeWhere((e, _) => ids.contains(e));
     return true;
   }
@@ -86,16 +88,17 @@ class PackageTaskManage extends BaseManage {
   }
 
   // 开始打包任务（不传id则启动全部任务）
-  Future<bool> startTask({List<int> ids = const []}) async {
+  Future<bool> startTask({required List<int> ids}) async {
+    if (ids.isEmpty) return true;
     if (_inProcess) return false;
-    _inProcess = true;
-    if (ids.isEmpty) ids.addAll(_taskQueue.keys);
     // 剔除准备中/打包中/停止中的任务
     ids.removeWhere((e) => const [
           PackageStatus.prepare,
           PackageStatus.packing,
           PackageStatus.stopping,
         ].contains(_taskQueue[e]?.status));
+    if (ids.isEmpty) return true;
+    _inProcess = true;
     // 判断打包队列中是否有空位
     var c = _maxQueue - _packagingQueue.length;
     if (c > 0) {
@@ -125,16 +128,17 @@ class PackageTaskManage extends BaseManage {
   }
 
   // 停止打包任务(不传id则停止所有任务)
-  Future<bool> stopTask({List<int> ids = const []}) async {
+  Future<bool> stopTask({required List<int> ids}) async {
+    if (ids.isEmpty) return true;
     if (_inProcess) return false;
-    _inProcess = true;
-    if (ids.isEmpty) ids.addAll(_taskQueue.keys);
     // 剔除异常/停止中/已停止的任务
     ids.removeWhere((e) => const [
           PackageStatus.fail,
           PackageStatus.stopping,
           PackageStatus.stopped,
         ].contains(_taskQueue[e]?.status));
+    if (ids.isEmpty) return true;
+    _inProcess = true;
     // 判断是否有打包中的任务，存在则停止打包
     final t = _packagingQueue.keys.where((e) => ids.contains(e)).toList();
     await dbManage.updatePackageStatus(t, PackageStatus.stopping);
