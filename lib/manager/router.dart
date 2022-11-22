@@ -23,9 +23,7 @@ class JRouter extends BaseManage {
   NavigatorState? get navigator => navigateKey.currentState;
 
   //设置基础参数
-  Future<void> setup({
-    RouteTransitionsBuilder? transitionsBuilder,
-  }) async {
+  Future<void> setup({RouteTransitionsBuilder? transitionsBuilder}) async {
     _transitionsBuilder = transitionsBuilder;
   }
 

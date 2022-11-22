@@ -16,10 +16,8 @@ import 'package:process_run/shell.dart';
 */
 class ScriptHandle {
   // 查看flutter版本号信息
-  static Future<Environment> loadFlutterEnv(
-    String path, {
-    Environment? oldEnv,
-  }) async {
+  static Future<Environment> loadFlutterEnv(String path,
+      {Environment? oldEnv}) async {
     final script = '$path/${ProjectFilePath.flutter} --version';
     final outText = await _runShell(script);
     var version = 'Flutter', channel = 'channel', dart = 'Dart';
@@ -42,9 +40,7 @@ class ScriptHandle {
 
   // 创建平台信息
   static Future<bool> createPlatforms(
-    String envPath,
-    List<PlatformType> platforms,
-  ) async {
+      String envPath, List<PlatformType> platforms) async {
     final script = '$envPath/${ProjectFilePath.flutter} create '
         '--platforms=${platforms.map((e) => e.name).join(',')} .';
     final outText = await _runShell(script);
@@ -52,12 +48,8 @@ class ScriptHandle {
   }
 
   // 项目平台打包
-  static Future<bool> buildApp(
-    String envPath,
-    String projectPath, {
-    required PlatformType platform,
-    ShellController? controller,
-  }) async {
+  static Future<bool> buildApp(String envPath, String projectPath,
+      {required PlatformType platform, ShellController? controller}) async {
     final t = const {
       PlatformType.android: 'apk',
       PlatformType.ios: '',
@@ -103,11 +95,8 @@ class ScriptHandle {
   }
 
   // 脚本执行方法
-  static Future<String> _runShell(
-    String script, {
-    String? path,
-    ShellController? controller,
-  }) async {
+  static Future<String> _runShell(String script,
+      {String? path, ShellController? controller}) async {
     final shell = Shell(
       throwOnError: true,
       workingDirectory: path,

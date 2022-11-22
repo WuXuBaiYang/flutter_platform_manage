@@ -21,11 +21,8 @@ class FileTool {
   }
 
   // 解析目录大小
-  static Future<String> parseDirSize({
-    String path = '',
-    bool lowerCase = false,
-    int fixed = 1,
-  }) async {
+  static Future<String> parseDirSize(
+      {String path = '', bool lowerCase = false, int fixed = 1}) async {
     final result = await getDirSize(path);
     return parseFileSize(result, lowerCase: lowerCase, fixed: fixed);
   }
@@ -53,11 +50,8 @@ class FileTool {
   };
 
   // 文件大小格式转换
-  static String parseFileSize(
-    int size, {
-    bool lowerCase = false,
-    int fixed = 1,
-  }) {
+  static String parseFileSize(int size,
+      {bool lowerCase = false, int fixed = 1}) {
     for (final item in _fileSizeMap.keys) {
       if (size >= item) {
         final result = (size / item).toStringAsFixed(fixed);
@@ -70,10 +64,8 @@ class FileTool {
   }
 
   // 获取本地文件目录(传入相对路径，拼接目标路径)
-  static Future<String?> getDirPath(
-    String path, {
-    FileDir root = FileDir.temporary,
-  }) async {
+  static Future<String?> getDirPath(String path,
+      {FileDir root = FileDir.temporary}) async {
     final rootPath = await root.path;
     if (null == rootPath) return null;
     final dir = Directory('$rootPath/$path');
