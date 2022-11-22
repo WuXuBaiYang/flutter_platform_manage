@@ -171,7 +171,7 @@ class _PackageTaskPageState
     final items = [1, 2, 3]
         .map((e) => ComboBoxItem<int>(
               value: e,
-              child: Text('$e 条并发'),
+              child: Text('$e 个任务'),
             ))
         .toList();
     return StatefulBuilder(

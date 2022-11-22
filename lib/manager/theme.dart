@@ -31,7 +31,7 @@ class ThemeManage extends BaseManage {
 
   // 当前样式
   ThemeData get currentTheme => currentType.getTheme(
-        fontFamily: currentFontFamily.fontFamily,
+        fontFamily: currentFontFamily.family,
       );
 
   // 切换默认样式
@@ -113,7 +113,7 @@ enum ThemeFontFamily {
 // 支持字体库扩展
 extension ThemeFontFamilyExtension on ThemeFontFamily {
   // 获取名称
-  String get fontFamily => {
+  String get family => {
         ThemeFontFamily.alibabaSans: 'AlibabaSans',
       }[this]!;
 }

@@ -54,14 +54,13 @@ class MyApp extends StatelessWidget {
       ),
       stream: eventManage.on<ThemeEvent>(),
       builder: (_, snap) {
-        final themeType = snap.data?.themeType;
-        final fontFamily = snap.data?.fontFamily;
+        final event = snap.data;
         return FluentApp(
           debugShowCheckedModeBanner: kDebugMode,
           navigatorKey: jRouter.navigateKey,
           routes: RoutePath.routeMap,
-          theme: themeType?.getTheme(
-            fontFamily: fontFamily?.fontFamily,
+          theme: event?.themeType.getTheme(
+            fontFamily: event.fontFamily.family,
           ),
           home: const HomePage(),
         );
