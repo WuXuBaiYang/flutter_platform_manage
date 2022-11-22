@@ -14,6 +14,7 @@ class AndroidBuildGuideDialog extends StatefulWidget {
   static Future<void> show(BuildContext context) {
     return showDialog<void>(
       context: context,
+      barrierDismissible: true,
       builder: (_) => const AndroidBuildGuideDialog(),
     );
   }
@@ -34,7 +35,9 @@ class _AndroidBuildGuideDialogState
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return ContentDialog(
+      title: const Text('Android平台打包引导'),
+    );
   }
 }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/manage.dart';
+import 'package:flutter_platform_manage/manager/cache.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
@@ -15,6 +16,9 @@ import 'package:flutter_platform_manage/utils/script_handle.dart';
 * @Time 2022/11/17 14:47
 */
 class PackageTaskManage extends BaseManage {
+  // 最大并发数缓存字段
+  final String _maxQueueCacheKey = 'max_queue_cache_key';
+
   static final PackageTaskManage _instance = PackageTaskManage._internal();
 
   factory PackageTaskManage() => _instance;
@@ -40,6 +44,8 @@ class PackageTaskManage extends BaseManage {
         .loadPackageTaskList()
         .asMap()
         .map((_, v) => MapEntry(v.id, v)));
+    // 获取最大并发数
+    _maxQueue = cacheManage.getInt(_maxQueueCacheKey) ?? 1;
   }
 
   // 获取最大打包并发数
@@ -49,6 +55,10 @@ class PackageTaskManage extends BaseManage {
   Future<bool> updateMaxQueue(int count) async {
     if (_inProcess) return false;
     if (count <= 0 || count > 3) return false;
+    if (!await cacheManage.setInt(
+      _maxQueueCacheKey,
+      count,
+    )) return false;
     _maxQueue = count;
     // 打包队列变更之后，启动准备中的任务进入队列
     return _resumeTask();
