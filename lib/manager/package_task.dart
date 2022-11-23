@@ -25,9 +25,6 @@ class PackageTaskManage extends BaseManage {
 
   PackageTaskManage._internal();
 
-  // // 任务列表
-  // final Map<int, Package> _taskQueue = {};
-
   // 打包队列
   final Map<int, ShellController> _packagingQueue = {};
 
@@ -41,6 +38,13 @@ class PackageTaskManage extends BaseManage {
   Future<void> init() async {
     // 获取最大并发数
     _maxQueue = cacheManage.getInt(_maxQueueCacheKey) ?? 1;
+    // 将准备/打包/停止中的状态全部更新为停止
+    final ids = dbManage.filterPackageIdsByStatus(status: [
+      PackageStatus.packing,
+      PackageStatus.prepare,
+      PackageStatus.stopping,
+    ]);
+    await dbManage.updatePackageStatus(ids, PackageStatus.stopped);
   }
 
   // 获取最大打包并发数
@@ -96,7 +100,7 @@ class PackageTaskManage extends BaseManage {
       if (ids.isEmpty) return true;
       if (_inProcess) return false;
       // 获取打包中/停止中/异常的任务
-      ids = dbManage.filterPackageIdsByStatus(ids, const [
+      ids = dbManage.filterPackageIdsByStatus(ids: ids, status: const [
         PackageStatus.prepare,
         PackageStatus.stopped,
         PackageStatus.fail,
@@ -139,7 +143,7 @@ class PackageTaskManage extends BaseManage {
     try {
       if (ids.isEmpty) return true;
       if (_inProcess) return false;
-      ids = dbManage.filterPackageIdsByStatus(ids, const [
+      ids = dbManage.filterPackageIdsByStatus(ids: ids, status: const [
         PackageStatus.prepare,
         PackageStatus.packing,
       ]);
@@ -182,7 +186,10 @@ class PackageTaskManage extends BaseManage {
       return _completePackage(package.id, c, startTime);
     }).catchError((_) async {
       if (!c.isKilled) return _packageFail(package.id, c);
-    }).whenComplete(() => _packagingQueue.remove(package.id));
+    }).whenComplete(() {
+      _packagingQueue.remove(package.id);
+      _resumeTask();
+    });
     return true;
   }
 
@@ -212,7 +219,6 @@ class PackageTaskManage extends BaseManage {
         ..timeSpent = spentTime
         ..outputPath = outputPath.path
         ..packageSize = size);
-      await _resumeTask();
     } catch (e) {
       LogTool.e('完成打包失败：', error: e);
       dbManage.updatePackageStatus([id], PackageStatus.fail);
@@ -227,7 +233,6 @@ class PackageTaskManage extends BaseManage {
       if (c.hasOutput) package.logs = [c.output, ...package.logs];
       if (c.hasOutputErr) package.errors = [c.outputErr, ...package.errors];
       await dbManage.updatePackage(package..status = PackageStatus.fail);
-      await _resumeTask();
     } catch (e) {
       LogTool.e('处理打包失败异常：', error: e);
       dbManage.updatePackageStatus([id], PackageStatus.fail);

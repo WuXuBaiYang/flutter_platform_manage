@@ -188,10 +188,13 @@ class DBManage extends BaseManage {
           // 判断id是否存在，并且状态为非完成
           final packages = await _isar.packages
               .filter()
-              .allOf<int, dynamic>(ids, (q, e) => q.idEqualTo(e))
+              .anyOf<int, dynamic>(ids, (q, e) => q.idEqualTo(e))
               .and()
               .not()
               .statusEqualTo(PackageStatus.completed)
+              .and()
+              .not()
+              .statusEqualTo(status)
               .findAll();
           if (packages.isEmpty) return [];
           for (var it in packages) {
@@ -244,9 +247,12 @@ class DBManage extends BaseManage {
   }
 
   // 根据传入的id集合与状态进行过滤
-  List<int> filterPackageIdsByStatus(
-      List<int> ids, List<PackageStatus> status) {
+  List<int> filterPackageIdsByStatus({
+    List<int> ids = const [],
+    required List<PackageStatus> status,
+  }) {
     final map = loadPackageTaskList().asMap().map((_, v) => MapEntry(v.id, v));
+    if (ids.isEmpty) ids = map.keys.toList();
     return ids.where((e) => status.contains(map[e]?.status)).toList();
   }
 
