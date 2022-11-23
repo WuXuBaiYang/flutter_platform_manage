@@ -48,7 +48,7 @@ class ProjectFilePath {
   static const String webManifest = 'manifest.json';
 
   // 项目打包输出目录
-  static const String packageOutput = 'platformManager/outputs';
+  static const String packageOutput = 'PlatformManager/outputs';
 
   // android打包输出文件路径
   static String getPlatformOutput(PlatformType platformType) => {

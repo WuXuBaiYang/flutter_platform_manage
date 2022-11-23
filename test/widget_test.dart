@@ -1,14 +1,9 @@
-import 'dart:async';
 import 'dart:io';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/model/android_key.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:process_run/shell.dart';
 
 void main() {
   test('测试android文件遍历', () {

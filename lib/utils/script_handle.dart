@@ -154,6 +154,7 @@ class ShellController {
       final result = String.fromCharCodes(
         Uint8List.fromList(e),
       );
+      LogTool.i('打包记录输出：$result');
       for (var li in _outListeners) {
         li.call(result);
       }
@@ -164,6 +165,7 @@ class ShellController {
       final result = String.fromCharCodes(
         Uint8List.fromList(e),
       );
+      LogTool.i('打包异常输出：$result');
       for (var li in _errOutListeners) {
         li.call(result);
       }
@@ -181,6 +183,24 @@ class ShellController {
   void addErrOutListener(OnShellOutListener listener) =>
       _errOutListeners.add(listener);
 
+  // 判断是否存在输出
+  Future<bool> get hasOutput => _outController.stream.isEmpty;
+
+  // 获取全部的输入
+  Future<String> get outputLog async => (await _outController.stream
+          .map((e) => String.fromCharCodes(Uint8List.fromList(e)))
+          .toList())
+      .join('\n');
+
+  // 判断是否存在异常输出
+  Future<bool> get hasOutputErr => _errOutController.stream.isEmpty;
+
+  // 获取全部的异常输出
+  Future<String> get outputErr async => (await _errOutController.stream
+          .map((e) => String.fromCharCodes(Uint8List.fromList(e)))
+          .toList())
+      .join('\n');
+
   // 杀死控制台
   Future<bool> kill({
     ProcessSignal signal = ProcessSignal.sigterm,
@@ -188,8 +208,15 @@ class ShellController {
     final c = Completer<bool>();
     _killOutController.stream.listen(c.complete);
     _killInController.add(signal);
+    _isKilled = true;
     return c.future;
   }
+
+  // 记录是否已杀死shell
+  var _isKilled = false;
+
+  // 判断是否杀死shell
+  bool get isKilled => _isKilled;
 
   // 销毁控制器
   void dispose() {

@@ -168,6 +168,13 @@ class DBManage extends BaseManage {
         silent: silent,
       );
 
+  // 更新打包任务
+  Future<Id?> updatePackage(Package package, {bool silent = false}) =>
+      _isar.writeTxn(
+        () => _isar.packages.put(package),
+        silent: silent,
+      );
+
   // 修改打包状态（已完成任务无法再改变）
   Future<bool> updatePackageStatus(
     List<Id> ids,
@@ -224,6 +231,9 @@ class DBManage extends BaseManage {
           .group((q) => q.statusEqualTo(PackageStatus.completed))
           .watchLazy(fireImmediately: fireImmediately);
 
+  // 获取单个打包任务
+  Package? loadPackage(int id) => _isar.packages.getSync(id);
+
   // 获取打包记录列表（非完成状态）
   List<Package> loadPackageTaskList() {
     return _isar.packages
@@ -231,6 +241,13 @@ class DBManage extends BaseManage {
         .not()
         .statusEqualTo(PackageStatus.completed)
         .findAllSync();
+  }
+
+  // 根据传入的id集合与状态进行过滤
+  List<int> filterPackageIdsByStatus(
+      List<int> ids, List<PackageStatus> status) {
+    final map = loadPackageTaskList().asMap().map((_, v) => MapEntry(v.id, v));
+    return ids.where((e) => status.contains(map[e]?.status)).toList();
   }
 
   // 分页获取打包历史记录列表
@@ -295,9 +312,9 @@ void _testInsertPackageCompleteInfo(Isar db) {
       ..status = PackageStatus.packing
       // ..logs = t
       // ..errors = t
-    // ..packageSize = 1129301291
-    // ..timeSpent = 1000 * 60 * 3
-    ..completeTime = DateTime.now().subtract(Duration(days: i % 15));
+      // ..packageSize = 1129301291
+      // ..timeSpent = 1000 * 60 * 3
+      ..completeTime = DateTime.now().subtract(Duration(days: i % 15));
     // ..outputPath = r'C:\Users\wuxubaiyang\Documents\xxxxx_test.zip';
   });
   db.writeTxn(() async {
