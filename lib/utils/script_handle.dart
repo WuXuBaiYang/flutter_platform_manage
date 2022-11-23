@@ -107,8 +107,9 @@ class ScriptHandle {
       stderr: controller?._errOutController,
     );
     // 监听kill命令并返回结果
-    controller?._killInController.stream
-        .listen((e) => controller._killOutController.add(shell.kill(e)));
+    controller?._killInController.stream.listen((e) {
+      controller._killOutController.add(shell.kill(e));
+    });
     final list = await shell.run(script);
     controller?.dispose();
     final errText = list.map((e) => e.errText).join('');
@@ -144,28 +145,36 @@ class ShellController {
   // 输出回调集合
   final List<OnShellOutListener> _outListeners = [];
 
+  // 记录输出日志
+  final List<String> _logs = [];
+
   // 异常输出回调
   final List<OnShellOutListener> _errOutListeners = [];
+
+  // 记录异常日志
+  final List<String> _errors = [];
 
   ShellController() {
     // 监听内容输出
     _outController.stream.listen((e) {
-      if (_outListeners.isEmpty) return;
       final result = String.fromCharCodes(
         Uint8List.fromList(e),
       );
+      _logs.add(result);
       LogTool.i('打包记录输出：$result');
+      if (_outListeners.isEmpty) return;
       for (var li in _outListeners) {
         li.call(result);
       }
     });
     // 监听异常内容输出
     _errOutController.stream.listen((e) {
-      if (_errOutListeners.isEmpty) return;
       final result = String.fromCharCodes(
         Uint8List.fromList(e),
       );
+      _errors.add(result);
       LogTool.i('打包异常输出：$result');
+      if (_errOutListeners.isEmpty) return;
       for (var li in _errOutListeners) {
         li.call(result);
       }
@@ -184,32 +193,26 @@ class ShellController {
       _errOutListeners.add(listener);
 
   // 判断是否存在输出
-  Future<bool> get hasOutput => _outController.stream.isEmpty;
+  bool get hasOutput => _logs.isNotEmpty;
 
   // 获取全部的输入
-  Future<String> get outputLog async => (await _outController.stream
-          .map((e) => String.fromCharCodes(Uint8List.fromList(e)))
-          .toList())
-      .join('\n');
+  String get output => _logs.join('\n');
 
   // 判断是否存在异常输出
-  Future<bool> get hasOutputErr => _errOutController.stream.isEmpty;
+  bool get hasOutputErr => _errors.isNotEmpty;
 
   // 获取全部的异常输出
-  Future<String> get outputErr async => (await _errOutController.stream
-          .map((e) => String.fromCharCodes(Uint8List.fromList(e)))
-          .toList())
-      .join('\n');
+  String get outputErr => _errors.join('\n');
 
   // 杀死控制台
   Future<bool> kill({
-    ProcessSignal signal = ProcessSignal.sigterm,
-  }) {
+    ProcessSignal signal = ProcessSignal.sigkill,
+  }) async {
     final c = Completer<bool>();
     _killOutController.stream.listen(c.complete);
     _killInController.add(signal);
     _isKilled = true;
-    return c.future;
+    return await c.future;
   }
 
   // 记录是否已杀死shell

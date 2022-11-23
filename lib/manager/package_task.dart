@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/manage.dart';
 import 'package:flutter_platform_manage/manager/cache.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:flutter_platform_manage/utils/date.dart';
 import 'package:flutter_platform_manage/utils/file.dart';
+import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 
 /*
@@ -92,69 +92,73 @@ class PackageTaskManage extends BaseManage {
 
   // 开始打包任务
   Future<bool> startTask({required List<int> ids}) async {
-    if (ids.isEmpty) return true;
-    if (_inProcess) return false;
-    // 剔除打包中/停止中的任务
-    ids = dbManage.filterPackageIdsByStatus(ids, const [
-      PackageStatus.prepare,
-      PackageStatus.stopped,
-      PackageStatus.fail,
-    ]);
-    if (ids.isEmpty) return true;
-    _inProcess = true;
-    // 判断打包队列中是否有空位
-    var c = _maxQueue - _packagingQueue.length;
-    if (c > 0) {
-      // 存在空位则取出前n位进入打包任务
-      final t = <int>[], e = <int>[];
-      c = c > ids.length ? ids.length : c;
-      for (var id in ids.sublist(0, c)) {
-        // 开始打包任务,开始成功之后记录id统一更新状态
-        final package = dbManage.loadPackage(id);
-        if (package == null) {
-          ids.remove(id);
-          e.add(id);
-        } else if (await _startPackage(package)) {
-          ids.remove(id);
-          t.add(id);
+    try {
+      if (ids.isEmpty) return true;
+      if (_inProcess) return false;
+      // 获取打包中/停止中/异常的任务
+      ids = dbManage.filterPackageIdsByStatus(ids, const [
+        PackageStatus.prepare,
+        PackageStatus.stopped,
+        PackageStatus.fail,
+      ]);
+      if (ids.isEmpty) return true;
+      _inProcess = true;
+      // 判断打包队列中是否有空位
+      var c = _maxQueue - _packagingQueue.length;
+      if (c > 0) {
+        // 存在空位则取出前n位进入打包任务
+        final t = <int>[], e = <int>[];
+        c = c > ids.length ? ids.length : c;
+        for (var id in ids.sublist(0, c)) {
+          // 开始打包任务,开始成功之后记录id统一更新状态
+          final package = dbManage.loadPackage(id);
+          if (package == null) {
+            ids.remove(id);
+            e.add(id);
+          } else if (await _startPackage(package)) {
+            ids.remove(id);
+            t.add(id);
+          }
         }
+        // 更新添加成功的任务状态为打包中
+        await dbManage.updatePackageStatus(t, PackageStatus.packing);
+        // 更新添加失败的任务状态为打包失败
+        await dbManage.updatePackageStatus(e, PackageStatus.fail);
       }
-      // 更新添加成功的任务状态为打包中
-      await dbManage.updatePackageStatus(t, PackageStatus.packing);
-      // 更新添加失败的任务状态为打包失败
-      await dbManage.updatePackageStatus(e, PackageStatus.fail);
+      // 剩下没有立即开始的任务状态更新为准备中
+      await dbManage.updatePackageStatus(ids, PackageStatus.prepare);
+    } catch (e) {
+      LogTool.e('任务启动失败：', error: e);
     }
-    // 剩下没有立即开始的任务状态更新为准备中
-    await dbManage.updatePackageStatus(ids, PackageStatus.prepare);
     _inProcess = false;
     return true;
   }
 
   // 停止打包任务
   Future<bool> stopTask({required List<int> ids}) async {
-    if (ids.isEmpty) return true;
-    if (_inProcess) return false;
-    ids = dbManage.filterPackageIdsByStatus(ids, const [
-      PackageStatus.prepare,
-      PackageStatus.packing,
-    ]);
-    if (ids.isEmpty) return true;
-    _inProcess = true;
-    // 判断是否有打包中的任务，存在则停止打包
-    final t = _packagingQueue.keys.where((e) => ids.contains(e)).toList();
-    await dbManage.updatePackageStatus(t, PackageStatus.stopping);
-    for (var id in t) {
-      final task = _packagingQueue.remove(id);
-      if (task == null) continue;
-      if (!await task.kill()) {
-        ids.remove(id);
-        continue;
+    try {
+      if (ids.isEmpty) return true;
+      if (_inProcess) return false;
+      ids = dbManage.filterPackageIdsByStatus(ids, const [
+        PackageStatus.prepare,
+        PackageStatus.packing,
+      ]);
+      if (ids.isEmpty) return true;
+      _inProcess = true;
+      final recover = <int>[];
+      // 将所有任务状态变成停止中
+      await dbManage.updatePackageStatus(ids, PackageStatus.stopping);
+      for (var id in ids) {
+        final task = _packagingQueue.remove(id);
+        if (task == null) continue;
+        if (!await task.kill()) recover.add(id);
       }
       // 如果没杀死，则恢复状态为打包中
-      await dbManage.updatePackageStatus([id], PackageStatus.packing);
-      _packagingQueue[id] = task;
+      await dbManage.updatePackageStatus(ids, PackageStatus.stopped);
+      await dbManage.updatePackageStatus(recover, PackageStatus.packing);
+    } catch (e) {
+      LogTool.e('任务停止失败');
     }
-    await dbManage.updatePackageStatus(ids, PackageStatus.stopped);
     _inProcess = false;
     return _resumeTask();
   }
@@ -178,7 +182,7 @@ class PackageTaskManage extends BaseManage {
       return _completePackage(package.id, c, startTime);
     }).catchError((_) async {
       if (!c.isKilled) return _packageFail(package.id, c);
-    });
+    }).whenComplete(() => _packagingQueue.remove(package.id));
     return true;
   }
 
@@ -187,39 +191,47 @@ class PackageTaskManage extends BaseManage {
       int id, ShellController c, int startTime) async {
     final package = dbManage.loadPackage(id);
     if (package == null) return;
-    final endTime = DateTime.now();
-    final spentTime = endTime.millisecondsSinceEpoch - startTime;
-    final dir = await FileTool.getDirPath(
-        '${ProjectFilePath.packageOutput}/'
-        '${package.projectId}/'
-        '${package.platform.name}_${endTime.format(DatePattern.dateSign)}',
-        root: FileDir.applicationDocuments);
-    final pro = dbManage.loadProject(package.projectId);
-    final old = File(
-        '${pro?.path}/${ProjectFilePath.getPlatformOutput(package.platform)}');
-    final outputPath = await old.copy('$dir/${old.name}');
-    final size = await FileTool.getDirSize(outputPath.parent.path);
-    if (await c.hasOutput) package.logs.add(await c.outputLog);
-    if (await c.hasOutputErr) package.logs.add(await c.outputErr);
-    await dbManage.updatePackage(package
-      ..status = PackageStatus.completed
-      ..completeTime = endTime
-      ..timeSpent = spentTime
-      ..outputPath = outputPath.path
-      ..packageSize = size);
-    _packagingQueue.remove(package.id);
-    await _resumeTask();
+    try {
+      final endTime = DateTime.now();
+      final spentTime = endTime.millisecondsSinceEpoch - startTime;
+      final dir = await FileTool.getDirPath(
+          '${ProjectFilePath.packageOutput}/'
+          '${package.projectId}/'
+          '${package.platform.name}_${endTime.format(DatePattern.dateSign)}',
+          root: FileDir.applicationDocuments);
+      final pro = dbManage.loadProject(package.projectId);
+      final old = File(
+          '${pro?.path}/${ProjectFilePath.getPlatformOutput(package.platform)}');
+      final outputPath = await old.copy('$dir/${old.name}');
+      final size = await FileTool.getDirSize(outputPath.parent.path);
+      if (c.hasOutput) package.logs = [c.output, ...package.logs];
+      if (c.hasOutputErr) package.errors = [c.outputErr, ...package.errors];
+      await dbManage.updatePackage(package
+        ..status = PackageStatus.completed
+        ..completeTime = endTime
+        ..timeSpent = spentTime
+        ..outputPath = outputPath.path
+        ..packageSize = size);
+      await _resumeTask();
+    } catch (e) {
+      LogTool.e('完成打包失败：', error: e);
+      dbManage.updatePackageStatus([id], PackageStatus.fail);
+    }
   }
 
   // 打包异常处理
   Future<void> _packageFail(int id, ShellController c) async {
-    final package = dbManage.loadPackage(id);
-    if (package == null) return;
-    if (await c.hasOutput) package.logs.add(await c.outputLog);
-    if (await c.hasOutputErr) package.logs.add(await c.outputErr);
-    await dbManage.updatePackage(package..status = PackageStatus.fail);
-    _packagingQueue.remove(package.id);
-    await _resumeTask();
+    try {
+      final package = dbManage.loadPackage(id);
+      if (package == null) return;
+      if (c.hasOutput) package.logs = [c.output, ...package.logs];
+      if (c.hasOutputErr) package.errors = [c.outputErr, ...package.errors];
+      await dbManage.updatePackage(package..status = PackageStatus.fail);
+      await _resumeTask();
+    } catch (e) {
+      LogTool.e('处理打包失败异常：', error: e);
+      dbManage.updatePackageStatus([id], PackageStatus.fail);
+    }
   }
 }
 

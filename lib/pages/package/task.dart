@@ -172,7 +172,7 @@ class _PackageTaskPageState
         .map((e) => ComboBoxItem<int>(
               value: e,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
+                padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Text('$e 个任务'),
               ),
             ))
