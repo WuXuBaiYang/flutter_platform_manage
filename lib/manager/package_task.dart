@@ -47,6 +47,9 @@ class PackageTaskManage extends BaseManage {
     await dbManage.updatePackageStatus(ids, PackageStatus.stopped);
   }
 
+  // 判断是否存在进行中的任务
+  bool get packageQueueNotEmpty => _packagingQueue.isNotEmpty;
+
   // 获取最大打包并发数
   int get maxQueue => _maxQueue;
 
@@ -137,6 +140,18 @@ class PackageTaskManage extends BaseManage {
     _inProcess = false;
     return true;
   }
+
+  // 停止所有进行中的任务
+  Future<bool> stopAllTask() => stopTask(
+      ids: dbManage
+          .loadPackageTaskList()
+          .where((e) => const [
+                PackageStatus.prepare,
+                PackageStatus.packing,
+                PackageStatus.stopping
+              ].contains(e.status))
+          .map((e) => e.id)
+          .toList());
 
   // 停止打包任务
   Future<bool> stopTask({required List<int> ids}) async {
