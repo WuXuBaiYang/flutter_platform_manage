@@ -1,7 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/package_task.dart';
-import 'package:flutter_platform_manage/model/db/package.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
