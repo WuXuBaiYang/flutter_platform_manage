@@ -156,27 +156,21 @@ class ShellController {
 
   ShellController() {
     // 监听内容输出
-    _outController.stream.listen((e) {
-      final result = String.fromCharCodes(
-        Uint8List.fromList(e),
-      );
-      _logs.add(result);
-      LogTool.i('打包记录输出：$result');
+    _outController.stream.transform(utf8.decoder).listen((e) {
+      _logs.add(e);
+      LogTool.i('打包记录输出：$e');
       if (_outListeners.isEmpty) return;
       for (var li in _outListeners) {
-        li.call(result);
+        li.call(e);
       }
     });
     // 监听异常内容输出
-    _errOutController.stream.listen((e) {
-      final result = String.fromCharCodes(
-        Uint8List.fromList(e),
-      );
-      _errors.add(result);
-      LogTool.i('打包异常输出：$result');
+    _errOutController.stream.transform(utf8.decoder).listen((e) {
+      _errors.add(e);
+      LogTool.i('打包异常输出：$e');
       if (_errOutListeners.isEmpty) return;
       for (var li in _errOutListeners) {
-        li.call(result);
+        li.call(e);
       }
     });
   }
