@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/model/package.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
@@ -15,7 +16,6 @@ class AndroidBuildGuideDialog extends StatefulWidget {
   static Future<void> show(BuildContext context) {
     return showDialog<void>(
       context: context,
-      barrierDismissible: true,
       builder: (_) => const AndroidBuildGuideDialog(),
     );
   }
@@ -54,13 +54,15 @@ class _AndroidBuildGuideDialogState
               horizontalMargin: EdgeInsets.all(8),
             ),
             const Text('#2', style: textStyle),
-            ..._buildStep2(context),
-            const ThicknessDivider(
-              horizontalMargin: EdgeInsets.all(8),
-            ),
           ],
         ),
       ),
+      actions: [
+        Button(
+          child: const Text('关闭'),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+      ],
     );
   }
 
@@ -78,11 +80,6 @@ class _AndroidBuildGuideDialogState
       const Text('\t\t\t\t填写下方参数'),
       const SizedBox(height: 8),
     ];
-  }
-
-  // 构建步骤2
-  List<Widget> _buildStep2(BuildContext context) {
-    return [];
   }
 }
 
