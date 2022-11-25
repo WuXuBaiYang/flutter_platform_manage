@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/android_key.dart';
@@ -49,7 +48,9 @@ class ScriptHandle {
 
   // 项目平台打包
   static Future<bool> buildApp(String envPath, String projectPath,
-      {required PlatformType platform, ShellController? controller}) async {
+      {required PlatformType platform,
+      ShellController? controller,
+      List<String> arguments = const []}) async {
     final t = const {
       PlatformType.android: 'apk',
       PlatformType.ios: '',
@@ -59,18 +60,16 @@ class ScriptHandle {
       PlatformType.linux: '',
     }[platform];
     if (t == null || t.isEmpty) return false;
-    final script = '$envPath/${ProjectFilePath.flutter} build $t';
-    final outText = await _runShell(
-      script,
-      path: projectPath,
-      controller: controller,
-    );
-    return outText.contains(r'√  Built');
+    var script = '$envPath/${ProjectFilePath.flutter} build $t';
+    if (arguments.isNotEmpty) script += arguments.join(' ');
+    await _runShell(script, path: projectPath, controller: controller);
+    return true;
   }
 
   // 查看android签名文件信息
   static Future<String> loadAndroidKeyInfo(AndroidKeyParams params) {
     if (!params.checkCanGetInfo()) throw Exception('参数不完整');
+    if (whichSync('keytool') == null) throw Exception('缺少java环境');
     final script = 'keytool -v -list '
         '-storepass ${params.storePass} -keystore ${params.keystore}';
     return _runShell(script);
@@ -78,8 +77,9 @@ class ScriptHandle {
 
   // 生成android签名文件
   static Future<bool> genAndroidKey(AndroidKeyParams params) async {
+    if (!params.checkCanGenKey()) throw Exception('参数不完整');
+    if (whichSync('keytool') == null) throw Exception('缺少java环境');
     try {
-      if (!params.checkCanGenKey()) throw Exception('参数不完整');
       final script = 'keytool -genkey '
           '-alias ${params.alias} -keyalg ${params.keyAlg} '
           '-keysize ${params.keySize} -validity ${params.validity} '

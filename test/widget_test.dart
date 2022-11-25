@@ -4,6 +4,7 @@ import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/file.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:process_run/which.dart';
 
 void main() {
   test('测试android文件遍历', () {
@@ -98,5 +99,10 @@ void main() {
   test('获取输出目录', () async {
     print(
         File(r'C:\Users\wuxubaiyang\Documents\Workspace\flutter\.github').name);
+  });
+
+  test('shell方法校验', () async {
+    final result = await which('firebase');
+    print('--------$result');
   });
 }

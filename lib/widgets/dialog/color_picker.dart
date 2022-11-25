@@ -89,6 +89,7 @@ class _ColorPickerDialogState
       builder: (_, selectColor, __) {
         final color = selectColor ?? const HSVColor.fromAHSV(0, 0, 0, 0);
         return material.Material(
+          color: Colors.transparent,
           child: Row(
             children: [
               SizedBox.square(
@@ -130,14 +131,14 @@ class _ColorPickerDialogState
             children: [
               ClipOval(
                 child: Container(
-                  width: 35,
-                  height: 35,
+                  width: 28,
+                  height: 28,
                   color: color,
                 ),
               ),
               CustomColorPickerInput(
                 color,
-                (v) => logic.updateColor(HSVColor.fromColor(v)),
+                    (v) => logic.updateColor(HSVColor.fromColor(v)),
                 embeddedText: true,
                 enableAlpha: widget.enableAlpha,
                 disable: !widget.enableInput,

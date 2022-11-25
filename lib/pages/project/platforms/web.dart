@@ -252,7 +252,7 @@ class _PlatformWebPageState
         context,
         initialColor: f.value,
         enableAlpha: false,
-        enableInput: false,
+        enableInput: true,
       ).then((v) {
         if (v != null) f.didChange(v);
       }),

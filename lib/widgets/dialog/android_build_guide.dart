@@ -75,7 +75,7 @@ class _AndroidBuildGuideDialogState
   // 构建步骤1
   List<Widget> _buildStep1(BuildContext context) {
     return [
-      const Text('\t\t\t\t填写下方必须参数'),
+      const Text('\t\t\t\t填写下方参数'),
       const SizedBox(height: 8),
     ];
   }
