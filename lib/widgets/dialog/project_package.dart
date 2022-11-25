@@ -127,6 +127,7 @@ class _ProjectPackageDialogState
       label: '选择项目',
       child: ProjectSelectComboBox<ProjectModel>(
         getValue: (e) => e,
+        selectedByDef: true,
         isExpanded: true,
         value: project,
         simple: false,
@@ -164,6 +165,7 @@ class _ProjectPackageDialogState
       child: PlatformSelectComboBox(
         value: platform,
         isExpanded: true,
+        selectedByDef: true,
         platforms: project.platformMap.keys
             .where((e) => platformSupports.contains(e))
             .toList(),
@@ -345,6 +347,7 @@ class _ProjectPackageDialogLogic extends BaseLogic {
       if (p == null) return null;
       if (!await p.modifyDisplayName(
         displayNameController.value.text,
+        autoCommit: true,
       )) return null;
       // 构造打包信息并添加到队列
       final packageInfo = PackageModel(

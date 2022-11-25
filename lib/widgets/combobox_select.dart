@@ -21,6 +21,9 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
   // 初始值
   final T? value;
 
+  // 是否默认选择
+  final bool selectedByDef;
+
   // 额外参数
   final List<ComboBoxItem<T>> additional;
 
@@ -42,6 +45,7 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
   const ProjectSelectComboBox({
     Key? key,
     this.value,
+    this.selectedByDef = false,
     this.additional = const [],
     this.onChanged,
     this.isExpanded = false,
@@ -60,7 +64,7 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
           ..addAll(additional);
         return ComboBox<T>(
           isExpanded: isExpanded,
-          value: value,
+          value: _getValue(projects),
           selectedItemBuilder: selectedItemBuilder != null
               ? (_) => selectedItemBuilder!(context, items)
               : null,
@@ -69,6 +73,14 @@ class ProjectSelectComboBox<T> extends StatelessWidget {
         );
       },
     );
+  }
+
+  // 获取值
+  T? _getValue(List<ProjectModel> projects) {
+    if (value != null || !selectedByDef || projects.isEmpty) return value;
+    final v = getValue(projects.first);
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChanged?.call(v));
+    return v;
   }
 
   // 构建项目选择子项
@@ -106,6 +118,9 @@ class PlatformSelectComboBox extends StatelessWidget {
   // 初始值
   final PlatformType? value;
 
+  // 是否默认选中
+  final bool selectedByDef;
+
   // 平台集合
   final List<PlatformType>? platforms;
 
@@ -118,6 +133,7 @@ class PlatformSelectComboBox extends StatelessWidget {
   const PlatformSelectComboBox({
     Key? key,
     this.value,
+    this.selectedByDef = false,
     this.onChanged,
     this.platforms,
     this.isExpanded = false,
@@ -125,14 +141,21 @@ class PlatformSelectComboBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = platforms ?? PlatformType.values;
     return ComboBox<PlatformType>(
       isExpanded: isExpanded,
-      value: value,
-      items: (platforms ?? PlatformType.values)
-          .map(_buildPlatformSelectItem)
-          .toList(),
+      value: _getValue(items),
+      items: items.map(_buildPlatformSelectItem).toList(),
       onChanged: onChanged,
     );
+  }
+
+  // 获取值
+  PlatformType? _getValue(List<PlatformType> items) {
+    if (value != null || !selectedByDef || items.isEmpty) return value;
+    final v = items.first;
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChanged?.call(v));
+    return v;
   }
 
   // 构建平台选择子项
