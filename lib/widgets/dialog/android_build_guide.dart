@@ -1,7 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/logic_state.dart';
-import 'package:flutter_platform_manage/model/package.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
