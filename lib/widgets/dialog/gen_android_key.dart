@@ -72,7 +72,7 @@ class _GenAndroidKeyDialogState
                   FilteringTextInputFormatter.allow(_inputRegExp),
                 ],
                 validator: (v) {
-                  if (v == null || v.isEmpty) return '签名密码不能为空';
+                  if (v == null || v.isEmpty) return '别名不能为空';
                   return null;
                 },
                 onSaved: (v) {
@@ -118,7 +118,7 @@ class _GenAndroidKeyDialogState
                   FilteringTextInputFormatter.allow(_inputRegExp),
                 ],
                 validator: (v) {
-                  if (v == null || v.isEmpty) return '别名不能为空';
+                  if (v == null || v.isEmpty) return '签名密码不能为空';
                   return null;
                 },
                 onSaved: (v) {
