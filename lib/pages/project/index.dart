@@ -1,20 +1,20 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
-import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_name_update.dart';
 import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_version_update.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_name_update.dart';
-import 'package:flutter_platform_manage/widgets/dialog/project_version_update.dart';
 import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 
@@ -252,25 +252,30 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic> {
 
   // 构建动作菜单
   Widget _buildCommandBar() {
-    return CommandBarCard(
-      child: CommandBar(
-        overflowBehavior: CommandBarOverflowBehavior.noWrap,
-        primaryItems: [
-          CommandBarButton(
-            icon: const Icon(FluentIcons.add),
-            label: const Text('添加'),
-            onPressed: () => ProjectImportDialog.show(context),
+    return Row(
+      children: [
+        const Spacer(),
+        CommandBarCard(
+          child: CommandBar(
+            overflowBehavior: CommandBarOverflowBehavior.noWrap,
+            primaryItems: [
+              CommandBarButton(
+                icon: const Icon(FluentIcons.add),
+                label: const Text('添加'),
+                onPressed: () => ProjectImportDialog.show(context),
+              ),
+              const CommandBarSeparator(),
+              CommandBarButton(
+                icon: const Icon(FluentIcons.refresh),
+                label: const Text('刷新'),
+                onPressed: () => setState(() {
+                  Utils.showSnack(context, '项目信息已刷新');
+                }),
+              ),
+            ],
           ),
-          const CommandBarSeparator(),
-          CommandBarButton(
-            icon: const Icon(FluentIcons.refresh),
-            label: const Text('刷新'),
-            onPressed: () => setState(() {
-              Utils.showSnack(context, '项目信息已刷新');
-            }),
-          ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }
