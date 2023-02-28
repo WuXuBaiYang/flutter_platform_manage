@@ -30,7 +30,6 @@ void main() async {
   await dbManage.init();
   await cacheManage.init();
   await eventManage.init();
-  await eventManage.init();
   await permissionManage.init();
   await packageTaskManage.init();
   // 启动应用

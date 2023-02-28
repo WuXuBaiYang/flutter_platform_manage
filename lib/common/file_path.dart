@@ -1,10 +1,10 @@
+import 'package:flutter_platform_manage/model/platform/platform.dart';
+
 /*
 * 项目文件路径
 * @author wuxubaiyang
 * @Time 5/15/2022 10:30 AM
 */
-import 'package:flutter_platform_manage/model/platform/platform.dart';
-
 class ProjectFilePath {
   // pubspec.yaml
   static const String pubspec = 'pubspec.yaml';
