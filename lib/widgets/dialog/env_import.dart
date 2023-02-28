@@ -5,8 +5,8 @@ import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/utils/script_handle.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
-import 'value_listenable_builder.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
 
 /*
 * 环境导入弹窗
@@ -80,7 +80,7 @@ class _EnvImportDialogState
               onPressed: () => Navigator.maybePop(context),
             ),
             FilledButton(
-              onPressed: logic.onImportEnv(context, env),
+              onPressed: logic.onImportEnv(context),
               child: const Text('导入'),
             ),
           ],
@@ -106,15 +106,14 @@ class _EnvImportDialogLogic extends BaseLogic {
   final errTextController = ValueChangeNotifier<String?>('');
 
   // 导入环境配置
-  VoidCallback? onImportEnv(BuildContext context, Environment? env) {
+  VoidCallback? onImportEnv(BuildContext context) {
+    final env = envController.value;
     if (env == null) return null;
     return () {
-      try {
-        dbManage.addEnvironment(env);
-        Navigator.maybePop(context, env);
-      } catch (e) {
-        errTextController.setValue('环境添加失败');
-      }
+      dbManage
+          .updateEnvironment(env)
+          .then((_) => Navigator.maybePop(context, env))
+          .catchError((e) => errTextController.setValue('环境添加失败'));
     };
   }
 
@@ -130,7 +129,7 @@ class _EnvImportDialogLogic extends BaseLogic {
       envPathController.text = '';
       errTextController.setValue(null);
       envController.setValue(null);
-      if (dbManage.hasEnvironment(path)) {
+      if (dbManage.hasEnvironmentSync(path)) {
         errTextController.setValue('已存在相同环境');
         return;
       }
@@ -143,5 +142,13 @@ class _EnvImportDialogLogic extends BaseLogic {
       errTextController.setValue('环境信息读取失败');
       envController.setValue(null);
     }
+  }
+
+  @override
+  void dispose() {
+    envPathController.dispose();
+    envController.dispose();
+    errTextController.dispose();
+    super.dispose();
   }
 }

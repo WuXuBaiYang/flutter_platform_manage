@@ -1,4 +1,4 @@
-import 'package:realm/realm.dart';
+import 'package:isar/isar.dart';
 
 part 'project.g.dart';
 
@@ -7,21 +7,33 @@ part 'project.g.dart';
 * @author wuxubaiyang
 * @Time 5/12/2022 14:58
 */
-@RealmModel()
-class _Project {
-  // 主键key
-  @PrimaryKey()
-  late String primaryKey;
-
-  // 项目别名
-  late String alias;
+@collection
+class Project {
+  // 主键id
+  Id id = Isar.autoIncrement;
 
   // 项目的本地存储路径
-  late String path;
+  String path = '';
+
+  // 项目别名
+  String alias = '';
 
   // 项目环境key
-  late String environmentKey;
+  int envId = 0;
 
   // 排序
-  late int order;
+  int order = 0;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is! Project) return false;
+    return id == other.id &&
+        path == other.path &&
+        alias == other.alias &&
+        envId == other.envId &&
+        order == other.order;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, path, alias, envId, order);
 }

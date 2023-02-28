@@ -6,7 +6,7 @@ import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/debouncer.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 
 /*
@@ -77,8 +77,10 @@ class _PermissionImportDialogState
         ),
         FilledButton(
           child: const Text('选择'),
-          onPressed: () =>
-              Navigator.pop(context, logic.permissionListController.value),
+          onPressed: () => Navigator.pop(
+            context,
+            logic.copyPermissionList(),
+          ),
         ),
       ],
     );
@@ -247,13 +249,26 @@ class _PermissionImportDialogLogic extends BaseLogic {
     if (checked) {
       permissionListController.removeValue(item);
     } else {
-      permissionListController.addValue([item]);
+      permissionListController.addValue(item);
     }
   }
 
   // 判断是否已包含权限
   bool hasPermission(PermissionItemModel item) =>
       permissionListController.contains(item);
+
+  // 拷贝所选权限列表
+  List<PermissionItemModel> copyPermissionList() =>
+      [...permissionListController.value];
+
+  @override
+  void dispose() {
+    permissionListController.dispose();
+    permissionListController.value.cast();
+    filterController.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
 }
 
 // 过滤状态枚举

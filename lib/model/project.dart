@@ -7,7 +7,7 @@ import 'package:flutter_platform_manage/utils/file_handle.dart';
 import 'db/environment.dart';
 
 /*
-*
+* 项目信息包装
 * @author wuxubaiyang
 * @Time 5/20/2022 10:37 AM
 */
@@ -58,7 +58,7 @@ class ProjectModel {
 
   // 获取当前项目对应的环境对象
   Environment? get environment =>
-      _environment ??= dbManage.find<Environment>(project.environmentKey);
+      _environment ??= dbManage.loadEnvironment(project.envId);
 
   // 项目名称正则
   final _nameReg = RegExp(r'name: .+');
@@ -72,7 +72,7 @@ class ProjectModel {
   String get pubspecFilePath => '${project.path}/${ProjectFilePath.pubspec}';
 
   // 更新项目信息
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandle.from(pubspecFilePath);
     try {
       // 处理pubspec.yaml文件
@@ -90,7 +90,7 @@ class ProjectModel {
         if (!d.existsSync()) continue;
         final p = t.create(d.path);
         // 更新平台信息
-        if (!await p.update(simple)) return false;
+        if (!await p.update(simple: simple)) return false;
         platformMap[t] = p;
       }
       // 置空环境对象
@@ -141,19 +141,15 @@ class ProjectModel {
     return autoCommit ? await handle.commit() : true;
   }
 
-  // 修改展示名称
-  Future<bool> modifyDisplayName(String name) async {
-    ///待实现
-    return true;
+  @override
+  bool operator ==(dynamic other) {
+    if (other is! ProjectModel) return false;
+    return project == other.project &&
+        exist == other.exist &&
+        name == other.name &&
+        version == other.version;
   }
 
-  // 修改平台图标
-  Future<void> modifyProjectIcon(File file) async {
-    ///待实现
-  }
-
-  // 项目平台打包
-  Future<void> projectPackaging(File output) async {
-    ///待实现
-  }
+  @override
+  int get hashCode => Object.hash(project, exist, name, version);
 }

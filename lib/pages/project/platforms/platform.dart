@@ -1,15 +1,15 @@
-import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/manager/event.dart';
+import 'package:flutter_platform_manage/model/event/project_package.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/project_logo_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_logo_manage.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -18,6 +18,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 * @Time 2022-07-29 16:09:36
 */
 abstract class BasePlatformPage<T extends BasePlatform> extends StatefulWidget {
+  // 平台信息实体
   final T platformInfo;
 
   const BasePlatformPage({
@@ -158,7 +159,7 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
           ),
           onPressed: () {
             final info = logic.platformInfo;
-            ProjectLogoDialog.show(
+            ProjectLogoManageDialog.show(
               context,
               initialPlatforms: [info],
               minFileSize: _minFileSizeMap[info.type]!,
@@ -168,6 +169,32 @@ abstract class BasePlatformPageState<T extends BasePlatformPage,
               }
             });
           },
+        ),
+      ),
+    );
+  }
+
+  // 平台打包项
+  Widget buildPackage({
+    List<Widget> actions = const [],
+  }) {
+    return buildItem(
+      child: CardItem(
+        child: ListTile(
+          title: const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text('平台打包'),
+          ),
+          trailing: Row(
+            children: [
+              ...actions,
+              const SizedBox(width: 8),
+              const Icon(FluentIcons.running),
+            ],
+          ),
+          onPressed: () => eventManage.fire(
+            ProjectPackageEvent(logic.platformInfo.type),
+          ),
         ),
       ),
     );

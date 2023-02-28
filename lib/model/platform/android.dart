@@ -15,39 +15,35 @@ import 'package:xml/xml.dart';
 */
 class AndroidPlatform extends BasePlatform {
   // 应用名
-  String label;
+  String label = '';
 
   // 包名
-  String package;
+  String package = '';
 
   // 图标对象
-  String _iconPath;
+  String _iconPath = '';
 
   // 权限集合
-  List<PermissionItemModel> permissions;
+  List<PermissionItemModel> permissions = [];
 
   AndroidPlatform({
-    required String platformPath,
-    this.label = '',
-    this.package = '',
-    this.permissions = const [],
-  })  : _iconPath = '',
-        super(type: PlatformType.android, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.android);
 
   // androidManifest.xml文件绝对路径
-  String get _manifestFile =>
+  String get _manifestFilePath =>
       '$platformPath/${ProjectFilePath.androidManifest}';
 
   // app/buildGradle 文件绝对路径
-  String get _appBuildGradleFile =>
+  String get _appBuildGradleFilePath =>
       '$platformPath/${ProjectFilePath.androidAppBuildGradle}';
 
   // app/src/main/res 资源路径
   String get _appResPath => '$platformPath/${ProjectFilePath.androidRes}';
 
   @override
-  Future<bool> update(bool simple) async {
-    final handle = FileHandleXML.from(_manifestFile);
+  Future<bool> update({bool simple = false}) async {
+    final handle = FileHandleXML.from(_manifestFilePath);
     try {
       // 处理androidManifest.xml文件
       // 获取图标路径
@@ -56,17 +52,16 @@ class AndroidPlatform extends BasePlatform {
               .replaceAll(r'@', '');
       // 加载图标
       projectIcons = await _loadIcons();
-      if (!simple) {
-        // 获取label
-        label = await handle.singleAtt('application', attName: 'android:label');
-        // 获取包名
-        package = await handle.singleAtt('manifest', attName: 'package');
-        // 获取权限集合
-        permissions = await permissionManage.findAllPermissions(
-          await handle.attList('uses-permission', attName: 'android:name'),
-          platform: PlatformType.android,
-        );
-      }
+      if (simple) return true;
+      // 获取label
+      label = await handle.singleAtt('application', attName: 'android:label');
+      // 获取包名
+      package = await handle.singleAtt('manifest', attName: 'package');
+      // 获取权限集合
+      permissions = await permissionManage.findAllPermissions(
+        await handle.attList('uses-permission', attName: 'android:name'),
+        platform: PlatformType.android,
+      );
     } catch (e) {
       return false;
     }
@@ -107,7 +102,8 @@ class AndroidPlatform extends BasePlatform {
   Future<bool> commit() async {
     try {
       // 处理androidManifest.xml文件
-      if (!await FileHandleXML.from(_manifestFile).fileWrite((handle) async {
+      if (!await FileHandleXML.from(_manifestFilePath)
+          .fileWrite((handle) async {
         // 修改label
         await modifyDisplayName(label, handle: handle);
         // 修改包名
@@ -123,7 +119,7 @@ class AndroidPlatform extends BasePlatform {
             }).toList());
       })) return false;
       // 处理app/build.gradle文件
-      if (!await FileHandleXML.from(_appBuildGradleFile)
+      if (!await FileHandleXML.from(_appBuildGradleFilePath)
           .fileWrite((handle) async {
         // 修改包名
         await handle.replace(RegExp(r'(package=|applicationId\s*)".+"'),
@@ -139,7 +135,7 @@ class AndroidPlatform extends BasePlatform {
   @override
   Future<bool> modifyDisplayName(String name,
       {FileHandle? handle, bool autoCommit = false}) async {
-    handle ??= FileHandleXML.from(_manifestFile);
+    handle ??= FileHandleXML.from(_manifestFilePath);
     if (handle is! FileHandleXML) return false;
     // 修改label
     await handle.setElAtt('application', attName: 'android:label', value: name);
@@ -147,25 +143,17 @@ class AndroidPlatform extends BasePlatform {
   }
 
   @override
-  Future<bool> projectPackaging(File output) async {
-    ///待实现
-    return true;
-  }
+  String? get displayName => label;
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final AndroidPlatform typedOther = other;
-    return label == typedOther.label &&
-        package == typedOther.package &&
-        (permissions.length == typedOther.permissions.length &&
-            !permissions.any((e) => !typedOther.permissions.contains(e)));
+    if (other is! AndroidPlatform) return false;
+    return label == other.label &&
+        package == other.package &&
+        (permissions.length == other.permissions.length &&
+            !permissions.any((e) => !other.permissions.contains(e)));
   }
 
   @override
-  int get hashCode => Object.hash(
-        label,
-        package,
-        Object.hashAll(permissions),
-      );
+  int get hashCode => Object.hash(label, package, Object.hashAll(permissions));
 }

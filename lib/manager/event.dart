@@ -13,21 +13,16 @@ class EventManage extends BaseManage {
 
   factory EventManage() => _instance;
 
-  EventManage._internal();
+  EventManage._internal() : _eventBus = EventBus();
 
   // 消息总线对象管理
-  late EventBus eventBus;
-
-  @override
-  Future<void> init() async {
-    eventBus = EventBus();
-  }
+  final EventBus _eventBus;
 
   // 注册消息监听
-  Stream<T> on<T extends BaseEvent>() => eventBus.on<T>();
+  Stream<T> on<T extends BaseEvent>() => _eventBus.on<T>();
 
   // 发送消息
-  void fire<T extends BaseEvent>(T event) => eventBus.fire(event);
+  void fire<T extends BaseEvent>(T event) => _eventBus.fire(event);
 }
 
 //单例调用

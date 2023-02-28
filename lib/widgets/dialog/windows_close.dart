@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -33,7 +34,9 @@ class _WindowsCloseDialogState extends State<WindowsCloseDialog> {
   Widget build(BuildContext context) {
     return ContentDialog(
       title: const Text('关闭提醒'),
-      content: const Text('确定要关闭应用吗？'),
+      content: Text(packageTaskManage.packageQueueNotEmpty
+          ? '还有正在进行中的任务，继续关闭将停止所有任务'
+          : '确定要关闭应用吗？'),
       actions: [
         Button(
           child: const Text('取消'),
@@ -41,8 +44,9 @@ class _WindowsCloseDialogState extends State<WindowsCloseDialog> {
         ),
         FilledButton(
           child: const Text('关闭'),
-          onPressed: () {
+          onPressed: () async {
             Navigator.maybePop(context);
+            await packageTaskManage.stopAllTask();
             windowManager.destroy();
           },
         ),

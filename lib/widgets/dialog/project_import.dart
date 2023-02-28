@@ -4,15 +4,16 @@ import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
-import 'package:flutter_platform_manage/manager/project.dart';
 import 'package:flutter_platform_manage/model/db/environment.dart';
 import 'package:flutter_platform_manage/model/db/project.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/env_import_dialog.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/custom_animated_size.dart';
+import 'package:flutter_platform_manage/widgets/dialog/env_import.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/platform_tag_group.dart';
-import 'value_listenable_builder.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
+import 'package:flutter_platform_manage/widgets/value_listenable_builder.dart';
 
 /*
 * 项目导入弹窗
@@ -33,11 +34,10 @@ class ProjectImportDialog extends StatefulWidget {
     BuildContext context, {
     Project? initialProject,
   }) {
-    initialProject ??= Project(Utils.genID(), '', '', '', 0);
     return showDialog<ProjectModel>(
       context: context,
       builder: (_) => ProjectImportDialog(
-        initialProject: initialProject!,
+        initialProject: initialProject ?? Project(),
       ),
     );
   }
@@ -80,7 +80,7 @@ class _ProjectImportDialogState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(_stepsMap.length * 2 - 1, (i) {
-                    if (i.isOdd) return const Divider(size: 60);
+                    if (i.isOdd) return const ThicknessDivider(size: 60);
                     i = i ~/ 2;
                     var it = _stepsMap.keys.elementAt(i);
                     return RadioButton(
@@ -95,8 +95,7 @@ class _ProjectImportDialogState
                   }),
                 ),
                 const SizedBox(height: 14),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
+                CustomAnimatedSize(
                   child: IndexedStack(
                     index: currentStep,
                     children: _stepsMap.values.map((e) => e()).toList(),
@@ -117,7 +116,9 @@ class _ProjectImportDialogState
             FilledButton(
               onPressed: () => logic.nextStep(context),
               child: Text(
-                currentStep < _stepsMap.length - 1 ? '下一步' : '导入',
+                currentStep < _stepsMap.length - 1
+                    ? '下一步'
+                    : (logic.isEdited ? '修改' : '导入'),
               ),
             ),
           ],
@@ -138,11 +139,7 @@ class _ProjectImportDialogState
             controller: TextEditingController(text: project.alias),
             header: '别名',
             placeholder: '默认取项目名',
-            onSaved: (v) {
-              dbManage.write((realm) {
-                project.alias = v ?? '';
-              });
-            },
+            onSaved: (v) => project.alias = v ?? '',
           ),
           const SizedBox(height: 14),
           _buildProjectSelectPath(project),
@@ -159,18 +156,14 @@ class _ProjectImportDialogState
       controller: logic.projectPathController,
       header: '项目路径',
       placeholder: '粘贴或选择项目根目录',
-      onSaved: (v) {
-        dbManage.write((realm) {
-          project.path = v ?? '';
-        });
-      },
+      onSaved: (v) => project.path = v ?? '',
       validator: (v) {
         if (null == v || v.isEmpty) return '项目路径不能为空';
         var path = '$v/${ProjectFilePath.pubspec}';
         if (!File(path).existsSync()) {
           return '项目不存在（缺少pubspec.yaml文件）';
         }
-        if (!project.isManaged && projectManage.has(v)) {
+        if (!logic.isEdited && dbManage.hasProjectSync(v)) {
           return '项目已存在';
         }
         return null;
@@ -195,8 +188,7 @@ class _ProjectImportDialogState
     return InfoLabel(
       label: '运行时环境',
       child: FormField<Environment>(
-        initialValue: dbManage.loadFirstEnvironment(
-            environmentKey: project.environmentKey),
+        initialValue: dbManage.loadEnvironment(project.envId),
         builder: (f) {
           return FormRow(
             padding: EdgeInsets.zero,
@@ -204,31 +196,14 @@ class _ProjectImportDialogState
             child: Row(
               children: [
                 Expanded(
-                  child: ComboBox<Environment>(
-                    isExpanded: true,
-                    placeholder: const Text('请添加flutter环境'),
-                    value: f.value,
-                    onChanged: f.didChange,
-                    items: dbManage
-                        .loadAllEnvironments()
-                        .map<ComboBoxItem<Environment>>((e) {
-                      return ComboBoxItem(
-                        value: e,
-                        child: Text('Flutter ${e.flutter} · ${e.channel}'),
-                      );
-                    }).toList(),
-                  ),
+                  child: _buildProjectSelectEnvItem(f),
                 ),
                 const SizedBox(width: 14),
                 IconButton(
                   icon: const Icon(FluentIcons.add),
-                  onPressed: () {
-                    EnvImportDialog.show(context).then((v) {
-                      if (null != v) {
-                        f.didChange(v);
-                      }
-                    });
-                  },
+                  onPressed: () => EnvImportDialog.show(context).then((v) {
+                    if (null != v) f.didChange(v);
+                  }),
                 )
               ],
             ),
@@ -238,12 +213,36 @@ class _ProjectImportDialogState
           if (null == v) return '运行时环境不能为空';
           return null;
         },
-        onSaved: (v) {
-          dbManage.write((realm) {
-            project.environmentKey = v?.primaryKey ?? '';
-          });
-        },
+        onSaved: (v) => project.envId = v?.id ?? 0,
       ),
+    );
+  }
+
+  // 构建项目环境选择子项
+  Widget _buildProjectSelectEnvItem(FormFieldState<Environment> f) {
+    return StreamBuilder<List<Environment>>(
+      stream: dbManage.watchEnvironmentList(
+        fireImmediately: true,
+      ),
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return ComboBox<Environment>(
+            isExpanded: true,
+            placeholder: const Text('请添加flutter环境'),
+            value: f.value,
+            onChanged: f.didChange,
+            items: (snap.data ?? []).map((e) {
+              return ComboBoxItem(
+                value: e,
+                child: Text('Flutter ${e.flutter} · ${e.channel}'),
+              );
+            }).toList(),
+          );
+        }
+        return const Center(
+          child: ProgressRing(),
+        );
+      },
     );
   }
 
@@ -324,23 +323,26 @@ class _ProjectImportDialogLogic extends BaseLogic {
   // 记录当前所在步骤
   final currentStepController = ValueChangeNotifier<int>(0);
 
-  // 项目信息
-  final Project project;
-
   // 项目包装信息
   final projectInfoController = ValueChangeNotifier<ProjectModel?>(null);
 
   // 项目路径选择控制器
   final TextEditingController projectPathController;
 
-  // 项目选择表单的key
-  final projectSelectKey = GlobalKey<FormState>();
-
   // 异常提示
   final errTextController = ValueChangeNotifier<String?>(null);
 
+  // 项目选择表单的key
+  final projectSelectKey = GlobalKey<FormState>();
+
+  // 项目信息
+  final Project project;
+
   _ProjectImportDialogLogic(this.project)
       : projectPathController = TextEditingController(text: project.path);
+
+  // 是否为编辑状态
+  bool get isEdited => project.id > 0;
 
   // 上一步
   VoidCallback? previewStep() {
@@ -367,7 +369,7 @@ class _ProjectImportDialogLogic extends BaseLogic {
       if (state == null || !state.validate()) return;
       state.save();
       final projectInfo = ProjectModel(project: project);
-      await projectInfo.update(true);
+      await projectInfo.update(simple: true);
       // 跳转到第二步
       projectInfoController.setValue(projectInfo);
       currentStepController.setValue(1);
@@ -379,7 +381,7 @@ class _ProjectImportDialogLogic extends BaseLogic {
   // 导入所选项目
   Future<void> importProject(BuildContext context) async {
     try {
-      projectManage.add(project);
+      dbManage.updateProject(project);
       Navigator.maybePop(
         context,
         projectInfoController.value,
@@ -387,5 +389,14 @@ class _ProjectImportDialogLogic extends BaseLogic {
     } catch (e) {
       errTextController.setValue('项目导入失败');
     }
+  }
+
+  @override
+  void dispose() {
+    currentStepController.dispose();
+    projectInfoController.dispose();
+    projectPathController.dispose();
+    errTextController.dispose();
+    super.dispose();
   }
 }

@@ -13,6 +13,9 @@ class Common {
   // 窗口最大尺寸
   static const Size windowMaximumSize = Size(1080, 810);
 
+  // 警告颜色(红色)
+  static const Color warningColor = Color(0xffe81123);
+
   // 平台图标-android
   static const String platformAndroid = 'assets/images/platform_android.svg';
 

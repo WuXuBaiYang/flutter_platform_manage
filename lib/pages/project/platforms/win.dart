@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/model/platform/windows.dart';
 
@@ -9,7 +11,7 @@ import 'platform.dart';
 * @Time 2022-07-22 17:48:47
 */
 class PlatformWinPage extends BasePlatformPage<WindowsPlatform> {
-  PlatformWinPage({
+  const PlatformWinPage({
     super.key,
     required super.platformInfo,
   });
@@ -33,6 +35,7 @@ class _PlatformWinPageState
   List<Widget> loadItemList(BuildContext context) {
     return [
       buildAppLogo(),
+      if (Platform.isWindows) buildPackage(),
     ];
   }
 }

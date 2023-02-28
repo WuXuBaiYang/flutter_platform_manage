@@ -1,18 +1,17 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/cache.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
 import 'package:flutter_platform_manage/manager/event.dart';
+import 'package:flutter_platform_manage/manager/package_task.dart';
 import 'package:flutter_platform_manage/manager/permission.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_platform_manage/model/event/theme.dart';
 import 'package:flutter_platform_manage/pages/home.dart';
 import 'package:window_manager/window_manager.dart';
-
-// 记录debug状态
-const bool debugMode = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +30,8 @@ void main() async {
   await dbManage.init();
   await cacheManage.init();
   await eventManage.init();
-  await eventManage.init();
   await permissionManage.init();
+  await packageTaskManage.init();
   // 启动应用
   runApp(const MyApp());
 }
@@ -50,15 +49,18 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<ThemeEvent>(
       initialData: ThemeEvent(
         themeType: themeManage.currentType,
+        fontFamily: themeManage.currentFontFamily,
       ),
       stream: eventManage.on<ThemeEvent>(),
       builder: (_, snap) {
-        final themeType = snap.data?.themeType;
+        final event = snap.data;
         return FluentApp(
-          debugShowCheckedModeBanner: debugMode,
+          debugShowCheckedModeBanner: kDebugMode,
           navigatorKey: jRouter.navigateKey,
           routes: RoutePath.routeMap,
-          theme: themeType?.theme,
+          theme: event?.themeType.getTheme(
+            fontFamily: event.fontFamily.family,
+          ),
           home: const HomePage(),
         );
       },

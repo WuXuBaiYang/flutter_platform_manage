@@ -67,11 +67,10 @@ class _FileImageProvider extends FileImage {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final _FileImageProvider typedOther = other;
-    return file.path == typedOther.file.path &&
-        scale == typedOther.scale &&
-        fileSize == typedOther.fileSize;
+    if (other is! _FileImageProvider) return false;
+    return file.path == other.file.path &&
+        scale == other.scale &&
+        fileSize == other.fileSize;
   }
 
   @override

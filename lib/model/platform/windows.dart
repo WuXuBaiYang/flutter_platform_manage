@@ -11,18 +11,19 @@ import 'package:flutter_platform_manage/utils/log.dart';
 */
 class WindowsPlatform extends BasePlatform {
   WindowsPlatform({
-    required String platformPath,
-  }) : super(type: PlatformType.windows, platformPath: platformPath);
+    required super.platformPath,
+  }) : super(type: PlatformType.windows);
 
   // 默认图标路径
-  String get iconFilePath => '$platformPath/runner/resources/app_icon.ico';
+  String get _iconFilePath => '$platformPath/runner/resources/app_icon.ico';
 
   @override
-  Future<bool> update(bool simple) async {
+  Future<bool> update({bool simple = false}) async {
     final handle = FileHandle.from('');
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();
+      if (simple) return true;
 
       ///待实现
     } catch (e) {
@@ -36,10 +37,10 @@ class WindowsPlatform extends BasePlatform {
     List<ProjectIcon> result = [];
     try {
       // 添加favicon图标
-      if (File(iconFilePath).existsSync()) {
+      if (File(_iconFilePath).existsSync()) {
         result.add(ProjectIcon(
           size: const Size.square(256),
-          src: iconFilePath,
+          src: _iconFilePath,
           type: 'image/ico',
           fileType: 'ico',
         ));
@@ -56,21 +57,9 @@ class WindowsPlatform extends BasePlatform {
     try {
       ///待实现
     } catch (e) {
+      LogTool.e('windows平台信息提交失败：', error: e);
       return false;
     }
-    return handle.commit();
-  }
-
-  @override
-  Future<bool> modifyDisplayName(String name,
-      {FileHandle? handle, bool autoCommit = false}) async {
-    ///待实现
-    return true;
-  }
-
-  @override
-  Future<bool> projectPackaging(File output) async {
-    ///待实现
     return true;
   }
 }

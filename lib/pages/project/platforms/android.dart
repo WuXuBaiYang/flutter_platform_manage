@@ -5,8 +5,10 @@ import 'package:flutter_platform_manage/model/permission.dart';
 import 'package:flutter_platform_manage/model/platform/android.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/widgets/card_item.dart';
-import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
-import 'package:flutter_platform_manage/widgets/permission_import_dialog.dart';
+import 'package:flutter_platform_manage/widgets/dialog/android_build_guide.dart';
+import 'package:flutter_platform_manage/widgets/dialog/gen_android_key.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
+import 'package:flutter_platform_manage/widgets/dialog/permission_import.dart';
 import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'platform.dart';
 
@@ -43,6 +45,16 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
       _buildPermissionManage(),
       _buildPackageName(),
       buildAppLogo(),
+      buildPackage(actions: [
+        TextButton(
+          child: const Text('生成签名'),
+          onPressed: () => GenAndroidKeyDialog.show(context),
+        ),
+        TextButton(
+          child: const Text('引导'),
+          onPressed: () => AndroidBuildGuideDialog.show(context),
+        ),
+      ]),
     ];
   }
 
@@ -112,10 +124,9 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
             initialValue: info.permissions,
             onSaved: (v) => info.permissions = v ?? [],
             builder: (f) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildPermissionManageHeader(f, expanded),
-                _buildPermissionManageList(f),
+                Expanded(child: _buildPermissionManageList(f)),
               ],
             ),
           ),
@@ -148,9 +159,7 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
                 platformType: PlatformType.android,
                 initialPermissions: f.value,
               ).then((v) {
-                if (null != v) {
-                  setState(() => logic.platformInfo.permissions = v);
-                }
+                if (null != v) f.didChange(v);
               });
             },
           ),
@@ -162,17 +171,15 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
   // 构建权限管理项列表
   Widget _buildPermissionManageList(
       FormFieldState<List<PermissionItemModel>> f) {
-    return Expanded(
-      child: CardItem(
-        child: f.value?.isEmpty ?? true
-            ? const Center(child: Text('还未添加任何权限哦~'))
-            : ListView.separated(
-                shrinkWrap: true,
-                itemCount: f.value?.length ?? 0,
-                separatorBuilder: (_, i) => const ThicknessDivider(),
-                itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
-              ),
-      ),
+    return CardItem(
+      child: f.value?.isEmpty ?? true
+          ? const Center(child: Text('还未添加任何权限哦~'))
+          : ListView.separated(
+              shrinkWrap: true,
+              itemCount: f.value?.length ?? 0,
+              separatorBuilder: (_, i) => const ThicknessDivider(),
+              itemBuilder: (_, i) => _buildPermissionManageItem(f, i),
+            ),
     );
   }
 
@@ -185,20 +192,17 @@ class _PlatformAndroidPageState extends BasePlatformPageState<
       child: Row(
         children: [
           Expanded(
-            child: DefaultTextStyle(
-              style: const TextStyle(fontSize: 12, color: Color(0xff333333)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item?.name ?? '',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(item?.describe ?? ''),
-                  Text(item?.value ?? ''),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item?.name ?? '',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(item?.describe ?? ''),
+                Text(item?.value ?? ''),
+              ],
             ),
           ),
           IconButton(
@@ -225,4 +229,10 @@ class _PlatformAndroidPageLogic extends BasePlatformPageLogic<AndroidPlatform> {
   final permissionExpand = ValueChangeNotifier<bool>(false);
 
   _PlatformAndroidPageLogic(super.platformInfo);
+
+  @override
+  void dispose() {
+    permissionExpand.dispose();
+    super.dispose();
+  }
 }

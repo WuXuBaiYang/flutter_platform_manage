@@ -4,18 +4,18 @@ import 'package:flutter_platform_manage/common/file_path.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 
 /*
 * 修改项目名弹窗
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class ProjectReNameDialog extends StatefulWidget {
+class ProjectNameUpdateDialog extends StatefulWidget {
   // 编辑项目信息时回传对象
   final ProjectModel initialProjectInfo;
 
-  const ProjectReNameDialog({
+  const ProjectNameUpdateDialog({
     Key? key,
     required this.initialProjectInfo,
   }) : super(key: key);
@@ -27,14 +27,14 @@ class ProjectReNameDialog extends StatefulWidget {
   }) {
     return showDialog<ProjectModel>(
       context: context,
-      builder: (_) => ProjectReNameDialog(
+      builder: (_) => ProjectNameUpdateDialog(
         initialProjectInfo: initialProjectInfo,
       ),
     );
   }
 
   @override
-  State<StatefulWidget> createState() => _ProjectReNameDialogState();
+  State<StatefulWidget> createState() => _ProjectNameUpdateDialogState();
 }
 
 /*
@@ -42,18 +42,18 @@ class ProjectReNameDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/21/2022 12:32 PM
 */
-class _ProjectReNameDialogState
-    extends LogicState<ProjectReNameDialog, _ProjectReNameDialogLogic> {
+class _ProjectNameUpdateDialogState
+    extends LogicState<ProjectNameUpdateDialog, _ProjectNameUpdateDialogLogic> {
   @override
-  _ProjectReNameDialogLogic initLogic() =>
-      _ProjectReNameDialogLogic(widget.initialProjectInfo);
+  _ProjectNameUpdateDialogLogic initLogic() =>
+      _ProjectNameUpdateDialogLogic(widget.initialProjectInfo);
 
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Row(
         children: [
-          const Text('修改 pubspec.yaml 文件中的项目名称'),
+          const Text('修改 pubspec.yaml 文件项目名称'),
           IconButton(
             icon: const Icon(FluentIcons.info),
             onPressed: () {
@@ -112,9 +112,8 @@ class _ProjectReNameDialogState
               return null;
             },
             onSaved: (v) {
-              if (null != v && logic.projectInfo.name != v) {
-                logic.projectInfo.modifyProjectName(v, autoCommit: true);
-              }
+              if (v == null || logic.projectInfo.name == v) return;
+              logic.projectInfo.modifyProjectName(v, autoCommit: true);
             },
             inputFormatters: [
               FilteringTextInputFormatter.allow(_reNameRegExp),
@@ -131,17 +130,17 @@ class _ProjectReNameDialogState
 * @author wuxubaiyang
 * @Time 2022/11/1 16:51
 */
-class _ProjectReNameDialogLogic extends BaseLogic {
-  // 表单key
-  final formKey = GlobalKey<FormState>();
-
+class _ProjectNameUpdateDialogLogic extends BaseLogic {
   // 输入框控制器
   final TextEditingController nameController;
+
+  // 表单key
+  final formKey = GlobalKey<FormState>();
 
   // 项目对象
   final ProjectModel projectInfo;
 
-  _ProjectReNameDialogLogic(this.projectInfo)
+  _ProjectNameUpdateDialogLogic(this.projectInfo)
       : nameController = TextEditingController(text: projectInfo.name);
 
   // 提交项目名修改
@@ -151,5 +150,11 @@ class _ProjectReNameDialogLogic extends BaseLogic {
       state.save();
       Navigator.maybePop(context, projectInfo);
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
   }
 }

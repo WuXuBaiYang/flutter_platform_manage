@@ -72,12 +72,11 @@ class PermissionItemModel {
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final PermissionItemModel typedOther = other;
-    return name == typedOther.name &&
-        describe == typedOther.describe &&
-        hint == typedOther.hint &&
-        value == typedOther.value;
+    if (other is! PermissionItemModel) return false;
+    return name == other.name &&
+        describe == other.describe &&
+        hint == other.hint &&
+        value == other.value;
   }
 
   @override

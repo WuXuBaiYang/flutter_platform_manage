@@ -362,3 +362,13 @@ build/
 /linux/flutter/generated_plugin_registrant.cc
 /linux/flutter/generated_plugin_registrant.h
 /linux/flutter/generated_plugins.cmake
+macos/Podfile
+macos/Podfile.lock
+
+jtech.db.isar
+jtech.db.isar-lck
+
+key.properties
+key.properties
+*.properties
+*.g.dart

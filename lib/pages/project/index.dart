@@ -1,24 +1,22 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/common/route_path.dart';
 import 'package:flutter_platform_manage/manager/db.dart';
-import 'package:flutter_platform_manage/manager/project.dart';
 import 'package:flutter_platform_manage/manager/router.dart';
 import 'package:flutter_platform_manage/model/project.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/utils/cache_future_builder.dart';
-import 'package:flutter_platform_manage/widgets/important_option_dialog.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/important_option.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_import.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_name_update.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_package.dart';
+import 'package:flutter_platform_manage/widgets/dialog/project_version_update.dart';
 import 'package:flutter_platform_manage/widgets/mouse_right_click_menu.dart';
 import 'package:flutter_platform_manage/widgets/notice_box.dart';
-import 'package:flutter_platform_manage/widgets/project_import_dialog.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
-import 'package:flutter_platform_manage/widgets/project_rename_dialog.dart';
-import 'package:flutter_platform_manage/widgets/project_version_dialog.dart';
 import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
-import 'package:window_manager/window_manager.dart';
 
 /*
 * 项目页
@@ -37,16 +35,9 @@ class ProjectPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 5/18/2022 5:14 PM
 */
-class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
-    with WindowListener {
+class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic> {
   @override
   _ProjectPageLogic initLogic() => _ProjectPageLogic();
-
-  @override
-  void initState() {
-    windowManager.addListener(this);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,90 +46,73 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
         title: const Text('项目列表'),
         commandBar: _buildCommandBar(),
       ),
-      content: CacheFutureBuilder<List<ProjectModel>>(
-        controller: logic.controller,
-        future: () => projectManage.loadAll(simple: true),
-        builder: (_, snap) {
-          final value = snap.data;
-          if (null != value && value.isNotEmpty) {
-            return _buildProjectGrid(value);
-          }
-          return Center(
-            child: NoticeBox.empty(
-              message: '点击右上角添加一个项目',
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // 构建动作菜单
-  Widget _buildCommandBar() {
-    return CommandBarCard(
-      child: CommandBar(
-        overflowBehavior: CommandBarOverflowBehavior.noWrap,
-        primaryItems: [
-          CommandBarButton(
-            icon: const Icon(FluentIcons.add),
-            label: const Text('添加'),
-            onPressed: () {
-              ProjectImportDialog.show(context).then((v) {
-                if (null != v) logic.controller.refreshValue();
-              });
-            },
-          ),
-          CommandBarButton(
-            icon: const Icon(FluentIcons.refresh),
-            label: const Text('刷新'),
-            onPressed: () {
-              logic.controller.refreshValue();
-              Utils.showSnack(context, '项目信息已刷新');
-            },
-          ),
-        ],
+      content: StreamBuilder(
+        stream: dbManage.watchProjectList(
+          fireImmediately: true,
+        ),
+        builder: (_, snap) => _buildProjectGrid(),
       ),
     );
   }
 
   // 构建项目列表
-  Widget _buildProjectGrid(List<ProjectModel> projectList) {
-    return ReorderableBuilder(
-      scrollController: logic.scrollController,
-      onReorder: (entities) =>
-          logic.updateProjectListOrder(projectList, entities),
-      builder: (children) => GridView(
-        key: logic.gridViewKey,
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
-          mainAxisExtent: 90,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 14,
-        ),
-        children: children,
-      ),
-      children: List.generate(
-        projectList.length,
-        (i) => _buildProjectGridItem(projectList[i]),
-      ),
+  Widget _buildProjectGrid() {
+    return FutureBuilder<List<ProjectModel>>(
+      future: dbManage.loadAllProjectInfos(),
+      builder: (c, snap) {
+        final list = snap.data ?? [];
+        if (snap.hasData && list.isNotEmpty) {
+          return ReorderableBuilder(
+            scrollController: logic.scrollController,
+            onReorder: (entities) =>
+                logic.updateProjectListOrder(list, entities),
+            builder: (children) => GridView(
+              key: logic.gridViewKey,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: Common.windowMinimumSize.width / 2,
+                mainAxisExtent: 90,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 14,
+              ),
+              children: children,
+            ),
+            children: List.generate(
+              list.length,
+              (i) => _buildProjectGridItem(c, list[i]),
+            ),
+          );
+        }
+        return Center(
+          child: NoticeBox.empty(
+            message: '点击右上角添加一个项目',
+          ),
+        );
+      },
     );
   }
 
   // 构建项目表格子项
-  Widget _buildProjectGridItem(ProjectModel item) {
-    if (!item.project.isValid) return const SizedBox();
+  Widget _buildProjectGridItem(BuildContext context, ProjectModel item) {
     return MouseRightClickMenu(
-      key: ObjectKey(item.project.primaryKey),
-      menuItems: _getProjectGirdItemMenuItems(item),
+      key: ObjectKey(item.project.id),
+      menuItems: _getProjectMenuItems(context, item),
       child: Center(
-        child: Card(
-          child: !item.exist
-              ? Center(
-                  child: Text(
-                  '项目信息丢失,点击重新编辑',
-                  style: TextStyle(color: Colors.red),
-                ))
-              : _buildProjectGridItemContent(item),
+        child: GestureDetector(
+          child: Card(
+            child: !item.exist
+                ? Center(
+                    child: Text(
+                    '项目信息丢失,点击重新编辑',
+                    style: TextStyle(color: Colors.red),
+                  ))
+                : _buildProjectGridItemContent(item),
+          ),
+          onTap: () {
+            if (!item.exist) return _showModifyProjectDialog(item);
+            jRouter.pushNamed(RoutePath.projectDetail, parameters: {
+              'id': item.project.id,
+            })?.then((_) => setState(() {}));
+          },
         ),
       ),
     );
@@ -146,35 +120,60 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
 
   // 构建项目列表子项内容
   Widget _buildProjectGridItemContent(ProjectModel item) {
-    return ListTile(
-      leading: ProjectLogo(
-        projectIcon: item.projectIcon,
-      ),
-      title: Text(
-        item.showTitle,
-        style: TextStyle(
-          color: !item.exist ? Colors.red : null,
+    return Row(
+      children: [
+        ProjectLogo(
+          projectIcon: item.projectIcon,
         ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-      subtitle: Text(
-        'v${!item.exist ? item.project.alias : item.version}'
-        ' · Flutter ${item.environment?.flutter}',
-        overflow: TextOverflow.ellipsis,
-        maxLines: 2,
-      ),
-      onPressed: () {
-        if (!item.exist) return _showModifyProjectDialog(item);
-        jRouter.pushNamed(RoutePath.projectDetail, parameters: {
-          'key': item.project.primaryKey,
-        })?.then((_) => logic.controller.refreshValue());
-      },
+        const SizedBox(width: 14),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.showTitle,
+              style: TextStyle(
+                color: !item.exist ? Colors.red : null,
+                fontSize: 18,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            Text(
+              'v${!item.exist ? item.project.alias : item.version}'
+              ' · Flutter ${item.environment?.flutter}',
+              style: TextStyle(
+                color: Colors.grey[120],
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   // 获取项目列表子项右键菜单项
-  List<Widget> _getProjectGirdItemMenuItems(ProjectModel item) => [
+  List<Widget> _getProjectMenuItems(BuildContext context, ProjectModel item) =>
+      [
+        ListTile(
+          leading: const Icon(
+            FluentIcons.running,
+            size: 14,
+          ),
+          title: const Text('打包'),
+          onPressed: () {
+            Navigator.pop(context);
+            item.update(simple: false).then((v) {
+              if (!v) return Utils.showSnack(context, '信息更新失败');
+              ProjectPackageDialog.show(
+                context,
+                initialProjectInfo: item,
+              );
+            });
+          },
+        ),
         ListTile(
           leading: const Icon(
             FluentIcons.rename,
@@ -183,11 +182,11 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
           title: const Text('项目名称'),
           onPressed: () {
             Navigator.pop(context);
-            ProjectReNameDialog.show(
+            ProjectNameUpdateDialog.show(
               context,
               initialProjectInfo: item,
             ).then((v) {
-              if (null != v) logic.controller.refreshValue();
+              if (null != v) setState(() {});
             });
           },
         ),
@@ -199,11 +198,11 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
           title: const Text('版本号'),
           onPressed: () {
             Navigator.pop(context);
-            ProjectVersionDialog.show(
+            ProjectVersionUpdateDialog.show(
               context,
               initialProjectInfo: item,
             ).then((v) {
-              if (null != v) logic.controller.refreshValue();
+              if (null != v) setState(() {});
             });
           },
         ),
@@ -235,8 +234,8 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
               message: '是否删除该项目 ${item.showTitle}',
               confirm: '删除',
               onConfirmTap: () {
-                dbManage.delete(item.project);
-                logic.controller.refreshValue();
+                final id = item.project.id;
+                dbManage.deleteProject(id);
               },
             );
           },
@@ -248,15 +247,36 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
     ProjectImportDialog.show(
       context,
       initialProject: item.project,
-    ).then((v) {
-      if (null != v) logic.controller.refreshValue();
-    });
+    );
   }
 
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
+  // 构建动作菜单
+  Widget _buildCommandBar() {
+    return Row(
+      children: [
+        const Spacer(),
+        CommandBarCard(
+          child: CommandBar(
+            overflowBehavior: CommandBarOverflowBehavior.noWrap,
+            primaryItems: [
+              CommandBarButton(
+                icon: const Icon(FluentIcons.add),
+                label: const Text('添加'),
+                onPressed: () => ProjectImportDialog.show(context),
+              ),
+              const CommandBarSeparator(),
+              CommandBarButton(
+                icon: const Icon(FluentIcons.refresh),
+                label: const Text('刷新'),
+                onPressed: () => setState(() {
+                  Utils.showSnack(context, '项目信息已刷新');
+                }),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
   }
 }
 
@@ -266,9 +286,6 @@ class _ProjectPageState extends LogicState<ProjectPage, _ProjectPageLogic>
 * @Time 2022/10/27 14:33
 */
 class _ProjectPageLogic extends BaseLogic {
-  // 异步加载控制器
-  final controller = CacheFutureBuilderController<List<ProjectModel>>();
-
   // 滚动控制器
   final scrollController = ScrollController();
 
@@ -277,15 +294,22 @@ class _ProjectPageLogic extends BaseLogic {
 
   // 更新项目列表排序
   void updateProjectListOrder(
-      List<ProjectModel> projectList, List<OrderUpdateEntity> entities) {
+    List<ProjectModel> projectList,
+    List<OrderUpdateEntity> entities,
+  ) {
     for (final entity in entities) {
       final item = projectList.removeAt(entity.oldIndex);
       projectList.insert(entity.newIndex, item);
     }
-    dbManage.write((realm) {
-      for (var i = 0; i < projectList.length; i++) {
-        projectList[i].project.order = i;
-      }
-    });
+    var i = 0;
+    dbManage.updateProjects(projectList.map((e) {
+      return e.project..order = i++;
+    }).toList());
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 }

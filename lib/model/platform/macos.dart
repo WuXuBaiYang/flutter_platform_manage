@@ -13,26 +13,46 @@ import 'package:flutter_platform_manage/utils/log.dart';
 * @Time 5/20/2022 11:28 AM
 */
 class MacOSPlatform extends BasePlatform {
-  MacOSPlatform({
-    required String platformPath,
-  }) : super(type: PlatformType.macos, platformPath: platformPath);
+  // 沙盒模式-开发
+  bool sandBoxDebug = true;
 
-  // info.plist文件绝对路径
-  String get infoPlistFilePath =>
-      '$platformPath/${ProjectFilePath.macosInfoPlist}';
+  // 沙盒模式-发布
+  bool sandBoxRelease = true;
+
+  MacOSPlatform({
+    required super.platformPath,
+  }) : super(type: PlatformType.macos);
+
+  // // info.plist文件绝对路径
+  // String get _infoPlistFilePath =>
+  //     '$platformPath/${ProjectFilePath.macosInfoPlist}';
+
+  // 开发模式的 DebugProfile.entitlements文件绝对路径
+  String get _debugPlistFilePath =>
+      '$platformPath/${ProjectFilePath.debugProfilePlist}';
+
+  // 发布模式的 Release.entitlements文件绝对路径
+  String get _releasePlistFilePath =>
+      '$platformPath/${ProjectFilePath.releasePlist}';
 
   // appIcon.appIconSet目录路径
-  String get appIconAssetsPath =>
+  String get _appIconAssetsPath =>
       '$platformPath/${ProjectFilePath.macosAssetsAppIcon}';
 
   @override
-  Future<bool> update(bool simple) async {
-    final handle = FileHandle.from('');
+  Future<bool> update({bool simple=false}) async {
     try {
       // 加载项目图标
       projectIcons = await _loadIcons();
-
-      ///待实现
+      if (simple) return true;
+      final debugPlistHandle = FileHandlePList.from(_debugPlistFilePath);
+      final releasePlistHandle = FileHandlePList.from(_releasePlistFilePath);
+      // 获取沙盒模式-开发状态
+      sandBoxDebug = await debugPlistHandle
+          .getValue('com.apple.security.app-sandbox', def: true) as bool;
+      // 获取沙盒模式-发布状态
+      sandBoxRelease = await releasePlistHandle
+          .getValue('com.apple.security.app-sandbox', def: true) as bool;
     } catch (e) {
       return false;
     }
@@ -44,7 +64,7 @@ class MacOSPlatform extends BasePlatform {
     List<ProjectIcon> result = [];
     try {
       // 读取配置文件信息
-      final f = File('$appIconAssetsPath/Contents.json');
+      final f = File('$_appIconAssetsPath/Contents.json');
       final config = jsonDecode(f.readAsStringSync());
       for (var it in config['images'] ?? []) {
         final fileName = it['filename'] ?? '';
@@ -56,7 +76,7 @@ class MacOSPlatform extends BasePlatform {
         }
         result.add(ProjectIcon(
           size: Size(w, h),
-          src: fileName.isNotEmpty ? '$appIconAssetsPath/$fileName' : '',
+          src: fileName.isNotEmpty ? '$_appIconAssetsPath/$fileName' : '',
           type: it['scale'] ?? '',
           desc: it['idiom'] ?? '',
           fileType: 'png',
@@ -70,25 +90,23 @@ class MacOSPlatform extends BasePlatform {
 
   @override
   Future<bool> commit() async {
-    final handle = FileHandle.from('');
     try {
-      ///待实现
+      // 处理DebugProfile.entitlements文件
+      if (!await FileHandlePList.from(_debugPlistFilePath)
+          .fileWrite((handle) async {
+        // 修改沙盒模式
+        handle.setValue('com.apple.security.app-sandbox', sandBoxDebug);
+      })) return false;
+      // 处理Release.entitlements文件
+      if (!await FileHandlePList.from(_releasePlistFilePath)
+          .fileWrite((handle) async {
+        // 修改沙盒模式
+        handle.setValue('com.apple.security.app-sandbox', sandBoxRelease);
+      })) return false;
     } catch (e) {
+      LogTool.e('macos平台信息提交失败：', error: e);
       return false;
     }
-    return handle.commit();
-  }
-
-  @override
-  Future<bool> modifyDisplayName(String name,
-      {FileHandle? handle, bool autoCommit = false}) async {
-    ///待实现
-    return true;
-  }
-
-  @override
-  Future<bool> projectPackaging(File output) async {
-    ///待实现
     return true;
   }
 }

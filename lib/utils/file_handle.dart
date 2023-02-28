@@ -191,14 +191,12 @@ class FileHandleXML extends FileHandle {
     }
   }
 
-  // 文件写入事件
   @override
   Future<bool> fileWrite(FileWriteCallback<FileHandleXML> callback) async {
     await callback(this);
     return commit();
   }
 
-  // 文件提交操作
   @override
   Future<bool> commit({bool indentAtt = false}) async {
     if (null != _xmlDocument) {
@@ -271,20 +269,6 @@ class FileHandlePList extends FileHandleXML {
   Future<void> removeValueList({required String includeKey}) async =>
       (await plistMap).removeWhere((key, value) => key.contains(includeKey));
 
-  // 文件写入事件
-  @override
-  Future<bool> fileWrite(FileWriteCallback<FileHandlePList> callback) async {
-    await callback(this);
-    return commit();
-  }
-
-  // 文件提交操作
-  @override
-  Future<bool> commit({bool indentAtt = false}) async {
-    (await _dictXml)?.replace(_convertMap2DictXml(await plistMap));
-    return super.commit(indentAtt: indentAtt);
-  }
-
   // 从xml转换为
   Map<String, dynamic> _convertDictXml2Map(XmlElement? element) {
     if (null == element) return {};
@@ -344,5 +328,95 @@ class FileHandlePList extends FileHandleXML {
       }
     }
     return XmlElement(XmlName('dict'), [], children);
+  }
+
+  @override
+  Future<bool> fileWrite(FileWriteCallback<FileHandlePList> callback) async {
+    await callback(this);
+    return commit();
+  }
+
+  @override
+  Future<bool> commit({bool indentAtt = false}) async {
+    (await _dictXml)?.replace(_convertMap2DictXml(await plistMap));
+    return super.commit(indentAtt: indentAtt);
+  }
+}
+
+/*
+* 作为json文件处理
+* @author wuxubaiyang
+* @Time 2022/11/4 15:45
+*/
+class FileHandleJSON<T extends Iterable> extends FileHandle {
+  FileHandleJSON.from(super.filePath, {Encoding encoding = utf8})
+      : super.from(encoding: encoding);
+
+  // 缓存文件的解析对象
+  dynamic _jsonData;
+
+  // 获取xml文件的解析对象
+  Future<dynamic> get jsonData async =>
+      _jsonData ??= jsonDecode(await fileContent);
+
+  // 获取Map格式的json
+  Future<Map> get jsonDataMap async => await jsonData as Map;
+
+  // 获取list格式的json
+  Future<List> get jsonDataList async => await jsonData as List;
+
+  // 获取map结构中的值
+  Future<V?> findInMap<V>(String key) async {
+    if (key.isEmpty) return null;
+    final json = await jsonDataMap;
+    return json[key] as V;
+  }
+
+  // 设置map结构的参数
+  Future<bool> setInMap(String key, {required dynamic value}) async {
+    if (key.isEmpty) return false;
+    final json = await jsonDataMap;
+    json[key] = value;
+    return true;
+  }
+
+  // 获取map结构中的key集合
+  Future<Iterable> getMapKeys() async {
+    final json = await jsonDataMap;
+    return json.keys;
+  }
+
+  // 获取map结构中的值集合
+  Future<Iterable> getMapValues() async {
+    final json = await jsonDataMap;
+    return json.values;
+  }
+
+  // 获取list结构的长度
+  Future<int> getListLength() async {
+    final json = await jsonDataList;
+    return json.length;
+  }
+
+  // 判断目标是否存在于list结构中
+  Future<bool> containsInList(dynamic v) async {
+    final json = await jsonDataList;
+    return json.contains(v);
+  }
+
+  @override
+  Future<bool> fileWrite(
+    FileWriteCallback<FileHandleJSON> callback,
+  ) async {
+    await callback(this);
+    return commit();
+  }
+
+  @override
+  Future<bool> commit({bool indentAtt = false}) async {
+    if (null != _jsonData) {
+      _fileContent = jsonEncode(_jsonData);
+    }
+    return super.commit();
   }
 }

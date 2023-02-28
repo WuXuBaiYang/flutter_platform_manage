@@ -21,7 +21,11 @@ class SystemSettings extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022-07-25 17:22:43
 */
-class _SystemSettingsState extends BaseSettingsState<SystemSettings> {
+class _SystemSettingsState
+    extends BaseSettingsState<SystemSettings, _SystemSettingsLogic> {
+  @override
+  _SystemSettingsLogic initLogic() => _SystemSettingsLogic();
+
   @override
   List<Widget> get loadSettingList => [
         _buildAppTheme(),
@@ -32,6 +36,7 @@ class _SystemSettingsState extends BaseSettingsState<SystemSettings> {
     return StreamBuilder<ThemeEvent>(
       initialData: ThemeEvent(
         themeType: themeManage.currentType,
+        fontFamily: ThemeFontFamily.alibabaSans,
       ),
       stream: eventManage.on<ThemeEvent>(),
       builder: (_, snap) {
@@ -50,20 +55,27 @@ class _SystemSettingsState extends BaseSettingsState<SystemSettings> {
                 const Spacer(),
                 ToggleSwitch(
                   checked: isDayLight,
-                  onChanged: (v) {
-                    final type = v ? ThemeType.light : ThemeType.dark;
-                    themeManage.switchTheme(type);
-                  },
+                  onChanged: (v) => logic.switchTheme(v),
                 ),
               ],
             ),
-            onPressed: () {
-              final type = !isDayLight ? ThemeType.light : ThemeType.dark;
-              themeManage.switchTheme(type);
-            },
+            onPressed: () => logic.switchTheme(!isDayLight),
           ),
         );
       },
     );
+  }
+}
+
+/*
+* 系统设置相关-逻辑
+* @author wuxubaiyang
+* @Time 2022/11/9 13:13
+*/
+class _SystemSettingsLogic extends BaseSettingsLogic {
+  // 切换样式
+  Future<bool> switchTheme(bool isDayLight) {
+    final type = isDayLight ? ThemeType.light : ThemeType.dark;
+    return themeManage.switchTheme(type);
   }
 }

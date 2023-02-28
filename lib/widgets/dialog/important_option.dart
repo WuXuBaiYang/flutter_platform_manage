@@ -87,12 +87,12 @@ class _ImportantOptionDialogState<T> extends State<ImportantOptionDialog> {
         ],
       ),
       content: Text(widget.message),
-      actions: _actions,
+      actions: _getActions(context),
     );
   }
 
   // 动态加载操作按钮集合
-  List<Widget> get _actions => [
+  List<Widget> _getActions(BuildContext context) => [
         Button(
           child: const Text('取消'),
           onPressed: () => Navigator.maybePop(context),

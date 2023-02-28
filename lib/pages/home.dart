@@ -2,12 +2,12 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
 import 'package:flutter_platform_manage/common/logic.dart';
 import 'package:flutter_platform_manage/common/notifier.dart';
+import 'package:flutter_platform_manage/pages/package/index.dart';
 import 'package:flutter_platform_manage/pages/project/index.dart';
-import 'package:flutter_platform_manage/pages/package_record.dart';
 import 'package:flutter_platform_manage/pages/setting/index.dart';
 import 'package:flutter_platform_manage/widgets/app_page.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
-import 'package:flutter_platform_manage/widgets/windows_close_dialog.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
+import 'package:flutter_platform_manage/widgets/dialog/windows_close.dart';
 import 'package:window_manager/window_manager.dart';
 
 /*
@@ -69,28 +69,28 @@ class _HomePageState extends LogicState<HomePage, _HomePageLogic>
   }
 
   // 导航项
-  List<NavigationPaneItem> get _navigationItems => [
-        PaneItem(
-          icon: const Icon(FluentIcons.project_management),
-          title: const Text('项目管理'),
-          body: const ProjectPage(),
-        ),
-        PaneItem(
-          icon: const Icon(FluentIcons.packages),
-          title: const Text('打包记录'),
-          body: const PackageRecordPage(),
-        )
-      ];
+  final List<NavigationPaneItem> _navigationItems = [
+    PaneItem(
+      icon: const Icon(FluentIcons.project_management),
+      title: const Text('项目管理'),
+      body: const ProjectPage(),
+    ),
+    PaneItem(
+      icon: const Icon(FluentIcons.packages),
+      title: const Text('打包管理'),
+      body: const PackagePage(),
+    )
+  ];
 
   // 导航底部项
-  List<NavigationPaneItem> get _navigationFooterItems => [
-        PaneItemSeparator(),
-        PaneItem(
-          icon: const Icon(FluentIcons.settings),
-          title: const Text('设置'),
-          body: const SettingPage(),
-        ),
-      ];
+  final List<NavigationPaneItem> _navigationFooterItems = [
+    PaneItemSeparator(),
+    PaneItem(
+      icon: const Icon(FluentIcons.settings),
+      title: const Text('设置'),
+      body: const SettingPage(),
+    ),
+  ];
 
   @override
   void onWindowClose() {
@@ -113,4 +113,10 @@ class _HomePageState extends LogicState<HomePage, _HomePageLogic>
 class _HomePageLogic extends BaseLogic {
   // 导航当前下标
   final navigationIndex = ValueChangeNotifier(0);
+
+  @override
+  void dispose() {
+    navigationIndex.dispose();
+    super.dispose();
+  }
 }

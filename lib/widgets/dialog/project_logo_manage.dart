@@ -8,8 +8,9 @@ import 'package:flutter_platform_manage/model/event/project_logo.dart';
 import 'package:flutter_platform_manage/model/platform/platform.dart';
 import 'package:flutter_platform_manage/utils/log.dart';
 import 'package:flutter_platform_manage/utils/utils.dart';
-import 'package:flutter_platform_manage/widgets/logic_state.dart';
+import 'package:flutter_platform_manage/common/logic_state.dart';
 import 'package:flutter_platform_manage/widgets/project_logo.dart';
+import 'package:flutter_platform_manage/widgets/thickness_divider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image/image.dart' as handle;
 
@@ -18,14 +19,14 @@ import 'package:image/image.dart' as handle;
 * @author wuxubaiyang
 * @Time 2022/10/31 11:05
 */
-class ProjectLogoDialog extends StatefulWidget {
+class ProjectLogoManageDialog extends StatefulWidget {
   // 项目平台集合
   final List<BasePlatform> initialPlatforms;
 
   // 所选图标最小尺寸
   final Size minFileSize;
 
-  const ProjectLogoDialog({
+  const ProjectLogoManageDialog({
     super.key,
     required this.initialPlatforms,
     required this.minFileSize,
@@ -39,7 +40,7 @@ class ProjectLogoDialog extends StatefulWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => ProjectLogoDialog(
+      builder: (_) => ProjectLogoManageDialog(
         initialPlatforms: initialPlatforms,
         minFileSize: minFileSize,
       ),
@@ -47,7 +48,7 @@ class ProjectLogoDialog extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _ProjectLogoDialogState();
+  State<StatefulWidget> createState() => _ProjectLogoManageDialogState();
 }
 
 /*
@@ -55,11 +56,11 @@ class ProjectLogoDialog extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/10/31 11:05
 */
-class _ProjectLogoDialogState
-    extends LogicState<ProjectLogoDialog, _ProjectLogoDialogLogic> {
+class _ProjectLogoManageDialogState
+    extends LogicState<ProjectLogoManageDialog, _ProjectLogoManageDialogLogic> {
   @override
-  _ProjectLogoDialogLogic initLogic() =>
-      _ProjectLogoDialogLogic(widget.initialPlatforms);
+  _ProjectLogoManageDialogLogic initLogic() =>
+      _ProjectLogoManageDialogLogic(widget.initialPlatforms);
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +72,8 @@ class _ProjectLogoDialogState
       content: Column(
         children: [
           _buildPlatformHeader(),
-          const Divider(
-            style: DividerThemeData(
-              horizontalMargin: EdgeInsets.symmetric(vertical: 14),
-            ),
+          const ThicknessDivider(
+            horizontalMargin: EdgeInsets.symmetric(vertical: 14),
           ),
           Expanded(child: _buildPlatformTabs()),
         ],
@@ -89,10 +88,12 @@ class _ProjectLogoDialogState
           builder: (_, v, __) {
             return FilledButton(
               onPressed: v != null
-                  ? () => Utils.showLoading(context,
-                      loadFuture: logic.replaceLogos().then((v) {
-                        if (!v) Utils.showSnack(context, '图标替换失败');
-                      }))
+                  ? () => Utils.showLoading<bool>(
+                        context,
+                        loadFuture: logic.replaceLogos(),
+                      ).then((v) {
+                        if (v != null && !v) Utils.showSnack(context, '图标替换失败');
+                      })
                   : null,
               child: const Text('替换'),
             );
@@ -131,10 +132,14 @@ class _ProjectLogoDialogState
                   height: 45,
                 )
               : Icon(
-                  FluentIcons.file_image,
+                  FluentIcons.image_search,
                   size: 45,
                   color: Colors.grey[90],
                 ),
+          trailing: const Padding(
+            padding: EdgeInsets.only(top: 12),
+            child: Icon(FluentIcons.settings),
+          ),
           title: Text('选择图标文件（${logic.handleSize(widget.minFileSize)}）'),
           subtitle: Text(selectFile?.path ?? '未选择'),
           onPressed: () {
@@ -221,17 +226,17 @@ class _ProjectLogoDialogState
 * @author wuxubaiyang
 * @Time 2022/11/2 9:11
 */
-class _ProjectLogoDialogLogic extends BaseLogic {
-  // 项目图标与平台表
-  final List<BasePlatform> platforms;
-
+class _ProjectLogoManageDialogLogic extends BaseLogic {
   // 平台下标
   final indexController = ValueChangeNotifier<int>(0);
 
   // 所选图标数据
   final selectIconFile = ValueChangeNotifier<File?>(null);
 
-  _ProjectLogoDialogLogic(this.platforms);
+  // 项目图标与平台表
+  final List<BasePlatform> platforms;
+
+  _ProjectLogoManageDialogLogic(this.platforms);
 
   // 接收尺寸并格式化
   String handleSize(Size size) {
@@ -275,5 +280,12 @@ class _ProjectLogoDialogLogic extends BaseLogic {
     }
     eventManage.fire(ProjectLogoChangeEvent());
     return true;
+  }
+
+  @override
+  void dispose() {
+    indexController.dispose();
+    selectIconFile.dispose();
+    super.dispose();
   }
 }

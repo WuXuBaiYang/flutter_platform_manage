@@ -13,6 +13,45 @@ import 'package:flutter/services.dart';
 * @Time 5/18/2022 10:58 AM
 */
 class Utils {
+  // 版本号自增
+  static String autoIncrement(BuildContext context, String version) {
+    var t = version.split('+');
+    if (t.length != 2) {
+      Utils.showSnack(context, '版本号格式错误');
+      return version;
+    }
+    var vName = t.first, vCode = t.last;
+    var c = int.tryParse(vCode);
+    if (null == c) {
+      Utils.showSnack(context, '版本号格式化失败');
+      return version;
+    }
+    vCode = '${++c}';
+    t = vName.split('.');
+    t.last = vCode;
+    vName = t.join('.');
+    return '$vName+$vCode';
+  }
+
+  // 解析颜色
+  static Color? parseHexColor(String hexColor) {
+    if (hexColor.isEmpty) return null;
+    hexColor = hexColor.replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF$hexColor";
+    }
+    if (hexColor.length == 8) {
+      return Color(int.parse("0x$hexColor"));
+    }
+    return null;
+  }
+
+  // 将色值转换为hex格式字符串
+  static String toHexColor(Color color) {
+    final radixStr = color.value.toRadixString(16);
+    return '#${radixStr.substring(2, 8)}';
+  }
+
   // 生成id
   static String genID({int? seed}) {
     final time = DateTime.now().millisecondsSinceEpoch;
@@ -77,19 +116,22 @@ class Utils {
     final navigator = Navigator.of(context);
     try {
       if (null != _loadingDialog) navigator.maybePop();
+      const duration = Duration(milliseconds: 200);
       _loadingDialog = showDialog<void>(
         context: context,
+        transitionDuration: duration,
         builder: (_) => const Center(
           child: Card(
             child: ProgressRing(),
           ),
         ),
       )..whenComplete(() => _loadingDialog = null);
+      await Future.delayed(duration);
       final result = await loadFuture;
-      if (null != _loadingDialog) navigator.maybePop();
+      if (null != _loadingDialog) await navigator.maybePop();
       return result;
     } catch (e) {
-      if (null != _loadingDialog) navigator.maybePop();
+      if (null != _loadingDialog) await navigator.maybePop();
       rethrow;
     }
   }

@@ -23,19 +23,15 @@ class JRouter extends BaseManage {
   NavigatorState? get navigator => navigateKey.currentState;
 
   //设置基础参数
-  Future<void> setup({
-    RouteTransitionsBuilder? transitionsBuilder,
-  }) async {
+  Future<void> setup({RouteTransitionsBuilder? transitionsBuilder}) async {
     _transitionsBuilder = transitionsBuilder;
   }
 
   //获取页面参数
-  V? find<V>(BuildContext context, String key, {V? def}) {
-    dynamic temp = ModalRoute.of(context)?.settings.arguments;
-    if (temp is Map) {
-      temp = temp[key] ?? def;
-    }
-    return null != temp ? temp as V : temp;
+  V? findInMap<V>(BuildContext context, String key) {
+    dynamic arguments = ModalRoute.of(context)?.settings.arguments;
+    if (arguments is Map) return arguments[key] as V;
+    return null;
   }
 
   //页面跳转
@@ -66,7 +62,7 @@ class JRouter extends BaseManage {
   }
 
   //页面跳转
-  Future<T?>? pushNamed<T>(String url, {Map<String, String>? parameters}) {
+  Future<T?>? pushNamed<T>(String url, {Map<String, dynamic>? parameters}) {
     final uri = Uri.parse(url);
     return navigator?.pushNamed<T>(
       uri.path,

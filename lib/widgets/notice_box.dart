@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_platform_manage/common/common.dart';
+import 'package:flutter_platform_manage/manager/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /*
@@ -33,7 +34,7 @@ class NoticeBox extends StatelessWidget {
     Key? key,
     required this.message,
     this.boxSize = NoticeBoxSize.middle,
-  })  : color = const Color(0xFF221D08).withOpacity(0.3),
+  })  : color = themeManage.currentTheme.uncheckedColor.withOpacity(0.3),
         svgAssetsPath = Common.emptyBoxImage,
         super(key: key);
 
@@ -42,7 +43,7 @@ class NoticeBox extends StatelessWidget {
     Key? key,
     required this.message,
     this.boxSize = NoticeBoxSize.middle,
-  })  : color = const Color(0xffe81123).withOpacity(0.3),
+  })  : color = Common.warningColor.withOpacity(0.3),
         svgAssetsPath = Common.warningBoxImage,
         super(key: key);
 
